@@ -1,8 +1,24 @@
-<view class="wrap">
-  <goods-category
-    level="{{3}}"
-    custom-class="goods-category-class"
-    category="{{list}}"
-    bind:changeCategory="onChange"
-  />
+<view class="category-page">
+  <view class="page-head">
+    <view class="eyebrow">Browse</view>
+    <view class="title">菜品分类</view>
+    <view class="subtitle">先定方向，再挑今晚具体吃什么。</view>
+  </view>
+
+  <view class="category-grid">
+    <view
+      class="category-card"
+      wx:for="{{list}}"
+      wx:key="groupId"
+      data-id="{{item.groupId}}"
+      data-name="{{item.name}}"
+      bindtap="openCategory"
+    >
+      <view>
+        <view class="category-name">{{item.name}}</view>
+        <view class="category-desc">{{item.description}}</view>
+      </view>
+      <view class="category-count">{{item.children[0].children.length}} 道</view>
+    </view>
+  </view>
 </view>

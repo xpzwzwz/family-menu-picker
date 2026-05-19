@@ -1,54 +1,33 @@
-<view class="goods-list-container">
-  <filter
-    wr-class="filter-container"
-    bind:change="handleFilterChange"
-    layout="{{layout}}"
-    sorts="{{sorts}}"
-    overall="{{overall}}"
-    bind:showFilterPopup="showFilterPopup"
-  >
-    <filter-popup
-      slot="filterPopup"
-      show="{{show}}"
-      bind:showFilterPopupClose="showFilterPopupClose"
-      bind:reset="reset"
-      bind:confirm="confirm"
-    >
-      <view class="price-container" slot="filterSlot">
-        <view class="price-between">价格区间</view>
-        <view class="price-ipts-wrap">
-          <t-input
-            align="center"
-            type="number"
-            t-class="price-ipt"
-            placeholder="最低价"
-            value="{{minVal}}"
-            bindchange="onMinValAction"
-          />
-          <view class="price-divided">-</view>
-          <t-input
-            align="center"
-            type="number"
-            t-class="price-ipt"
-            placeholder="最高价"
-            value="{{maxVal}}"
-            bindchange="onMaxValAction"
-          />
-        </view>
-      </view>
-    </filter-popup>
-  </filter>
+<view class="dish-list-page">
+  <view class="list-head">
+    <view>
+      <view class="eyebrow">Dishes</view>
+      <view class="title">{{categoryName}}</view>
+    </view>
+    <button class="menu-btn" bindtap="goMenu">今晚菜单</button>
+  </view>
+
   <view class="empty-wrap" wx:if="{{goodsList.length === 0 && hasLoaded}}">
-    <t-empty t-class="empty-tips" size="240rpx" description="暂无相关商品" />
+    <t-empty t-class="empty-tips" size="240rpx" description="暂无相关菜品" />
   </view>
-  <view class="category-goods-list" wx:if="{{goodsList.length}}">
-    <goods-list
-      wr-class="wr-goods-list"
-      goodsList="{{goodsList}}"
-      bind:click="gotoGoodsDetail"
-      bind:addcart="handleAddCart"
-    />
+
+  <view class="dish-list" wx:if="{{goodsList.length}}">
+    <view class="dish-card" wx:for="{{goodsList}}" wx:key="spuId">
+      <t-image src="{{item.thumb}}" t-class="dish-image" mode="aspectFill" />
+      <view class="dish-body">
+        <view class="dish-title-row">
+          <view class="dish-name">{{item.title}}</view>
+          <view class="dish-time">{{item.cookMinutes}} 分钟</view>
+        </view>
+        <view class="dish-meta">{{item.difficulty}} · {{item.flavor}}</view>
+        <view class="dish-tags">
+          <text wx:for="{{item.tags}}" wx:key="*this">{{item}}</text>
+        </view>
+        <button class="add-btn" data-index="{{index}}" bindtap="handleAddCart">加入今晚菜单</button>
+      </view>
+    </view>
   </view>
-  <load-more wx:if="{{goodsList.length > 0}}" status="{{loadMoreStatus}}" no-more-text="没有更多了" />
+
+  <load-more wx:if="{{goodsList.length > 0}}" status="{{loadMoreStatus}}" no-more-text="没有更多菜了" />
+  <t-toast id="t-toast" />
 </view>
-<t-toast id="t-toast" />
