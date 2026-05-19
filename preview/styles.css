@@ -1,0 +1,299 @@
+:root {
+  color: #1f241f;
+  background: #f4f5f1;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+button,
+textarea {
+  font: inherit;
+}
+
+button {
+  border: 0;
+  cursor: pointer;
+}
+
+.app-shell {
+  margin: 0 auto;
+  max-width: 520px;
+  padding: 20px;
+}
+
+.hero,
+.summary-card,
+.menu-panel,
+.dish-card,
+.category-tabs,
+.dish-row {
+  border-radius: 8px;
+}
+
+.hero {
+  background: #26332c;
+  color: #fff;
+  padding: 24px;
+}
+
+.eyebrow {
+  color: #6c7a62;
+  font-size: 12px;
+  letter-spacing: 0;
+  margin: 0 0 4px;
+}
+
+.hero .eyebrow {
+  color: #b8d8c2;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: 34px;
+  line-height: 1.2;
+}
+
+h2 {
+  font-size: 22px;
+  line-height: 1.3;
+}
+
+.subtitle {
+  color: #dce7df;
+  font-size: 15px;
+  line-height: 1.6;
+  margin-top: 12px;
+}
+
+.hero-actions {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 20px;
+}
+
+.hero-actions button,
+.confirm {
+  background: #f3c969;
+  border-radius: 8px;
+  color: #1f241f;
+  font-weight: 700;
+  min-height: 44px;
+}
+
+.hero-actions .secondary {
+  background: #fff;
+}
+
+.summary-card,
+.menu-panel,
+.dish-row {
+  background: #fff;
+}
+
+.summary-card {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding: 18px;
+}
+
+#recommendation-meta,
+#menu-summary,
+.dish-meta,
+.dish-note,
+.confirm-status {
+  color: #69736d;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.ghost {
+  background: #eef4e7;
+  border-radius: 8px;
+  color: #48613f;
+  padding: 10px 12px;
+}
+
+.dish-grid,
+.dish-list,
+.menu-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.dish-card,
+.dish-row {
+  background: #fff;
+  display: flex;
+  overflow: hidden;
+}
+
+.dish-card img,
+.dish-row img {
+  aspect-ratio: 1;
+  flex: 0 0 110px;
+  object-fit: cover;
+  width: 110px;
+}
+
+.dish-body {
+  flex: 1;
+  min-width: 0;
+  padding: 14px;
+}
+
+.dish-title-row {
+  align-items: flex-start;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.dish-name {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.time-pill,
+.dish-tags span {
+  background: #eef4e7;
+  border-radius: 6px;
+  color: #48613f;
+  display: inline-flex;
+  font-size: 12px;
+  padding: 4px 7px;
+}
+
+.dish-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.category-tabs {
+  background: #fff;
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  overflow-x: auto;
+  padding: 10px;
+}
+
+.category-tabs button {
+  background: #f4f5f1;
+  border-radius: 8px;
+  color: #48613f;
+  flex: 0 0 auto;
+  padding: 10px 12px;
+}
+
+.category-tabs button.is-active {
+  background: #26332c;
+  color: #fff;
+}
+
+.add-btn,
+.qty-btn {
+  background: #e34d59;
+  border-radius: 8px;
+  color: #fff;
+  margin-top: 12px;
+  padding: 10px 12px;
+}
+
+.menu-panel {
+  margin-top: 16px;
+  padding: 18px;
+}
+
+.panel-head {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.menu-item {
+  align-items: center;
+  background: #f8f8f4;
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 1fr auto;
+  padding: 12px;
+}
+
+.qty-controls {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.qty-btn {
+  margin: 0;
+  min-width: 34px;
+  padding: 7px 10px;
+}
+
+.remove-btn {
+  background: transparent;
+  color: #e34d59;
+  padding: 7px 0;
+}
+
+.note-field {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.note-field span {
+  font-weight: 700;
+}
+
+textarea {
+  border: 1px solid #d8ddd5;
+  border-radius: 8px;
+  min-height: 76px;
+  padding: 10px;
+  resize: vertical;
+}
+
+.confirm {
+  background: #e34d59;
+  color: #fff;
+  margin-top: 16px;
+  width: 100%;
+}
+
+.confirm-status {
+  margin-top: 10px;
+}
+
+@media (max-width: 430px) {
+  .app-shell {
+    padding: 14px;
+  }
+
+  .hero-actions {
+    grid-template-columns: 1fr;
+  }
+}

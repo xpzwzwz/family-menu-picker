@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>今晚吃什么 - 浏览器预览</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Family Menu Picker</p>
+          <h1>今晚吃什么</h1>
+          <p class="subtitle">浏览器预览版，用来先调 UI、文案和流程；真实小程序发布仍需要微信开发者工具。</p>
+        </div>
+        <div class="hero-actions">
+          <button id="randomize" type="button">随机换一桌</button>
+          <button id="add-recommendation" class="secondary" type="button">加入今晚菜单</button>
+        </div>
+      </section>
+
+      <section class="summary-card" aria-label="推荐概览">
+        <div>
+          <h2 id="recommendation-title">推荐搭配</h2>
+          <p id="recommendation-meta">正在生成...</p>
+        </div>
+        <button id="clear-menu" class="ghost" type="button">清空菜单</button>
+      </section>
+
+      <section id="recommendation-list" class="dish-grid" aria-label="推荐菜"></section>
+
+      <nav id="category-tabs" class="category-tabs" aria-label="菜品分类"></nav>
+      <section id="dish-list" class="dish-list" aria-label="菜品列表"></section>
+
+      <section class="menu-panel" aria-label="今晚菜单">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">Tonight</p>
+            <h2>今晚菜单</h2>
+          </div>
+          <p id="menu-summary">0 份 · 0 分钟</p>
+        </div>
+        <div id="menu-list" class="menu-list"></div>
+        <label class="note-field">
+          <span>家庭备注</span>
+          <textarea id="menu-note" rows="3" placeholder="例如：少辣、米饭多煮一点、谁负责洗菜。"></textarea>
+        </label>
+        <button id="confirm-menu" class="confirm" type="button">确认今晚菜单</button>
+        <p id="confirm-status" class="confirm-status" role="status"></p>
+      </section>
+    </main>
+    <script src="./app.js" type="module"></script>
+  </body>
+</html>
