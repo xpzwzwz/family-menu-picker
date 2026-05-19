@@ -59,7 +59,7 @@ export function genSettleDetail(params) {
       storeGoodsList: [
         {
           storeId: '1000',
-          storeName: '云Mall深圳旗舰店',
+          storeName: '家庭厨房',
           remark: null,
           goodsCount: 1,
           deliveryFee: '0',
@@ -81,7 +81,7 @@ export function genSettleDetail(params) {
       outOfStockGoodsList: null,
       limitGoodsList: null,
       abnormalDeliveryGoodsList: null,
-      invoiceSupport: 1,
+      invoiceSupport: 0,
     },
     code: 'Success',
     msg: null,
@@ -136,8 +136,12 @@ export function genSettleDetail(params) {
 
   resp.data.totalCouponAmount = totalDiscountPrice;
 
-  resp.data.totalPayAmount =
-    totalPrice - totalDiscountPrice - Number(resp.data.totalPromotionAmount);
+  resp.data.totalPromotionAmount = 0;
+  resp.data.totalDeliveryFee = 0;
+  resp.data.totalPayAmount = totalPrice - totalDiscountPrice;
+  resp.data.totalGoodsCount = list.reduce((pre, cur) => pre + cur.quantity, 0);
+  resp.data.settleType = 1;
+  resp.data.userAddress = { name: '家庭菜单', phone: '', address: '今晚在家吃' };
 
   if (userAddressReq) {
     resp.data.settleType = 1;

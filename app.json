@@ -55,15 +55,15 @@
     "list": [
       {
         "pagePath": "pages/home/home",
-        "text": "首页"
+        "text": "今晚吃什么"
       },
       {
         "pagePath": "pages/category/index",
-        "text": "分类"
+        "text": "菜品"
       },
       {
         "pagePath": "pages/cart/index",
-        "text": "购物车"
+        "text": "今晚菜单"
       },
       {
         "pagePath": "pages/usercenter/index",
@@ -77,7 +77,7 @@
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "Weixin",
+    "navigationBarTitleText": "今晚吃什么",
     "navigationBarTextStyle": "black"
   },
   "sitemapLocation": "sitemap.json",

@@ -1,22 +1,22 @@
 export default [
   {
     icon: 'home',
-    text: '首页',
+    text: '今晚吃什么',
     url: 'pages/home/home',
   },
   {
     icon: 'sort',
-    text: '分类',
+    text: '菜品',
     url: 'pages/category/index',
   },
   {
     icon: 'cart',
-    text: '购物车',
+    text: '今晚菜单',
     url: 'pages/cart/index',
   },
   {
     icon: 'person',
-    text: '个人中心',
+    text: '我的',
     url: 'pages/usercenter/index',
   },
 ];
