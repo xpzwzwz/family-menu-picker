@@ -22,6 +22,26 @@
   </a>
 </p>
 
+# Family Menu Picker
+
+家庭内部用的微信小程序，用来解决“今晚吃什么”。第一版使用本地 mock 数据，不需要后端、支付、地址或登录。
+
+## 第一版链路
+
+1. 首页随机生成一桌晚餐推荐。
+2. 推荐菜可以一键加入今晚菜单。
+3. 菜品页可以按分类继续选菜。
+4. 今晚菜单页可以改数量、删除、确认。
+5. 确认页保存最终菜单，不发起支付。
+
+## 运行
+
+1. `npm install`
+2. 用微信开发者工具导入本目录
+3. 在微信开发者工具里构建 npm
+
+---
+
 # TDesign 零售行业模版示例小程序
 
 TDesign 零售模版示例小程序采用 [TDesign 企业级设计体系小程序解决方案](https://tdesign.tencent.com/miniprogram/overview) 进行搭建，依赖 [TDesign 微信小程序组件库](https://github.com/Tencent/tdesign-miniprogram)，涵盖完整的基本零售场景需求。
