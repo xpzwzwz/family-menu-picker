@@ -1,18 +1,16 @@
 import Dialog from 'tdesign-miniprogram/dialog/index';
 import Toast from 'tdesign-miniprogram/toast/index';
 import { fetchCartGroupData } from '../../services/cart/cart';
+import { removeTonightMenuItem, updateTonightMenuItem } from '../../model/dishes';
 
 Page({
   data: {
     cartGroupData: null,
   },
 
-  // 调用自定义tabbar的init函数，使页面与tabbar激活状态保持一致
   onShow() {
     this.getTabBar().init();
-  },
-
-  onLoad() {
+    this.setData({ cartGroupData: null });
     this.refreshData();
   },
 
@@ -20,27 +18,22 @@ Page({
     this.getCartGroupData().then((res) => {
       let isEmpty = true;
       const cartGroupData = res.data;
-      // 一些组件中需要的字段可能接口并没有返回，或者返回的数据结构与预期不一致，需要在此先对数据做一些处理
-      // 统计门店下加购的商品是否全选、是否存在缺货/无货
       for (const store of cartGroupData.storeGoods) {
-        store.isSelected = true; // 该门店已加购商品是否全选
-        store.storeStockShortage = false; // 该门店已加购商品是否存在库存不足
+        store.isSelected = true;
+        store.storeStockShortage = false;
         if (!store.shortageGoodsList) {
-          store.shortageGoodsList = []; // 该门店已加购商品如果库存为0需单独分组
+          store.shortageGoodsList = [];
         }
         for (const activity of store.promotionGoodsList) {
           activity.goodsPromotionList = activity.goodsPromotionList.filter((goods) => {
             goods.originPrice = undefined;
 
-            // 统计是否有加购数大于库存数的商品
             if (goods.quantity > goods.stockQuantity) {
               store.storeStockShortage = true;
             }
-            // 统计是否全选
             if (!goods.isSelected) {
               store.isSelected = false;
             }
-            // 库存为0（无货）的商品单独分组
             if (goods.stockQuantity > 0) {
               return true;
             }
@@ -93,7 +86,6 @@ Page({
     };
   },
 
-  // 注：实际场景时应该调用接口获取购物车数据
   getCartGroupData() {
     const { cartGroupData } = this.data;
     if (!cartGroupData) {
@@ -102,41 +94,37 @@ Page({
     return Promise.resolve({ data: cartGroupData });
   },
 
-  // 选择单个商品
-  // 注：实际场景时应该调用接口更改选中状态
   selectGoodsService({ spuId, skuId, isSelected }) {
     this.findGoods(spuId, skuId).currentGoods.isSelected = isSelected;
+    updateTonightMenuItem(spuId, skuId, { isSelected: isSelected ? 1 : 0 });
     return Promise.resolve();
   },
 
-  // 全选门店
-  // 注：实际场景时应该调用接口更改选中状态
   selectStoreService({ storeId, isSelected }) {
     const currentStore = this.data.cartGroupData.storeGoods.find((s) => s.storeId === storeId);
     currentStore.isSelected = isSelected;
     currentStore.promotionGoodsList.forEach((activity) => {
       activity.goodsPromotionList.forEach((goods) => {
         goods.isSelected = isSelected;
+        updateTonightMenuItem(goods.spuId, goods.skuId, { isSelected: isSelected ? 1 : 0 });
       });
     });
     return Promise.resolve();
   },
 
-  // 加购数量变更
-  // 注：实际场景时应该调用接口
   changeQuantityService({ spuId, skuId, quantity }) {
     this.findGoods(spuId, skuId).currentGoods.quantity = quantity;
+    updateTonightMenuItem(spuId, skuId, { quantity });
     return Promise.resolve();
   },
 
-  // 删除加购商品
-  // 注：实际场景时应该调用接口
   deleteGoodsService({ spuId, skuId }) {
     function deleteGoods(group) {
       for (const gindex in group) {
         const goods = group[gindex];
         if (goods.spuId === spuId && goods.skuId === skuId) {
           group.splice(gindex, 1);
+          removeTonightMenuItem(spuId, skuId);
           return gindex;
         }
       }
@@ -159,8 +147,6 @@ Page({
     return Promise.reject();
   },
 
-  // 清空失效商品
-  // 注：实际场景时应该调用接口
   clearInvalidGoodsService() {
     this.data.cartGroupData.invalidGoodItems = [];
     return Promise.resolve();
@@ -197,22 +183,20 @@ Page({
       quantity,
     } = e.detail;
     const { currentGoods } = this.findGoods(spuId, skuId);
-    const stockQuantity = currentGoods.stockQuantity > 0 ? currentGoods.stockQuantity : 0; // 避免后端返回的是-1
-    // 加购数量超过库存数量
+    const stockQuantity = currentGoods.stockQuantity > 0 ? currentGoods.stockQuantity : 0;
     if (quantity > stockQuantity) {
-      // 加购数量等于库存数量的情况下继续加购
       if (currentGoods.quantity === stockQuantity && quantity - stockQuantity === 1) {
         Toast({
           context: this,
           selector: '#t-toast',
-          message: '当前商品库存不足',
+          message: '这道菜数量太多了',
         });
         return;
       }
       Dialog.confirm({
-        title: '商品库存不足',
-        content: `当前商品库存不足，最大可购买数量为${stockQuantity}件`,
-        confirmBtn: '修改为最大可购买数量',
+        title: '数量超过建议',
+        content: `这道菜最多建议准备${stockQuantity}份`,
+        confirmBtn: '修改为建议数量',
         cancelBtn: '取消',
       })
         .then(() => {
@@ -229,11 +213,7 @@ Page({
   },
 
   goCollect() {
-    /** 活动肯定有一个活动ID，用来获取活动banner，活动商品列表等 */
-    const promotionID = '123';
-    wx.navigateTo({
-      url: `/pages/promotion/promotion-detail/index?promotion_id=${promotionID}`,
-    });
+    wx.switchTab({ url: '/pages/category/index' });
   },
 
   goGoodsDetail(e) {
@@ -244,7 +224,6 @@ Page({
   },
 
   clearInvalidGoods() {
-    // 实际场景时应该调用接口清空失效商品
     this.clearInvalidGoodsService().then(() => this.refreshData());
   },
 
@@ -253,12 +232,12 @@ Page({
       goods: { spuId, skuId },
     } = e.detail;
     Dialog.confirm({
-      content: '确认删除该商品吗?',
+      content: '确认从今晚菜单删除这道菜吗?',
       confirmBtn: '确定',
       cancelBtn: '取消',
     }).then(() => {
       this.deleteGoodsService({ spuId, skuId }).then(() => {
-        Toast({ context: this, selector: '#t-toast', message: '商品删除成功' });
+        Toast({ context: this, selector: '#t-toast', message: '已从今晚菜单删除' });
         this.refreshData();
       });
     });
@@ -271,7 +250,7 @@ Page({
       selector: '#t-toast',
       message: `${isAllSelected ? '取消' : '点击'}了全选按钮`,
     });
-    // 调用接口改变全选
+    this.selectStoreService({ storeId: 'family-kitchen', isSelected: !isAllSelected }).then(() => this.refreshData());
   },
 
   onToSettle() {
@@ -289,6 +268,6 @@ Page({
     wx.navigateTo({ url: '/pages/order/order-confirm/index?type=cart' });
   },
   onGotoHome() {
-    wx.switchTab({ url: '/pages/home/home' });
+    wx.switchTab({ url: '/pages/category/index' });
   },
 });

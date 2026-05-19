@@ -18,7 +18,7 @@
           <t-icon prefix="wr" size="40rpx" color="#333333" name="store" />
           <view class="store-name">{{store.storeName}}</view>
         </view>
-        <view class="get-coupon" catch:tap="gotoCoupons">优惠券</view>
+        <view class="get-coupon">今晚</view>
       </view>
     </view>
     <block wx:for="{{store.promotionGoodsList}}" wx:for-item="promotion" wx:for-index="promoindex" wx:key="promoindex">
@@ -34,7 +34,7 @@
           <view class="promotion-text">{{promotion.description}}</view>
         </view>
         <view class="promotion-action action-btn" hover-class="action-btn--active">
-          <view class="promotion-action-label"> {{promotion.isNeedAddOnShop == 1 ? '去凑单' : '再逛逛'}} </view>
+          <view class="promotion-action-label">继续选菜</view>
           <t-icon name="chevron-right" size="32rpx" color="#BBBBBB" />
         </view>
       </view>
@@ -66,11 +66,11 @@
                 catchspecs="specsTap"
                 catchclick="goGoodsDetail"
               >
-                <view slot="thumb-cover" class="stock-mask" wx:if="{{goods.shortageStock || goods.stockQuantity <= 3}}">
-                  仅剩{{goods.stockQuantity}}件
+                <view slot="thumb-cover" class="stock-mask" wx:if="{{goods.cookMinutes}}">
+                  {{goods.cookMinutes}}分钟
                 </view>
                 <view slot="append-body" class="goods-stepper">
-                  <view class="stepper-tip" wx:if="{{goods.shortageStock}}">库存不足</view>
+                  <view class="stepper-tip" wx:if="{{goods.quantity > 4}}">份数较多</view>
                   <t-stepper
                     classname="stepper-info"
                     value="{{goods.quantity}}"
@@ -88,7 +88,7 @@
               </goods-card>
             </view>
           </view>
-          <view slot="right" class="swiper-right-del" bindtap="deleteGoods" data-goods="{{goods}}"> 删除 </view>
+          <view slot="right" class="swiper-right-del" bindtap="deleteGoods" data-goods="{{goods}}"> 移除 </view>
         </swipeout>
       </view>
       <view
@@ -123,12 +123,12 @@
                 catchclick="goGoodsDetail"
               >
                 <view slot="thumb-cover" class="no-storage-mask" wx:if="{{goods.stockQuantity <=0}}">
-                  <view class="no-storage-content">无货</view>
+                  <view class="no-storage-content">暂不做</view>
                 </view>
               </goods-card>
             </view>
           </view>
-          <view slot="right" class="swiper-right-del" bindtap="deleteGoods" data-goods="{{goods}}"> 删除 </view>
+          <view slot="right" class="swiper-right-del" bindtap="deleteGoods" data-goods="{{goods}}"> 移除 </view>
         </swipeout>
       </view>
       <view

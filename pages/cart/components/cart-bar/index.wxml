@@ -10,22 +10,14 @@
 	<text>全选</text>
 	<view class="cart-bar__total flex1">
 		<view>
-			<text class="cart-bar__total--bold text-padding-right">总计</text>
-			<price
-			 price="{{totalAmount || '0'}}"
-			 fill="{{false}}"
-			 decimalSmaller
-			 class="cart-bar__total--bold cart-bar__total--price"
-			/>
-			<text class="cart-bar__total--normal">（不含运费）</text>
+			<text class="cart-bar__total--bold text-padding-right">预计耗时</text>
+			<text class="cart-bar__total--bold cart-bar__total--price">{{totalAmount || 0}} 分钟</text>
 		</view>
-		<view wx:if="{{totalDiscountAmount}}">
-			<text class="cart-bar__total--normal text-padding-right">已优惠</text>
-			<price class="cart-bar__total--normal" price="{{totalDiscountAmount || '0'}}" fill="{{false}}" />
+		<view>
+			<text class="cart-bar__total--normal">按已选择菜品估算</text>
 		</view>
 	</view>
 	<view catchtap="handleToSettle" class="{{!isDisabled ? '' : 'disabled-btn'}} account-btn" hover-class="{{!isDisabled ? '' : 'hover-btn'}}">
-		去结算({{totalGoodsNum}})
+		确认菜单({{totalGoodsNum}})
 	</view>
 </view>
-

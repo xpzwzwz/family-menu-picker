@@ -6,11 +6,11 @@ Component({
     },
     tip: {
       type: String,
-      value: '购物车是空的',
+      value: '今晚菜单还是空的',
     },
     btnText: {
       type: String,
-      value: '去首页',
+      value: '去选菜',
     },
   },
   data: {},

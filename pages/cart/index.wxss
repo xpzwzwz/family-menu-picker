@@ -2,6 +2,26 @@
   padding-bottom: 100rpx;
 }
 
+.menu-header {
+  background: #ffffff;
+  box-sizing: border-box;
+  padding: 28rpx 32rpx;
+}
+
+.menu-title {
+  color: #1f241f;
+  font-size: 40rpx;
+  font-weight: 700;
+  line-height: 54rpx;
+}
+
+.menu-subtitle {
+  color: #69736d;
+  font-size: 24rpx;
+  line-height: 34rpx;
+  margin-top: 6rpx;
+}
+
 .gap {
   height: 100rpx;
   width: 100%;
