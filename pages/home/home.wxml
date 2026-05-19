@@ -1,58 +1,47 @@
-<view style="text-align: center; color: #b9b9b9" wx:if="{{pageLoading}}">
-  <t-loading theme="circular" size="40rpx" text="加载中..." inherit-color />
-</view>
-<view class="home-page-header">
-  <view class="search" bind:tap="navToSearchPage">
-    <t-search
-      t-class-input="t-search__input"
-      t-class-input-container="t-search__input-container"
-      placeholder="iphone 13 火热发售中"
-      leftIcon=""
-      disabled
-    >
-      <t-icon slot="left-icon" prefix="wr" name="search" size="40rpx" color="#bbb" />
-    </t-search>
-  </view>
-  <view class="swiper-wrap">
-    <t-swiper
-      wx:if="{{imgSrcs.length > 0}}"
-      current="{{current}}"
-      autoplay="{{autoplay}}"
-      duration="{{duration}}"
-      interval="{{interval}}"
-      navigation="{{navigation}}"
-      imageProps="{{swiperImageProps}}"
-      list="{{imgSrcs}}"
-      bind:click="navToActivityDetail"
-    />
-  </view>
-</view>
-<view class="home-page-container">
-  <view class="home-page-tabs">
-    <t-tabs
-      t-class="t-tabs"
-      t-class-active="tabs-external__active"
-      t-class-item="tabs-external__item"
-      defaultValue="{{0}}"
-      space-evenly="{{false}}"
-      bind:change="tabChangeHandle"
-    >
-      <t-tab-panel
-        wx:for="{{tabList}}"
-        wx:for-index="index"
-        wx:key="index"
-        label="{{item.text}}"
-        value="{{item.key}}"
-      />
-    </t-tabs>
+<view class="dinner-home">
+  <view class="hero">
+    <view class="hero-top">
+      <view>
+        <view class="eyebrow">Family Menu Picker</view>
+        <view class="title">今晚吃什么</view>
+      </view>
+      <view class="menu-pill" bindtap="navToMenu">已选 {{totalMenuCount}}</view>
+    </view>
+    <view class="subtitle">随机搭一桌，尽量兼顾荤素和做饭时间。</view>
+    <view class="hero-actions">
+      <button class="primary-btn" bindtap="randomDinnerSet">随机换一桌</button>
+      <button class="secondary-btn" bindtap="addRecommendationToMenu">加入今晚菜单</button>
+    </view>
   </view>
 
-  <goods-list
-    wr-class="goods-list-container"
-    goodsList="{{goodsList}}"
-    bind:click="goodListClickHandle"
-    bind:addcart="goodListAddCartHandle"
-  />
-  <load-more list-is-empty="{{!goodsList.length}}" status="{{goodsListLoadStatus}}" bind:retry="onReTry" />
+  <view class="summary-card" wx:if="{{recommendation}}">
+    <view>
+      <view class="summary-title">{{recommendation.title}}</view>
+      <view class="summary-meta">{{recommendation.totalCookMinutes}} 分钟 · {{recommendation.tags.join(' / ')}}</view>
+    </view>
+    <t-icon name="refresh" size="40rpx" color="#e34d59" bindtap="randomDinnerSet" />
+  </view>
+
+  <view class="dish-grid" wx:if="{{recommendation}}">
+    <view class="dish-card" wx:for="{{recommendation.dishes}}" wx:key="id">
+      <t-image src="{{item.image}}" t-class="dish-image" mode="aspectFill" />
+      <view class="dish-body">
+        <view class="dish-name">{{item.name}}</view>
+        <view class="dish-meta">{{item.cookMinutes}} 分钟 · {{item.difficulty}} · {{item.flavor}}</view>
+        <view class="dish-tags">
+          <text wx:for="{{item.tags}}" wx:key="*this">{{item}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="browse-row" bindtap="navToDishList">
+    <view>
+      <view class="browse-title">还是想自己挑？</view>
+      <view class="browse-desc">去菜品里按快手菜、荤菜、素菜、汤和主食慢慢选。</view>
+    </view>
+    <t-icon name="chevron-right" size="40rpx" color="#666" />
+  </view>
+
   <t-toast id="t-toast" />
 </view>
