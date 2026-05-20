@@ -53,8 +53,11 @@
     <view class="history-list" wx:if="{{historyList.length}}">
       <view class="history-card" wx:for="{{historyList}}" wx:key="id">
         <view class="history-head">
-          <view class="history-time">{{item.confirmedAtText}}</view>
-          <view class="history-count">{{item.dishCount}} 道 · {{item.totalCookMinutes}} 分钟</view>
+          <view class="history-title-wrap">
+            <view class="history-time">{{item.confirmedAtText}}</view>
+            <view class="history-count">{{item.dishCount}} 道 · {{item.totalCookMinutes}} 分钟</view>
+          </view>
+          <button class="reuse-btn" catchtap="reuseHistoryMenu" data-id="{{item.id}}">复用</button>
         </view>
         <view class="history-dishes">{{item.dishNames}}</view>
         <view class="history-note" wx:if="{{item.note}}">{{item.note}}</view>
@@ -67,5 +70,6 @@
   </view>
 
   <view class="footer__version" wx:if="{{versionNo !== ''}}">当前版本 {{versionNo}}</view>
+  <t-dialog id="t-dialog" />
   <t-toast id="t-toast" />
 </view>

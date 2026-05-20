@@ -405,6 +405,17 @@ export function saveConfirmedMenu({ confirmedAt = Date.now(), goodsList = [], su
   return confirmedMenu;
 }
 
+export function reuseMenuHistoryEntry(historyId) {
+  const historyEntry = readMenuHistory().find((entry) => entry.id === historyId);
+  if (!historyEntry) return [];
+  const nextMenu = historyEntry.goodsList.map((goods) => ({
+    ...goods,
+    quantity: Math.max(Number(goods.quantity) || 1, 1),
+    isSelected: 1,
+  }));
+  return saveTonightMenu(nextMenu);
+}
+
 export function addDishesToTonightMenu(goodsList) {
   const current = readTonightMenu();
   const next = [...current];

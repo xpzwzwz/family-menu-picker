@@ -188,6 +188,11 @@ page {
   gap: 20rpx;
 }
 
+.history-title-wrap {
+  flex: 1;
+  min-width: 0;
+}
+
 .history-time {
   color: #333;
   font-size: 28rpx;
@@ -196,10 +201,27 @@ page {
 }
 
 .history-count {
-  flex-shrink: 0;
+  margin-top: 4rpx;
   color: #d54941;
   font-size: 24rpx;
   line-height: 34rpx;
+}
+
+.reuse-btn {
+  flex-shrink: 0;
+  width: 112rpx;
+  height: 56rpx;
+  padding: 0;
+  border-radius: 8rpx;
+  background: #fff0ee;
+  color: #d54941;
+  font-size: 24rpx;
+  font-weight: 600;
+  line-height: 56rpx;
+}
+
+.reuse-btn::after {
+  border: 0;
 }
 
 .history-dishes {

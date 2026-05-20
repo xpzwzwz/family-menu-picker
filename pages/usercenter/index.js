@@ -1,5 +1,6 @@
+import Dialog from 'tdesign-miniprogram/dialog/index';
 import Toast from 'tdesign-miniprogram/toast/index';
-import { readLastConfirmedMenu, readMenuHistory, readTonightMenu } from '../../model/dishes';
+import { readLastConfirmedMenu, readMenuHistory, readTonightMenu, reuseMenuHistoryEntry } from '../../model/dishes';
 
 const actionList = [
   {
@@ -127,6 +128,29 @@ Page({
         break;
       }
     }
+  },
+
+  reuseHistoryMenu(event) {
+    const { id } = event.currentTarget.dataset;
+    Dialog.confirm({
+      title: '替换今晚菜单？',
+      content: '会用这条历史菜单覆盖当前已选菜品。',
+      confirmBtn: '替换',
+      cancelBtn: '取消',
+    })
+      .then(() => {
+        const nextMenu = reuseMenuHistoryEntry(id);
+        if (!nextMenu.length) {
+          Toast({
+            context: this,
+            selector: '#t-toast',
+            message: '没有找到这条历史菜单',
+          });
+          return;
+        }
+        wx.switchTab({ url: '/pages/cart/index' });
+      })
+      .catch(() => {});
   },
 
   getVersionInfo() {
