@@ -1,21 +1,61 @@
 import Toast from 'tdesign-miniprogram/toast/index';
-import { addCustomDish, dishCategories } from '../../../model/dishes';
+import { addCustomDish, dishCategories, getCustomDishById, updateCustomDish } from '../../../model/dishes';
 
 const difficultyOptions = ['简单', '中等', '费事'];
 
+function getDefaultForm() {
+  return {
+    name: '',
+    category: '',
+    cookMinutes: '',
+    difficulty: '简单',
+    flavor: '',
+    tagsText: '',
+    notes: '',
+  };
+}
+
+function formatDishForm(dish) {
+  return {
+    name: dish.name,
+    category: dish.category,
+    cookMinutes: String(dish.cookMinutes || ''),
+    difficulty: dish.difficulty || '简单',
+    flavor: dish.flavor || '',
+    tagsText: Array.isArray(dish.tags) ? dish.tags.join('，') : '',
+    notes: dish.notes || '',
+  };
+}
+
 Page({
   data: {
-    form: {
-      name: '',
-      category: '',
-      cookMinutes: '',
-      difficulty: '简单',
-      flavor: '',
-      tagsText: '',
-      notes: '',
-    },
+    editingId: '',
+    modeTitle: '新增菜品',
+    submitText: '保存菜品',
+    form: getDefaultForm(),
     categoryOptions: dishCategories,
     difficultyOptions,
+  },
+
+  onLoad(options = {}) {
+    if (!options.id) return;
+
+    const dish = getCustomDishById(options.id);
+    if (!dish) {
+      this.showToast('没有找到这道菜');
+      setTimeout(() => {
+        wx.redirectTo({ url: '/pages/dish/manage/index' });
+      }, 500);
+      return;
+    }
+
+    wx.setNavigationBarTitle({ title: '编辑菜品' });
+    this.setData({
+      editingId: dish.id,
+      modeTitle: '编辑菜品',
+      submitText: '保存修改',
+      form: formatDishForm(dish),
+    });
   },
 
   updateField(event) {
@@ -56,6 +96,24 @@ Page({
     const errorMessage = this.validateForm();
     if (errorMessage) {
       this.showToast(errorMessage);
+      return;
+    }
+
+    if (this.data.editingId) {
+      const updatedDish = updateCustomDish(this.data.editingId, this.data.form);
+      if (!updatedDish) {
+        this.showToast('没有找到这道菜');
+        return;
+      }
+
+      Toast({
+        context: this,
+        selector: '#t-toast',
+        message: '已保存修改',
+      });
+      setTimeout(() => {
+        wx.redirectTo({ url: '/pages/dish/manage/index' });
+      }, 500);
       return;
     }
 

@@ -191,21 +191,29 @@ function parseTags(tagsText) {
     .filter(Boolean);
 }
 
-function normalizeCustomDish(dish) {
-  if (!dish || !dish.id || !dish.name || !dish.category) return null;
+function getPayloadTags(payload) {
+  return Object.prototype.hasOwnProperty.call(payload, 'tagsText') ? payload.tagsText : payload.tags;
+}
+
+function buildCustomDish(payload = {}, id = `custom-${Date.now()}`) {
   return {
-    id: dish.id,
-    name: String(dish.name).trim(),
-    category: dish.category,
-    image: dish.image || DEFAULT_IMAGE,
-    cookMinutes: Math.max(Number(dish.cookMinutes) || 1, 1),
-    difficulty: dish.difficulty || '简单',
-    flavor: dish.flavor || '家常',
-    servings: Number(dish.servings) || 3,
-    tags: parseTags(dish.tags),
-    notes: dish.notes || '',
+    id,
+    name: String(payload.name || '').trim(),
+    category: payload.category,
+    image: payload.image || DEFAULT_IMAGE,
+    cookMinutes: Math.max(Number(payload.cookMinutes) || 0, 1),
+    difficulty: payload.difficulty || '简单',
+    flavor: String(payload.flavor || '').trim() || '家常',
+    servings: Number(payload.servings) || 3,
+    tags: parseTags(getPayloadTags(payload)),
+    notes: String(payload.notes || '').trim(),
     isCustom: true,
   };
+}
+
+function normalizeCustomDish(dish) {
+  if (!dish || !dish.id || !dish.name || !dish.category) return null;
+  return buildCustomDish(dish, dish.id);
 }
 
 export function readCustomDishes() {
@@ -219,24 +227,32 @@ export function saveCustomDishes(customDishes) {
 }
 
 export function addCustomDish(payload = {}) {
-  const timestamp = Date.now();
-  const cookMinutes = Math.max(Number(payload.cookMinutes) || 0, 1);
-  const customDish = {
-    id: `custom-${timestamp}`,
-    name: String(payload.name || '').trim(),
-    category: payload.category,
-    image: DEFAULT_IMAGE,
-    cookMinutes,
-    difficulty: payload.difficulty || '简单',
-    flavor: String(payload.flavor || '').trim() || '家常',
-    servings: Number(payload.servings) || 3,
-    tags: parseTags(payload.tagsText || payload.tags),
-    notes: String(payload.notes || '').trim(),
-    isCustom: true,
-  };
+  const customDish = buildCustomDish(payload);
   const next = [customDish, ...readCustomDishes().filter((dish) => dish.id !== customDish.id)];
   saveCustomDishes(next);
   return customDish;
+}
+
+export function getCustomDishById(id) {
+  return readCustomDishes().find((dish) => dish.id === id) || null;
+}
+
+export function updateCustomDish(id, patch = {}) {
+  const customDishes = readCustomDishes();
+  const existing = customDishes.find((dish) => dish.id === id);
+  if (!existing) return null;
+
+  const updatedDish = buildCustomDish({ ...existing, ...patch }, id);
+  saveCustomDishes(customDishes.map((dish) => (dish.id === id ? updatedDish : dish)));
+  return updatedDish;
+}
+
+export function deleteCustomDish(id) {
+  const customDishes = readCustomDishes();
+  const next = customDishes.filter((dish) => dish.id !== id);
+  if (next.length === customDishes.length) return false;
+  saveCustomDishes(next);
+  return true;
 }
 
 function getAllDishes() {

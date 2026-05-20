@@ -27,6 +27,12 @@ const actionList = [
     type: 'customDish',
     icon: 'add',
   },
+  {
+    title: '管理菜品',
+    desc: '编辑或删除自定义菜品',
+    type: 'manageDish',
+    icon: 'view-list',
+  },
 ];
 
 function formatConfirmedAt(timestamp) {
@@ -115,6 +121,10 @@ Page({
       }
       case 'customDish': {
         wx.navigateTo({ url: '/pages/dish/custom-create/index' });
+        break;
+      }
+      case 'manageDish': {
+        wx.navigateTo({ url: '/pages/dish/manage/index' });
         break;
       }
       default: {

@@ -1,7 +1,7 @@
 <view class="custom-dish-page">
   <view class="page-head">
     <view class="eyebrow">Custom Dish</view>
-    <view class="title">新增菜品</view>
+    <view class="title">{{modeTitle}}</view>
     <view class="subtitle">把家里常吃的菜加进来，之后会出现在菜品列表和随机推荐里。</view>
   </view>
 
@@ -95,7 +95,7 @@
   </view>
 
   <view class="footer">
-    <button class="save-btn" bindtap="submitDish">保存菜品</button>
+    <button class="save-btn" bindtap="submitDish">{{submitText}}</button>
   </view>
 
   <t-toast id="t-toast" />
