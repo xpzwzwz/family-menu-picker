@@ -1,4 +1,5 @@
 import Toast from 'tdesign-miniprogram/toast/index';
+import { saveConfirmedMenu } from '../../../model/dishes';
 
 function readSelectedMenu() {
   const stored = wx.getStorageSync('order.goodsRequestList');
@@ -64,15 +65,11 @@ Page({
       return;
     }
 
-    wx.setStorageSync(
-      'familyMenuPicker.lastConfirmedMenu',
-      JSON.stringify({
-        confirmedAt: Date.now(),
-        goodsList: this.data.goodsList,
-        summary: this.data.summary,
-        note: this.data.note,
-      }),
-    );
+    saveConfirmedMenu({
+      goodsList: this.data.goodsList,
+      summary: this.data.summary,
+      note: this.data.note,
+    });
 
     Toast({
       context: this,

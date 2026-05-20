@@ -1,5 +1,5 @@
 import Toast from 'tdesign-miniprogram/toast/index';
-import { readTonightMenu } from '../../model/dishes';
+import { readLastConfirmedMenu, readMenuHistory, readTonightMenu } from '../../model/dishes';
 
 const actionList = [
   {
@@ -32,15 +32,21 @@ function formatConfirmedAt(timestamp) {
   return `${month}月${day}日 ${hour}:${minute}`;
 }
 
-function readLastConfirmedMenu() {
-  const stored = wx.getStorageSync('familyMenuPicker.lastConfirmedMenu');
-  if (!stored) return null;
-  try {
-    const parsed = typeof stored === 'string' ? JSON.parse(stored) : stored;
-    return parsed && Array.isArray(parsed.goodsList) ? parsed : null;
-  } catch (error) {
-    return null;
-  }
+function formatHistoryEntry(entry) {
+  const goodsList = Array.isArray(entry.goodsList) ? entry.goodsList : [];
+  const summary = entry.summary || {};
+  return {
+    id: entry.id,
+    confirmedAtText: formatConfirmedAt(entry.confirmedAt),
+    dishCount: goodsList.length,
+    totalCookMinutes: summary.totalCookMinutes || 0,
+    dishNames: goodsList
+      .slice(0, 3)
+      .map((goods) => goods.title)
+      .filter(Boolean)
+      .join(' / '),
+    note: entry.note || '',
+  };
 }
 
 const getDefaultData = () => ({
@@ -50,6 +56,7 @@ const getDefaultData = () => ({
   lastConfirmedAtText: '暂无',
   lastConfirmedCount: 0,
   lastConfirmedNote: '',
+  historyList: [],
   versionNo: '',
 });
 
@@ -73,12 +80,14 @@ Page({
   init() {
     const menu = readTonightMenu();
     const lastConfirmed = readLastConfirmedMenu();
+    const historyList = readMenuHistory().map(formatHistoryEntry);
     this.setData({
       selectedCount: menu.reduce((sum, item) => sum + (item.quantity || 1), 0),
       totalCookMinutes: menu.reduce((sum, item) => sum + (item.cookMinutes || 0) * (item.quantity || 1), 0),
       lastConfirmedAtText: formatConfirmedAt(lastConfirmed && lastConfirmed.confirmedAt),
       lastConfirmedCount: lastConfirmed ? lastConfirmed.goodsList.length : 0,
       lastConfirmedNote: lastConfirmed && lastConfirmed.note ? lastConfirmed.note : '',
+      historyList,
     });
   },
 

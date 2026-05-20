@@ -2,6 +2,9 @@ const STORE_ID = 'family-kitchen';
 const STORE_NAME = '家庭厨房';
 const DEFAULT_IMAGE = 'https://tdesign.gtimg.com/miniprogram/template/retail/goods/nz-09a.png';
 const MENU_STORAGE_KEY = 'familyMenuPicker.tonightMenu';
+const LAST_CONFIRMED_MENU_STORAGE_KEY = 'familyMenuPicker.lastConfirmedMenu';
+const MENU_HISTORY_STORAGE_KEY = 'familyMenuPicker.menuHistory';
+const MAX_MENU_HISTORY_COUNT = 20;
 
 export const dishCategories = [
   { id: 'quick', name: '快手菜', description: '30 分钟内能上桌' },
@@ -287,6 +290,56 @@ export function saveTonightMenu(menu) {
   return menu;
 }
 
+function readStorageValue(key, fallback) {
+  const wxApi = typeof wx !== 'undefined' ? wx : null;
+  if (!wxApi || !wxApi.getStorageSync) return fallback;
+  const stored = wxApi.getStorageSync(key);
+  if (!stored) return fallback;
+  try {
+    return typeof stored === 'string' ? JSON.parse(stored) : stored;
+  } catch (error) {
+    return fallback;
+  }
+}
+
+function writeStorageValue(key, value) {
+  const wxApi = typeof wx !== 'undefined' ? wx : null;
+  if (!wxApi || !wxApi.setStorageSync) return value;
+  wxApi.setStorageSync(key, JSON.stringify(value));
+  return value;
+}
+
+export function readLastConfirmedMenu() {
+  const stored = readStorageValue(LAST_CONFIRMED_MENU_STORAGE_KEY, null);
+  return stored && Array.isArray(stored.goodsList) ? stored : null;
+}
+
+export function readMenuHistory() {
+  const stored = readStorageValue(MENU_HISTORY_STORAGE_KEY, []);
+  if (!Array.isArray(stored)) return [];
+  return stored
+    .filter((entry) => entry && Array.isArray(entry.goodsList))
+    .sort((left, right) => (right.confirmedAt || 0) - (left.confirmedAt || 0))
+    .slice(0, MAX_MENU_HISTORY_COUNT);
+}
+
+export function saveConfirmedMenu({ confirmedAt = Date.now(), goodsList = [], summary = {}, note = '' }) {
+  const confirmedMenu = {
+    id: `menu-${confirmedAt}`,
+    confirmedAt,
+    goodsList,
+    summary,
+    note,
+  };
+  const nextHistory = [confirmedMenu, ...readMenuHistory().filter((entry) => entry.id !== confirmedMenu.id)]
+    .sort((left, right) => (right.confirmedAt || 0) - (left.confirmedAt || 0))
+    .slice(0, MAX_MENU_HISTORY_COUNT);
+
+  writeStorageValue(LAST_CONFIRMED_MENU_STORAGE_KEY, confirmedMenu);
+  writeStorageValue(MENU_HISTORY_STORAGE_KEY, nextHistory);
+  return confirmedMenu;
+}
+
 export function addDishesToTonightMenu(goodsList) {
   const current = readTonightMenu();
   const next = [...current];
@@ -303,9 +356,12 @@ export function addDishesToTonightMenu(goodsList) {
 }
 
 export function updateTonightMenuItem(spuId, skuId, patch) {
-  const next = readTonightMenu().map((item) =>
-    item.spuId === spuId && item.skuId === skuId ? { ...item, ...patch } : item,
-  );
+  const next = readTonightMenu().map((item) => {
+    if (item.spuId === spuId && item.skuId === skuId) {
+      return { ...item, ...patch };
+    }
+    return item;
+  });
   return saveTonightMenu(next);
 }
 
