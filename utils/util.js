@@ -70,7 +70,7 @@ export const loadSystemWidth = () => {
   }
 
   try {
-    ({ screenWidth: systemWidth, pixelRatio } = wx.getSystemInfoSync());
+    ({ screenWidth: systemWidth, pixelRatio } = wx.getWindowInfo ? wx.getWindowInfo() : wx.getSystemInfoSync());
   } catch (e) {
     systemWidth = 0;
   }

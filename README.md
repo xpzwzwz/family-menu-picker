@@ -26,19 +26,91 @@
 
 家庭内部用的微信小程序，用来解决“今晚吃什么”。第一版使用本地 mock 数据，不需要后端、支付、地址或登录。
 
-## 第一版链路
+## 功能
 
 1. 首页随机生成一桌晚餐推荐。
 2. 推荐菜可以一键加入今晚菜单。
 3. 菜品页可以按分类继续选菜。
-4. 今晚菜单页可以改数量、删除、确认。
+4. 今晚菜单页可以改数量、删除、全选、确认。
 5. 确认页保存最终菜单，不发起支付。
+6. 我的页面可以查看最近确认的菜单，并复用历史菜单。
+7. 支持添加、管理自定义菜品。
+
+## 技术栈
+
+- 原生微信小程序
+- JavaScript / WXML / WXSS
+- TDesign Miniprogram
+- 本地 mock 数据与本地存储
+
+## 目录
+
+```text
+app.json                         小程序页面和 tab 配置
+pages/home/                      今晚吃什么首页
+pages/category/                  菜品分类
+pages/goods/list/                菜品列表
+pages/cart/                      今晚菜单
+pages/order/order-confirm/       确认菜单
+pages/dish/custom-create/        添加自定义菜品
+pages/dish/manage/               管理自定义菜品
+pages/usercenter/                我的/历史菜单
+model/dishes.js                  菜品 mock 数据、菜单存储与历史记录
+services/                        mock service 层
+components/                      通用组件
+```
 
 ## 运行
 
-1. `npm install`
-2. 用微信开发者工具导入本目录
-3. 在微信开发者工具里构建 npm
+推荐在 WSL 里安装依赖，但用微信开发者工具打开 Windows 本地路径。
+
+1. 在 WSL 中安装依赖：
+
+   ```bash
+   cd ~/family-menu-picker
+   npm install
+   ```
+
+2. 如果微信开发者工具无法正确处理 `\\wsl.localhost\...` 路径，可以同步一份到 Windows 本地目录：
+
+   ```bash
+   mkdir -p /mnt/c/Users/ASUS/Projects/family-menu-picker
+   rsync -a --delete --exclude='.git/' --exclude='node_modules/' ~/family-menu-picker/ /mnt/c/Users/ASUS/Projects/family-menu-picker/
+   ```
+
+3. 在微信开发者工具导入项目：
+
+   ```text
+   C:\Users\ASUS\Projects\family-menu-picker
+   ```
+
+4. AppID 可以选择测试号，后端服务选择“不使用云服务”。
+
+5. 如果未生成 `miniprogram_npm`，在微信开发者工具中执行：
+
+   ```text
+   工具 -> 构建 npm
+   ```
+
+6. 点击“编译”。
+
+## 开发注意
+
+- 当前项目使用本地 mock 数据，不需要后端服务。
+- `node_modules/`、`miniprogram_npm/`、`package-lock.json` 不提交。
+- 微信开发者工具在 WSL UNC 路径下可能找不到 npm 构建产物；遇到组件路径错误时，优先使用 Windows 本地路径导入。
+- TDesign 字体加载偶尔会在开发者工具里出现缓存/网络警告，一般不影响页面运行。
+
+## 测试
+
+```bash
+node tests/custom-dishes.mjs
+node tests/menu-history.mjs
+node tests/manage-custom-dishes.mjs
+node tests/reuse-menu-history.mjs
+```
+
+## 来源
 
 ---
 

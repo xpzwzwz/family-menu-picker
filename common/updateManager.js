@@ -1,4 +1,9 @@
 export default () => {
+  const accountInfo = wx.getAccountInfoSync && wx.getAccountInfoSync();
+  if (accountInfo?.miniProgram?.envVersion !== 'release') {
+    return;
+  }
+
   if (!wx.canIUse('getUpdateManager')) {
     return;
   }
