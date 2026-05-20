@@ -34,24 +34,12 @@
 			</view>
 			<view class="wr-goods-card__short_content">
 				<block wx:if="{{goods.stockQuantity !== 0}}">
-					<view wx:if="{{ pricePrefix }}" class="wr-goods-card__price__prefix price-prefix-class">{{ pricePrefix }}</view>
 					<slot name="price-prefix" />
-					<view wx:if="{{ goods.price && !goods.hideKey.price }}" class="wr-goods-card__price">
-						<price
-						  wr-class="price-class"
-						  symbol="{{currency}}"
-						  price="{{goods.price}}"
-						  fill="{{priceFill}}"
-						  decimalSmaller
-						/>
+					<view wx:if="{{ goods.cookMinutes }}" class="wr-goods-card__meta">
+						{{ goods.cookMinutes }}分钟
 					</view>
-					<view wx:if="{{ goods.originPrice && !goods.hideKey.originPrice && isValidityLinePrice }}" class="wr-goods-card__origin-price">
-						<price
-						  wr-class="origin-price-class"
-						  symbol="{{currency}}"
-						  price="{{goods.originPrice}}"
-						  fill="{{priceFill}}"
-						/>
+					<view wx:if="{{ goods.flavor }}" class="wr-goods-card__submeta">
+						{{ goods.flavor }}
 					</view>
 					<slot name="origin-price" />
 					<view wx:if="{{goods.num && !goods.hideKey.num}}" class="wr-goods-card__num num-class">
@@ -72,4 +60,3 @@
 	</view>
 	<slot name="append-card" />
 </view>
-

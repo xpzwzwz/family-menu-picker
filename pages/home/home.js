@@ -4,6 +4,7 @@ import { addDishesToTonightMenu, buildDinnerRecommendation, readTonightMenu } fr
 Page({
   data: {
     recommendation: null,
+    recommendationTagText: '',
     recommendationSeed: 0,
     totalMenuCount: 0,
   },
@@ -34,7 +35,11 @@ Page({
 
   refreshRecommendation(seed = Date.now()) {
     const recommendation = buildDinnerRecommendation(seed);
-    this.setData({ recommendation, recommendationSeed: seed });
+    this.setData({
+      recommendation,
+      recommendationTagText: recommendation.tags.join(' / '),
+      recommendationSeed: seed,
+    });
   },
 
   randomDinnerSet() {

@@ -171,6 +171,22 @@
   font-size: 24rpx;
   margin: 0;
 }
+.wr-goods-card__meta {
+  white-space: nowrap;
+  font-weight: 600;
+  order: 1;
+  color: #d54941;
+  font-size: 28rpx;
+  line-height: 40rpx;
+}
+.wr-goods-card__submeta {
+  white-space: nowrap;
+  order: 2;
+  color: #777;
+  font-size: 24rpx;
+  line-height: 36rpx;
+  margin-top: 4rpx;
+}
 .wr-goods-card__num {
   white-space: nowrap;
   order: 4;

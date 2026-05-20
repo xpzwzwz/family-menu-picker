@@ -17,7 +17,7 @@
   <view class="summary-card" wx:if="{{recommendation}}">
     <view>
       <view class="summary-title">{{recommendation.title}}</view>
-      <view class="summary-meta">{{recommendation.totalCookMinutes}} 分钟 · {{recommendation.tags.join(' / ')}}</view>
+      <view class="summary-meta">{{recommendation.totalCookMinutes}} 分钟 · {{recommendationTagText}}</view>
     </view>
     <t-icon name="refresh" size="40rpx" color="#e34d59" bindtap="randomDinnerSet" />
   </view>

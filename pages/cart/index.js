@@ -217,9 +217,11 @@ Page({
   },
 
   goGoodsDetail(e) {
-    const { spuId, storeId } = e.detail.goods;
-    wx.navigateTo({
-      url: `/pages/goods/details/index?spuId=${spuId}&storeId=${storeId}`,
+    const { title } = e.detail.goods;
+    Toast({
+      context: this,
+      selector: '#t-toast',
+      message: `${title} 已在今晚菜单中`,
     });
   },
 
@@ -244,7 +246,7 @@ Page({
   },
 
   onSelectAll(event) {
-    const { isAllSelected } = event?.detail ?? {};
+    const { isAllSelected } = (event && event.detail) || {};
     Toast({
       context: this,
       selector: '#t-toast',
@@ -258,7 +260,7 @@ Page({
     this.data.cartGroupData.storeGoods.forEach((store) => {
       store.promotionGoodsList.forEach((promotion) => {
         promotion.goodsPromotionList.forEach((m) => {
-          if (m.isSelected == 1) {
+          if (m.isSelected === 1) {
             goodsRequestList.push(m);
           }
         });
