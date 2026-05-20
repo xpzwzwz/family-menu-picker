@@ -10,6 +10,11 @@
       "root": "pages/order",
       "name": "order",
       "pages": ["order-confirm/index"]
+    },
+    {
+      "root": "pages/dish",
+      "name": "dish",
+      "pages": ["custom-create/index"]
     }
   ],
   "tabBar": {

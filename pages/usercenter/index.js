@@ -20,6 +20,12 @@ const actionList = [
     type: 'menu',
     icon: 'cart',
   },
+  {
+    title: '新增菜品',
+    desc: '把家里常吃的菜加进来',
+    type: 'customDish',
+    icon: 'add',
+  },
 ];
 
 function formatConfirmedAt(timestamp) {
@@ -104,6 +110,10 @@ Page({
       }
       case 'menu': {
         wx.switchTab({ url: '/pages/cart/index' });
+        break;
+      }
+      case 'customDish': {
+        wx.navigateTo({ url: '/pages/dish/custom-create/index' });
         break;
       }
       default: {

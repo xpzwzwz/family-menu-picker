@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "新增菜品",
+  "usingComponents": {
+    "t-toast": "tdesign-miniprogram/toast/toast",
+    "t-textarea": "tdesign-miniprogram/textarea/textarea"
+  }
+}

@@ -1,0 +1,102 @@
+<view class="custom-dish-page">
+  <view class="page-head">
+    <view class="eyebrow">Custom Dish</view>
+    <view class="title">新增菜品</view>
+    <view class="subtitle">把家里常吃的菜加进来，之后会出现在菜品列表和随机推荐里。</view>
+  </view>
+
+  <view class="form-section">
+    <view class="field">
+      <view class="field-label">菜名</view>
+      <input
+        class="field-input"
+        value="{{form.name}}"
+        placeholder="例如：干煸豆角"
+        data-field="name"
+        bindinput="updateField"
+      />
+    </view>
+
+    <view class="field">
+      <view class="field-label">分类</view>
+      <view class="chip-row">
+        <view
+          class="chip {{form.category == item.id ? 'chip-active' : ''}}"
+          wx:for="{{categoryOptions}}"
+          wx:key="id"
+          data-value="{{item.id}}"
+          bindtap="selectCategory"
+        >
+          {{item.name}}
+        </view>
+      </view>
+    </view>
+
+    <view class="field two-col">
+      <view>
+        <view class="field-label">预计分钟</view>
+        <input
+          class="field-input"
+          type="number"
+          value="{{form.cookMinutes}}"
+          placeholder="20"
+          data-field="cookMinutes"
+          bindinput="updateField"
+        />
+      </view>
+      <view>
+        <view class="field-label">口味</view>
+        <input
+          class="field-input"
+          value="{{form.flavor}}"
+          placeholder="咸香"
+          data-field="flavor"
+          bindinput="updateField"
+        />
+      </view>
+    </view>
+
+    <view class="field">
+      <view class="field-label">难度</view>
+      <view class="chip-row">
+        <view
+          class="chip {{form.difficulty == item ? 'chip-active' : ''}}"
+          wx:for="{{difficultyOptions}}"
+          wx:key="*this"
+          data-value="{{item}}"
+          bindtap="selectDifficulty"
+        >
+          {{item}}
+        </view>
+      </view>
+    </view>
+
+    <view class="field">
+      <view class="field-label">标签</view>
+      <input
+        class="field-input"
+        value="{{form.tagsText}}"
+        placeholder="例如：快手，素菜，下饭"
+        data-field="tagsText"
+        bindinput="updateField"
+      />
+    </view>
+
+    <view class="field">
+      <view class="field-label">备注</view>
+      <t-textarea
+        value="{{form.notes}}"
+        placeholder="例如：豆角要炒熟，少放辣。"
+        maxlength="{{80}}"
+        data-field="notes"
+        bindchange="updateField"
+      />
+    </view>
+  </view>
+
+  <view class="footer">
+    <button class="save-btn" bindtap="submitDish">保存菜品</button>
+  </view>
+
+  <t-toast id="t-toast" />
+</view>

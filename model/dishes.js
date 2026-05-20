@@ -4,6 +4,7 @@ const DEFAULT_IMAGE = 'https://tdesign.gtimg.com/miniprogram/template/retail/goo
 const MENU_STORAGE_KEY = 'familyMenuPicker.tonightMenu';
 const LAST_CONFIRMED_MENU_STORAGE_KEY = 'familyMenuPicker.lastConfirmedMenu';
 const MENU_HISTORY_STORAGE_KEY = 'familyMenuPicker.menuHistory';
+const CUSTOM_DISHES_STORAGE_KEY = 'familyMenuPicker.customDishes';
 const MAX_MENU_HISTORY_COUNT = 20;
 
 export const dishCategories = [
@@ -162,6 +163,86 @@ export const dishes = [
   },
 ];
 
+function readStorageValue(key, fallback) {
+  const wxApi = typeof wx !== 'undefined' ? wx : null;
+  if (!wxApi || !wxApi.getStorageSync) return fallback;
+  const stored = wxApi.getStorageSync(key);
+  if (!stored) return fallback;
+  try {
+    return typeof stored === 'string' ? JSON.parse(stored) : stored;
+  } catch (error) {
+    return fallback;
+  }
+}
+
+function writeStorageValue(key, value) {
+  const wxApi = typeof wx !== 'undefined' ? wx : null;
+  if (!wxApi || !wxApi.setStorageSync) return value;
+  wxApi.setStorageSync(key, JSON.stringify(value));
+  return value;
+}
+
+function parseTags(tagsText) {
+  if (!tagsText) return [];
+  if (Array.isArray(tagsText)) return tagsText.map((tag) => String(tag).trim()).filter(Boolean);
+  return String(tagsText)
+    .split(/[,，]/)
+    .map((tag) => tag.trim())
+    .filter(Boolean);
+}
+
+function normalizeCustomDish(dish) {
+  if (!dish || !dish.id || !dish.name || !dish.category) return null;
+  return {
+    id: dish.id,
+    name: String(dish.name).trim(),
+    category: dish.category,
+    image: dish.image || DEFAULT_IMAGE,
+    cookMinutes: Math.max(Number(dish.cookMinutes) || 1, 1),
+    difficulty: dish.difficulty || '简单',
+    flavor: dish.flavor || '家常',
+    servings: Number(dish.servings) || 3,
+    tags: parseTags(dish.tags),
+    notes: dish.notes || '',
+    isCustom: true,
+  };
+}
+
+export function readCustomDishes() {
+  const stored = readStorageValue(CUSTOM_DISHES_STORAGE_KEY, []);
+  if (!Array.isArray(stored)) return [];
+  return stored.map(normalizeCustomDish).filter(Boolean);
+}
+
+export function saveCustomDishes(customDishes) {
+  return writeStorageValue(CUSTOM_DISHES_STORAGE_KEY, Array.isArray(customDishes) ? customDishes : []);
+}
+
+export function addCustomDish(payload = {}) {
+  const timestamp = Date.now();
+  const cookMinutes = Math.max(Number(payload.cookMinutes) || 0, 1);
+  const customDish = {
+    id: `custom-${timestamp}`,
+    name: String(payload.name || '').trim(),
+    category: payload.category,
+    image: DEFAULT_IMAGE,
+    cookMinutes,
+    difficulty: payload.difficulty || '简单',
+    flavor: String(payload.flavor || '').trim() || '家常',
+    servings: Number(payload.servings) || 3,
+    tags: parseTags(payload.tagsText || payload.tags),
+    notes: String(payload.notes || '').trim(),
+    isCustom: true,
+  };
+  const next = [customDish, ...readCustomDishes().filter((dish) => dish.id !== customDish.id)];
+  saveCustomDishes(next);
+  return customDish;
+}
+
+function getAllDishes() {
+  return [...dishes, ...readCustomDishes()];
+}
+
 function getTagText(dish) {
   return dish.tags.slice(0, 2);
 }
@@ -200,6 +281,7 @@ export function toGoodsCard(dish, quantity = 1) {
     flavor: dish.flavor,
     servings: dish.servings,
     notes: dish.notes,
+    isCustom: !!dish.isCustom,
     available: 1,
     putOnSale: 1,
   };
@@ -216,7 +298,7 @@ export function getDishCategories() {
         groupId: category.id,
         name: category.name,
         thumbnail: DEFAULT_IMAGE,
-        children: dishes
+        children: getAllDishes()
           .filter((dish) => dish.category === category.id || (category.id === 'quick' && dish.tags.includes('快手')))
           .map((dish) => ({
             groupId: category.id,
@@ -230,11 +312,12 @@ export function getDishCategories() {
 }
 
 export function getDishesByCategory(categoryId) {
-  if (!categoryId || categoryId === 'all') return dishes;
+  const allDishes = getAllDishes();
+  if (!categoryId || categoryId === 'all') return allDishes;
   if (categoryId === 'quick') {
-    return dishes.filter((dish) => dish.category === 'quick' || dish.tags.includes('快手'));
+    return allDishes.filter((dish) => dish.category === 'quick' || dish.tags.includes('快手'));
   }
-  return dishes.filter((dish) => dish.category === categoryId);
+  return allDishes.filter((dish) => dish.category === categoryId);
 }
 
 export function getDishGoodsList({ categoryId = 'all', pageNum = 1, pageSize = 20 } = {}) {
@@ -249,6 +332,7 @@ export function getDishGoodsList({ categoryId = 'all', pageNum = 1, pageSize = 2
 
 function pickByCategory(categoryId, offset = 0) {
   const source = getDishesByCategory(categoryId);
+  if (!source.length) return getAllDishes()[offset % getAllDishes().length];
   return source[offset % source.length];
 }
 
@@ -288,25 +372,6 @@ export function saveTonightMenu(menu) {
   if (!wxApi || !wxApi.setStorageSync) return menu;
   wxApi.setStorageSync(MENU_STORAGE_KEY, JSON.stringify(menu));
   return menu;
-}
-
-function readStorageValue(key, fallback) {
-  const wxApi = typeof wx !== 'undefined' ? wx : null;
-  if (!wxApi || !wxApi.getStorageSync) return fallback;
-  const stored = wxApi.getStorageSync(key);
-  if (!stored) return fallback;
-  try {
-    return typeof stored === 'string' ? JSON.parse(stored) : stored;
-  } catch (error) {
-    return fallback;
-  }
-}
-
-function writeStorageValue(key, value) {
-  const wxApi = typeof wx !== 'undefined' ? wx : null;
-  if (!wxApi || !wxApi.setStorageSync) return value;
-  wxApi.setStorageSync(key, JSON.stringify(value));
-  return value;
 }
 
 export function readLastConfirmedMenu() {
