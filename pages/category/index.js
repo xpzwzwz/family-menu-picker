@@ -1,5 +1,6 @@
 import Toast from 'tdesign-miniprogram/toast/index';
 import { addDishesToTonightMenu, getDishSelectionSections } from '../../model/dishes';
+import { readSquadMembers } from '../../model/user';
 
 const SECTION_TOP_OFFSET = 8;
 const TAB_BAR_HEIGHT = 76;
@@ -11,6 +12,8 @@ Page({
     activeCategoryId: '',
     scrollTop: 0,
     scrollHeight: 0,
+    squadMembers: [],
+    selectedMemberId: 'self',
   },
 
   sectionTops: [],
@@ -20,11 +23,21 @@ Page({
     this.getTabBar().init();
     this.updateScrollHeight();
     this.refreshSections();
+    this.refreshMembers();
   },
 
   onLoad() {
     this.updateScrollHeight();
     this.refreshSections();
+    this.refreshMembers();
+  },
+
+  refreshMembers() {
+    const squadMembers = readSquadMembers();
+    const selectedMemberId = squadMembers.some((member) => member.id === this.data.selectedMemberId)
+      ? this.data.selectedMemberId
+      : squadMembers[0].id;
+    this.setData({ squadMembers, selectedMemberId });
   },
 
   updateScrollHeight() {
@@ -119,12 +132,24 @@ Page({
     const section = this.data.sections[sectionIndex];
     const goods = section && section.goodsList[goodsIndex];
     if (!goods) return;
-    addDishesToTonightMenu([goods]);
+    const member = this.data.squadMembers.find((item) => item.id === this.data.selectedMemberId) || this.data.squadMembers[0];
+    addDishesToTonightMenu([
+      {
+        ...goods,
+        selectedBy: member ? member.id : '',
+        selectedByName: member ? member.name : '',
+      },
+    ]);
     Toast({
       context: this,
       selector: '#t-toast',
-      message: '已加入菜单',
+      message: member ? `${member.name} 已加入菜单` : '已加入菜单',
     });
+  },
+
+  selectMember(event) {
+    const { id } = event.currentTarget.dataset;
+    this.setData({ selectedMemberId: id });
   },
 
   goDishDetail(event) {

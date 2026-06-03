@@ -46,10 +46,10 @@ const actionList = [
     icon: 'view-list',
   },
   {
-    title: '用户资料',
-    desc: '设置昵称、角色和口味偏好',
+    title: '小分队成员',
+    desc: '添加家里一起点菜的人',
     type: 'profile',
-    icon: 'user',
+    icon: 'usergroup',
   },
   {
     title: '问题反馈',

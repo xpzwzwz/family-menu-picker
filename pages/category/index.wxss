@@ -20,6 +20,36 @@ page {
   padding: 10rpx 6rpx 18rpx;
 }
 
+.member-strip {
+  flex-shrink: 0;
+  width: 100%;
+  white-space: nowrap;
+  padding: 0 0 16rpx;
+  box-sizing: border-box;
+}
+
+.member-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 128rpx;
+  height: 56rpx;
+  margin-right: 12rpx;
+  padding: 0 18rpx;
+  border-radius: 8rpx;
+  background: #ffffff;
+  color: #69736d;
+  font-size: 24rpx;
+  font-weight: 600;
+  line-height: 56rpx;
+  box-sizing: border-box;
+}
+
+.member-chip-active {
+  background: #d54941;
+  color: #ffffff;
+}
+
 .eyebrow {
   color: #6c7a62;
   font-size: 22rpx;

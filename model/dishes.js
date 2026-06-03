@@ -736,6 +736,8 @@ export function addDishesToTonightMenu(goodsList) {
     if (existing) {
       existing.quantity += goods.quantity || 1;
       existing.isSelected = 1;
+      if (goods.selectedBy) existing.selectedBy = goods.selectedBy;
+      if (goods.selectedByName) existing.selectedByName = goods.selectedByName;
       return;
     }
     next.push({ ...goods, quantity: goods.quantity || 1, isSelected: 1 });

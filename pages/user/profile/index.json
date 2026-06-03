@@ -1,7 +1,6 @@
 {
-  "navigationBarTitleText": "用户资料",
+  "navigationBarTitleText": "小分队成员",
   "usingComponents": {
-    "t-textarea": "tdesign-miniprogram/textarea/textarea",
     "t-toast": "tdesign-miniprogram/toast/toast"
   }
 }

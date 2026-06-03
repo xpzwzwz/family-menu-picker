@@ -15,6 +15,7 @@ function getDefaultForm() {
     tagsText: '',
     ingredientsText: '',
     stepsText: '',
+    stepImages: [],
     notes: '',
   };
 }
@@ -30,8 +31,20 @@ function formatDishForm(dish) {
     tagsText: Array.isArray(dish.tags) ? dish.tags.join('，') : '',
     ingredientsText: Array.isArray(dish.ingredients) ? dish.ingredients.join('，') : '',
     stepsText: Array.isArray(dish.steps) ? dish.steps.map((step) => step.description || step.title).join('\n') : '',
+    stepImages: Array.isArray(dish.steps) ? dish.steps.map((step) => step.image || '') : [],
     notes: dish.notes || '',
   };
+}
+
+function buildStepPreviews(stepsText, stepImages = []) {
+  return String(stepsText || '')
+    .split(/\n+/)
+    .map((step) => step.trim())
+    .filter(Boolean)
+    .map((text, index) => ({
+      text,
+      image: stepImages[index] || '',
+    }));
 }
 
 Page({
@@ -43,10 +56,14 @@ Page({
     categoryOptions: dishCategories,
     difficultyOptions,
     uploadingImage: false,
+    stepPreviews: [],
   },
 
   onLoad(options = {}) {
-    if (!options.id) return;
+    if (!options.id) {
+      this.refreshStepPreviews();
+      return;
+    }
 
     const dish = getDishById(options.id);
     if (!dish) {
@@ -64,12 +81,20 @@ Page({
       submitText: '保存修改',
       form: formatDishForm(dish),
     });
+    this.refreshStepPreviews();
   },
 
   updateField(event) {
     const { field } = event.currentTarget.dataset;
     this.setData({
       [`form.${field}`]: event.detail.value,
+    });
+    if (field === 'stepsText') this.refreshStepPreviews(event.detail.value);
+  },
+
+  refreshStepPreviews(nextStepsText = this.data.form.stepsText) {
+    this.setData({
+      stepPreviews: buildStepPreviews(nextStepsText, this.data.form.stepImages),
     });
   },
 
@@ -117,6 +142,43 @@ Page({
       },
       fail: () => {},
     });
+  },
+
+  chooseStepImage(event) {
+    const { index } = event.currentTarget.dataset;
+    wx.chooseMedia({
+      count: 1,
+      mediaType: ['image'],
+      sourceType: ['album', 'camera'],
+      success: async (res) => {
+        const file = res.tempFiles && res.tempFiles[0];
+        if (!file || !file.tempFilePath) return;
+        this.setData({ uploadingImage: true });
+        try {
+          const imageUrl = await uploadDishImage(file.tempFilePath);
+          this.setStepImage(index, imageUrl);
+          this.showToast('步骤图已保存');
+        } catch (error) {
+          this.setStepImage(index, file.tempFilePath);
+          this.showToast('步骤图暂存到本机');
+        } finally {
+          this.setData({ uploadingImage: false });
+        }
+      },
+      fail: () => {},
+    });
+  },
+
+  removeStepImage(event) {
+    const { index } = event.currentTarget.dataset;
+    this.setStepImage(index, '');
+  },
+
+  setStepImage(index, image) {
+    const stepImages = [...(this.data.form.stepImages || [])];
+    stepImages[index] = image;
+    this.setData({ 'form.stepImages': stepImages });
+    this.refreshStepPreviews();
   },
 
   validateForm() {

@@ -45,6 +45,7 @@
         <view class="step-copy">
           <view class="step-title">{{item.title}}</view>
           <view class="step-desc">{{item.description}}</view>
+          <t-image wx:if="{{item.image}}" src="{{item.image}}" t-class="step-image" mode="aspectFill" />
         </view>
       </view>
     </view>

@@ -116,6 +116,25 @@
         data-field="stepsText"
         bindinput="updateField"
       />
+      <view class="step-preview-list" wx:if="{{stepPreviews.length}}">
+        <view class="step-preview" wx:for="{{stepPreviews}}" wx:key="text">
+          <view class="step-number">{{index + 1}}</view>
+          <view class="step-preview-copy">
+            <view class="step-preview-text">{{item.text}}</view>
+            <view class="step-image-row" bindtap="chooseStepImage" data-index="{{index}}">
+              <t-image wx:if="{{item.image}}" src="{{item.image}}" t-class="step-image" mode="aspectFill" />
+              <view class="step-image-placeholder" wx:else>
+                <t-icon name="image" size="36rpx" color="#d54941" />
+              </view>
+              <view class="step-image-copy">
+                <view class="step-image-title">{{item.image ? '更换步骤图' : '添加步骤图'}}</view>
+                <view class="step-image-desc">有图就展示，没图不占位。</view>
+              </view>
+            </view>
+            <button class="remove-step-image" wx:if="{{item.image}}" catchtap="removeStepImage" data-index="{{index}}">移除图片</button>
+          </view>
+        </view>
+      </view>
     </view>
 
     <view class="field">

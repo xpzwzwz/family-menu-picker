@@ -7,6 +7,18 @@
     <view class="head-copy">按分类滑动挑菜</view>
   </view>
 
+  <scroll-view class="member-strip" scroll-x="{{true}}" show-scrollbar="{{false}}">
+    <view
+      class="member-chip {{selectedMemberId === item.id ? 'member-chip-active' : ''}}"
+      wx:for="{{squadMembers}}"
+      wx:key="id"
+      data-id="{{item.id}}"
+      bindtap="selectMember"
+    >
+      {{item.name}}点菜
+    </view>
+  </scroll-view>
+
   <view class="picker-shell" style="height: {{scrollHeight}}px;">
     <scroll-view class="category-sidebar" scroll-y="{{true}}" enhanced="{{true}}" show-scrollbar="{{false}}" style="height: {{scrollHeight}}px;">
       <view

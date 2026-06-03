@@ -82,6 +82,17 @@
   -webkit-line-clamp: 2;
   overflow: hidden;
 }
+
+.wr-goods-card__picker {
+  align-self: flex-start;
+  margin-top: 8rpx;
+  padding: 4rpx 8rpx;
+  border-radius: 6rpx;
+  background: #eef4e7;
+  color: #48613f;
+  font-size: 22rpx;
+  line-height: 30rpx;
+}
 .wr-goods-card__specs__desc,
 .wr-goods-card__specs__text {
   font-size: 24rpx;

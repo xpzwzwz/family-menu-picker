@@ -41,6 +41,82 @@ page {
   box-shadow: 0 8rpx 24rpx rgba(31, 31, 31, 0.06);
 }
 
+.member-list {
+  display: grid;
+  gap: 18rpx;
+  margin-bottom: 22rpx;
+}
+
+.member-card {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  padding: 22rpx;
+  border-radius: 8rpx;
+  background: #fff;
+  box-shadow: 0 8rpx 24rpx rgba(31, 31, 31, 0.06);
+}
+
+.member-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72rpx;
+  height: 72rpx;
+  flex-shrink: 0;
+  border-radius: 8rpx;
+  background: #26332c;
+  color: #fff;
+  font-size: 30rpx;
+  font-weight: 700;
+  line-height: 72rpx;
+}
+
+.member-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.member-name {
+  color: #1f1f1f;
+  font-size: 30rpx;
+  font-weight: 700;
+  line-height: 42rpx;
+}
+
+.member-meta,
+.member-pref {
+  margin-top: 2rpx;
+  color: #777;
+  font-size: 24rpx;
+  line-height: 34rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.member-actions {
+  display: grid;
+  gap: 8rpx;
+  flex-shrink: 0;
+}
+
+.text-btn {
+  width: 92rpx;
+  height: 48rpx;
+  padding: 0;
+  border-radius: 8rpx;
+  background: #fff0ee;
+  color: #d54941;
+  font-size: 24rpx;
+  line-height: 48rpx;
+}
+
+.muted-btn {
+  background: #f7f7f7;
+  color: #777;
+}
+
 .field {
   margin-bottom: 28rpx;
 }
@@ -68,20 +144,33 @@ page {
 }
 
 .footer {
+  display: grid;
+  gap: 16rpx;
   margin-top: 32rpx;
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-.save-btn {
+.save-btn,
+.cancel-btn {
   height: 92rpx;
   border-radius: 8rpx;
-  background: #d54941;
-  color: #fff;
   font-size: 30rpx;
   font-weight: 600;
   line-height: 92rpx;
 }
 
-.save-btn::after {
+.save-btn {
+  background: #d54941;
+  color: #fff;
+}
+
+.cancel-btn {
+  background: #fff;
+  color: #666;
+}
+
+.save-btn::after,
+.cancel-btn::after,
+.text-btn::after {
   border: 0;
 }
