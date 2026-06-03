@@ -40,6 +40,13 @@ export const dishes = [
     flavor: '酸甜',
     servings: 3,
     tags: ['快手', '下饭', '小朋友友好', '素菜'],
+    ingredients: ['番茄', '鸡蛋', '葱', '盐', '糖'],
+    steps: [
+      { title: '处理食材', description: '番茄切块，鸡蛋打散，加少许盐搅匀。' },
+      { title: '先炒鸡蛋', description: '热锅下油，把鸡蛋炒到刚凝固后盛出。' },
+      { title: '炒番茄出汁', description: '番茄下锅炒软，加少许盐和糖调味。' },
+      { title: '合炒收味', description: '倒回鸡蛋翻匀，撒葱花即可。' },
+    ],
     notes: '家里常备菜，适合选择困难时兜底。',
   },
   {
@@ -52,6 +59,13 @@ export const dishes = [
     flavor: '咸香',
     servings: 3,
     tags: ['荤菜', '下饭', '高蛋白'],
+    ingredients: ['牛肉', '青椒', '蒜', '生抽', '淀粉'],
+    steps: [
+      { title: '腌牛肉', description: '牛肉切薄片，用生抽、淀粉和少许油抓匀。' },
+      { title: '处理配菜', description: '青椒切块，蒜切片备用。' },
+      { title: '快炒牛肉', description: '热锅快炒牛肉到变色后盛出。' },
+      { title: '回锅合炒', description: '青椒炒断生，倒回牛肉翻匀调味。' },
+    ],
     notes: '牛肉提前腌 10 分钟，口感更稳。',
   },
   {
@@ -64,6 +78,12 @@ export const dishes = [
     flavor: '清爽',
     servings: 3,
     tags: ['素菜', '快手', '清淡'],
+    ingredients: ['生菜', '蒜', '盐', '生抽'],
+    steps: [
+      { title: '洗菜控水', description: '生菜洗净后尽量控干水分。' },
+      { title: '爆香蒜末', description: '热锅下油，小火炒香蒜末。' },
+      { title: '大火快炒', description: '下生菜快速翻炒，加盐和少许生抽。' },
+    ],
     notes: '适合搭配重口味荤菜。',
   },
   {
@@ -76,6 +96,13 @@ export const dishes = [
     flavor: '鲜甜',
     servings: 4,
     tags: ['汤', '可提前炖', '荤菜'],
+    ingredients: ['排骨', '玉米', '胡萝卜', '姜片', '盐'],
+    steps: [
+      { title: '排骨焯水', description: '排骨冷水下锅，煮出浮沫后洗净。' },
+      { title: '加料炖煮', description: '排骨、玉米、胡萝卜和姜片入锅加水。' },
+      { title: '小火慢炖', description: '小火炖到排骨软烂，约 45 分钟。' },
+      { title: '最后调味', description: '出锅前加盐，按口味撒葱花。' },
+    ],
     notes: '时间紧时可换成紫菜蛋花汤。',
   },
   {
@@ -88,6 +115,13 @@ export const dishes = [
     flavor: '咸香',
     servings: 2,
     tags: ['主食', '快手', '剩饭友好'],
+    ingredients: ['剩米饭', '鸡蛋', '葱花', '盐', '生抽'],
+    steps: [
+      { title: '打散米饭', description: '剩饭提前压散，鸡蛋打匀。' },
+      { title: '炒鸡蛋', description: '热锅下蛋液炒散，盛出备用。' },
+      { title: '炒米饭', description: '米饭下锅炒热炒散，加盐和少许生抽。' },
+      { title: '合炒出锅', description: '倒回鸡蛋，加葱花翻匀。' },
+    ],
     notes: '适合不想煮饭的时候。',
   },
   {
@@ -100,6 +134,13 @@ export const dishes = [
     flavor: '微辣',
     servings: 3,
     tags: ['快手', '下饭', '豆制品'],
+    ingredients: ['豆腐', '肉末', '豆瓣酱', '蒜', '淀粉水'],
+    steps: [
+      { title: '处理豆腐', description: '豆腐切块，可用淡盐水稍微焯一下。' },
+      { title: '炒香底料', description: '肉末炒散，加入蒜末和豆瓣酱炒出红油。' },
+      { title: '烧豆腐', description: '加水后放豆腐，小火煮入味。' },
+      { title: '勾芡收汁', description: '淋入淀粉水，轻推收汁。' },
+    ],
     notes: '不能吃辣时减少豆瓣酱。',
   },
   {
@@ -112,6 +153,13 @@ export const dishes = [
     flavor: '鲜香',
     servings: 3,
     tags: ['荤菜', '清淡', '高蛋白'],
+    ingredients: ['鱼', '姜', '葱', '蒸鱼豉油', '热油'],
+    steps: [
+      { title: '处理鱼身', description: '鱼清理干净，两面放姜片去腥。' },
+      { title: '上锅蒸', description: '水开后上锅，根据鱼大小蒸 8-12 分钟。' },
+      { title: '倒掉蒸汁', description: '取出后倒掉盘中腥水，铺葱丝。' },
+      { title: '淋油调味', description: '淋蒸鱼豉油，再浇热油激香。' },
+    ],
     notes: '适合想吃清淡但又要有主菜的晚上。',
   },
   {
@@ -124,6 +172,12 @@ export const dishes = [
     flavor: '鲜香',
     servings: 3,
     tags: ['素菜', '清淡', '快手'],
+    ingredients: ['青菜', '香菇', '蒜', '盐', '蚝油'],
+    steps: [
+      { title: '切配食材', description: '青菜洗净，香菇切片，蒜切末。' },
+      { title: '先炒香菇', description: '香菇下锅炒软炒香。' },
+      { title: '加入青菜', description: '青菜下锅大火翻炒，加盐和少许蚝油。' },
+    ],
     notes: '和鱼、牛肉都好搭。',
   },
   {
@@ -136,6 +190,12 @@ export const dishes = [
     flavor: '清淡',
     servings: 3,
     tags: ['汤', '快手', '清淡'],
+    ingredients: ['紫菜', '鸡蛋', '葱花', '盐', '香油'],
+    steps: [
+      { title: '烧开汤底', description: '锅中加水烧开，放入紫菜。' },
+      { title: '淋入蛋液', description: '鸡蛋打散后沿锅边慢慢淋入。' },
+      { title: '调味出锅', description: '加盐调味，出锅前点香油和葱花。' },
+    ],
     notes: '最快的汤类兜底。',
   },
   {
@@ -148,6 +208,13 @@ export const dishes = [
     flavor: '酸甜',
     servings: 2,
     tags: ['主食', '快手', '热乎'],
+    ingredients: ['面条', '番茄', '鸡蛋', '青菜', '盐'],
+    steps: [
+      { title: '炒番茄汤底', description: '番茄炒软出汁，加水煮开。' },
+      { title: '下面条', description: '放入面条煮到接近熟透。' },
+      { title: '加蛋和青菜', description: '淋入蛋液，加入青菜煮熟。' },
+      { title: '调味', description: '加盐调味，喜欢酸甜可补一点番茄酱。' },
+    ],
     notes: '适合懒得炒多个菜时。',
   },
   {
@@ -160,6 +227,12 @@ export const dishes = [
     flavor: '咸香',
     servings: 1,
     tags: ['外卖备选', '省事', '单人'],
+    ingredients: ['烧腊饭', '青菜', '汤品'],
+    steps: [
+      { title: '确认人数', description: '按实际人数决定份数，避免点多浪费。' },
+      { title: '补一份蔬菜', description: '如果店里有青菜或例汤，优先搭配。' },
+      { title: '到家分餐', description: '到家后先分装，保留明天能复热的部分。' },
+    ],
     notes: '只作为今天不想做饭的备选。',
   },
   {
@@ -172,6 +245,13 @@ export const dishes = [
     flavor: '热辣',
     servings: 4,
     tags: ['外卖备选', '聚餐', '可加菜'],
+    ingredients: ['火锅底料', '肉片', '丸子', '青菜', '主食'],
+    steps: [
+      { title: '准备锅底', description: '底料加水煮开，按口味调咸淡。' },
+      { title: '先下耐煮食材', description: '丸子、根茎类和冻品先下锅。' },
+      { title: '再下鲜菜肉片', description: '肉片和绿叶菜最后下，熟了就吃。' },
+      { title: '收尾主食', description: '最后可下粉面或米饭，避免一开始太撑。' },
+    ],
     notes: '适合人多但没人想决定吃什么的时候。',
   },
 ];
@@ -206,8 +286,48 @@ function parseTags(tagsText) {
     .filter(Boolean);
 }
 
+function parseIngredients(ingredientsText) {
+  if (!ingredientsText) return [];
+  if (Array.isArray(ingredientsText)) return ingredientsText.map((ingredient) => String(ingredient).trim()).filter(Boolean);
+  return String(ingredientsText)
+    .split(/[,，\n]/)
+    .map((ingredient) => ingredient.trim())
+    .filter(Boolean);
+}
+
+function parseSteps(stepsText) {
+  if (!stepsText) return [];
+  if (Array.isArray(stepsText)) {
+    return stepsText
+      .map((step, index) => {
+        if (typeof step === 'string') {
+          const text = step.trim();
+          return text ? { title: text, description: text } : null;
+        }
+        if (!step || typeof step !== 'object') return null;
+        const title = String(step.title || step.description || `第 ${index + 1} 步`).trim();
+        const description = String(step.description || step.title || '').trim();
+        return title && description ? { title, description } : null;
+      })
+      .filter(Boolean);
+  }
+  return String(stepsText)
+    .split(/\n+/)
+    .map((step) => step.trim())
+    .filter(Boolean)
+    .map((step) => ({ title: step, description: step }));
+}
+
 function getPayloadTags(payload) {
   return Object.prototype.hasOwnProperty.call(payload, 'tagsText') ? payload.tagsText : payload.tags;
+}
+
+function getPayloadIngredients(payload) {
+  return Object.prototype.hasOwnProperty.call(payload, 'ingredientsText') ? payload.ingredientsText : payload.ingredients;
+}
+
+function getPayloadSteps(payload) {
+  return Object.prototype.hasOwnProperty.call(payload, 'stepsText') ? payload.stepsText : payload.steps;
 }
 
 function buildCustomDish(payload = {}, id = `custom-${Date.now()}`) {
@@ -222,6 +342,8 @@ function buildCustomDish(payload = {}, id = `custom-${Date.now()}`) {
     flavor: String(payload.flavor || '').trim() || '家常',
     servings: Number(payload.servings) || 3,
     tags: parseTags(getPayloadTags(payload)),
+    ingredients: parseIngredients(getPayloadIngredients(payload)),
+    steps: parseSteps(getPayloadSteps(payload)),
     notes: String(payload.notes || '').trim(),
     isCustom: true,
   };
@@ -445,6 +567,8 @@ export function toGoodsCard(dish, quantity = 1) {
     flavor: dish.flavor,
     servings: dish.servings,
     notes: dish.notes,
+    ingredients: Array.isArray(dish.ingredients) ? dish.ingredients : [],
+    steps: Array.isArray(dish.steps) ? dish.steps : [],
     isCustom: !!dish.isCustom,
     available: 1,
     putOnSale: 1,
