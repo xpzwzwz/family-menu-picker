@@ -14,6 +14,7 @@ const LAST_CONFIRMED_MENU_STORAGE_KEY = 'familyMenuPicker.lastConfirmedMenu';
 const MENU_HISTORY_STORAGE_KEY = 'familyMenuPicker.menuHistory';
 const CUSTOM_DISHES_STORAGE_KEY = 'familyMenuPicker.customDishes';
 const USER_DISHES_STORAGE_KEY = 'familyMenuPicker.userDishes';
+const SHOPPING_BASKET_CHECKED_KEY = 'familyMenuPicker.shoppingBasketChecked';
 const MAX_MENU_HISTORY_COUNT = 20;
 
 export const dishCategories = [
@@ -745,6 +746,76 @@ export function updateTonightMenuItem(spuId, skuId, patch) {
 export function removeTonightMenuItem(spuId, skuId) {
   const next = readTonightMenu().filter((item) => item.spuId !== spuId || item.skuId !== skuId);
   return saveTonightMenu(next);
+}
+
+function normalizeIngredientName(name) {
+  return String(name || '').trim();
+}
+
+function getShoppingBasketItemId(name) {
+  return normalizeIngredientName(name).toLowerCase();
+}
+
+export function readShoppingBasketChecked() {
+  const stored = readStorageValue(SHOPPING_BASKET_CHECKED_KEY, []);
+  if (!Array.isArray(stored)) return [];
+  return [...new Set(stored.map(String).filter(Boolean))];
+}
+
+function saveShoppingBasketChecked(checkedIds) {
+  return writeStorageValue(SHOPPING_BASKET_CHECKED_KEY, [...new Set((checkedIds || []).map(String).filter(Boolean))]);
+}
+
+export function toggleShoppingBasketItem(id, checked) {
+  const checkedSet = new Set(readShoppingBasketChecked());
+  if (checked) {
+    checkedSet.add(String(id));
+  } else {
+    checkedSet.delete(String(id));
+  }
+  return saveShoppingBasketChecked([...checkedSet]);
+}
+
+export function clearShoppingBasketChecked() {
+  return saveShoppingBasketChecked([]);
+}
+
+export function buildShoppingBasket(menu = readTonightMenu()) {
+  const checkedSet = new Set(readShoppingBasketChecked());
+  const grouped = new Map();
+
+  menu.forEach((goods) => {
+    const dish = getDishById(goods.dishId || goods.spuId);
+    if (!dish || !Array.isArray(dish.ingredients)) return;
+
+    dish.ingredients.forEach((ingredient) => {
+      const name = normalizeIngredientName(ingredient);
+      if (!name) return;
+      const id = getShoppingBasketItemId(name);
+      const current = grouped.get(id) || {
+        id,
+        name,
+        count: 0,
+        dishes: [],
+        checked: checkedSet.has(id),
+      };
+      current.count += Math.max(Number(goods.quantity) || 1, 1);
+      if (!current.dishes.includes(dish.name)) current.dishes.push(dish.name);
+      grouped.set(id, current);
+    });
+  });
+
+  const items = [...grouped.values()].sort((left, right) => {
+    if (left.checked !== right.checked) return left.checked ? 1 : -1;
+    return left.name.localeCompare(right.name, 'zh-Hans-CN');
+  });
+
+  return {
+    items,
+    checkedCount: items.filter((item) => item.checked).length,
+    totalIngredientCount: items.length,
+    totalDishCount: menu.length,
+  };
 }
 
 export function buildCartGroupData(menu = readTonightMenu()) {
