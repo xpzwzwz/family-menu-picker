@@ -2,7 +2,7 @@
   <view class="center-hero">
     <view class="eyebrow">Family</view>
     <view class="center-title">家庭菜单</view>
-    <view class="center-desc">这里保留当前选择和最近一次确认结果，首版先不接入地址、订单和支付。</view>
+    <view class="center-desc">这里管理菜单入口、个人资料和问题反馈。</view>
   </view>
 
   <view class="profile-card" bindtap="handleAction" data-type="profile">
@@ -15,28 +15,7 @@
     <t-icon name="chevron-right" size="36rpx" color="#999" />
   </view>
 
-  <view class="stats-grid">
-    <view class="stat-item">
-      <view class="stat-value">{{selectedCount}}</view>
-      <view class="stat-label">当前已选</view>
-    </view>
-    <view class="stat-item">
-      <view class="stat-value">{{totalCookMinutes}}</view>
-      <view class="stat-label">预计分钟</view>
-    </view>
-    <view class="stat-item">
-      <view class="stat-value">{{lastConfirmedCount}}</view>
-      <view class="stat-label">上次确认</view>
-    </view>
-    <view class="stat-item">
-      <view class="stat-value">{{historyCount}}</view>
-      <view class="stat-label">历史菜单</view>
-    </view>
-    <view class="stat-item">
-      <view class="stat-value">{{feedbackCount}}</view>
-      <view class="stat-label">反馈记录</view>
-    </view>
-  </view>
+  <view class="menu-summary">当前 {{selectedCount}} 份 · 预计 {{totalCookMinutes}} 分钟</view>
 
   <view class="section">
     <view class="section-title">快捷入口</view>

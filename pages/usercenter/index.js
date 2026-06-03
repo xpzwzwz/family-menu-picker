@@ -1,6 +1,6 @@
 import Toast from 'tdesign-miniprogram/toast/index';
-import { readLastConfirmedMenu, readMenuHistory, readTonightMenu } from '../../model/dishes';
-import { readFeedbackList, readUserProfile } from '../../model/user';
+import { readTonightMenu } from '../../model/dishes';
+import { readUserProfile } from '../../model/user';
 
 const actionList = [
   {
@@ -57,9 +57,6 @@ const getDefaultData = () => ({
   actionList,
   selectedCount: 0,
   totalCookMinutes: 0,
-  lastConfirmedCount: 0,
-  historyCount: 0,
-  feedbackCount: 0,
   userProfile: readUserProfile(),
   avatarText: '光',
   versionNo: '',
@@ -84,18 +81,12 @@ Page({
 
   init() {
     const menu = readTonightMenu();
-    const lastConfirmed = readLastConfirmedMenu();
-    const historyCount = readMenuHistory().length;
-    const feedbackCount = readFeedbackList().length;
     const userProfile = readUserProfile();
     this.setData({
       userProfile,
       avatarText: userProfile.nickname.slice(0, 1) || '光',
       selectedCount: menu.reduce((sum, item) => sum + (item.quantity || 1), 0),
       totalCookMinutes: menu.reduce((sum, item) => sum + (item.cookMinutes || 0) * (item.quantity || 1), 0),
-      lastConfirmedCount: lastConfirmed ? lastConfirmed.goodsList.length : 0,
-      historyCount,
-      feedbackCount,
     });
   },
 

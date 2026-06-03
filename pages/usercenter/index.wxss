@@ -34,36 +34,6 @@ page {
   line-height: 42rpx;
 }
 
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16rpx;
-  margin-bottom: 28rpx;
-}
-
-.stat-item {
-  padding: 24rpx 16rpx;
-  border-radius: 8rpx;
-  background: #fff;
-  box-shadow: 0 8rpx 24rpx rgba(31, 31, 31, 0.06);
-}
-
-.stat-value {
-  color: #1f1f1f;
-  font-size: 40rpx;
-  font-weight: 700;
-  line-height: 52rpx;
-  text-align: center;
-}
-
-.stat-label {
-  margin-top: 6rpx;
-  color: #777;
-  font-size: 24rpx;
-  line-height: 34rpx;
-  text-align: center;
-}
-
 .profile-card {
   display: flex;
   align-items: center;
@@ -112,6 +82,13 @@ page {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.menu-summary {
+  margin: -12rpx 8rpx 28rpx;
+  color: #777;
+  font-size: 26rpx;
+  line-height: 38rpx;
 }
 
 .section {
