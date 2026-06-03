@@ -217,12 +217,9 @@ Page({
   },
 
   goGoodsDetail(e) {
-    const { title } = e.detail.goods;
-    Toast({
-      context: this,
-      selector: '#t-toast',
-      message: `${title} 已在菜单中`,
-    });
+    const { spuId } = e.detail.goods;
+    if (!spuId) return;
+    wx.navigateTo({ url: `/pages/dish/detail/index?id=${spuId}&from=menu` });
   },
 
   clearInvalidGoods() {

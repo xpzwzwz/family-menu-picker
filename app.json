@@ -14,7 +14,7 @@
     {
       "root": "pages/dish",
       "name": "dish",
-      "pages": ["custom-create/index", "manage/index"]
+      "pages": ["custom-create/index", "manage/index", "detail/index"]
     },
     {
       "root": "pages/user",

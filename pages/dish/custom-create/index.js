@@ -13,6 +13,8 @@ function getDefaultForm() {
     flavor: '',
     image: '',
     tagsText: '',
+    ingredientsText: '',
+    stepsText: '',
     notes: '',
   };
 }
@@ -26,6 +28,8 @@ function formatDishForm(dish) {
     flavor: dish.flavor || '',
     image: dish.image || getDishPlaceholderImage(dish.category),
     tagsText: Array.isArray(dish.tags) ? dish.tags.join('，') : '',
+    ingredientsText: Array.isArray(dish.ingredients) ? dish.ingredients.join('，') : '',
+    stepsText: Array.isArray(dish.steps) ? dish.steps.map((step) => step.description || step.title).join('\n') : '',
     notes: dish.notes || '',
   };
 }

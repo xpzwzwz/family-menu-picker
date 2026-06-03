@@ -23,7 +23,7 @@
   </view>
 
   <view class="dish-grid" wx:if="{{recommendation}}">
-    <view class="dish-card" wx:for="{{recommendation.dishes}}" wx:key="id">
+    <view class="dish-card" wx:for="{{recommendation.dishes}}" wx:key="id" data-id="{{item.id}}" bindtap="goDishDetail">
       <t-image src="{{item.image}}" t-class="dish-image" mode="aspectFill" />
       <view class="dish-body">
         <view class="dish-name">{{item.name}}</view>

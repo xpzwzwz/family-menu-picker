@@ -53,6 +53,8 @@
           wx:for-item="goods"
           wx:for-index="goodsIndex"
           wx:key="spuId"
+          data-id="{{goods.spuId}}"
+          bindtap="goDishDetail"
         >
           <t-image src="{{goods.thumb}}" t-class="dish-image" mode="aspectFill" />
           <view class="dish-info">

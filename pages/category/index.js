@@ -126,4 +126,10 @@ Page({
       message: '已加入菜单',
     });
   },
+
+  goDishDetail(event) {
+    const { id } = event.currentTarget.dataset;
+    if (!id) return;
+    wx.navigateTo({ url: `/pages/dish/detail/index?id=${id}` });
+  },
 });

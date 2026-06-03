@@ -67,6 +67,18 @@ page {
   box-sizing: border-box;
 }
 
+.field-textarea {
+  width: 100%;
+  min-height: 180rpx;
+  padding: 22rpx 24rpx;
+  border-radius: 8rpx;
+  background: #f7f7f7;
+  color: #1f1f1f;
+  font-size: 28rpx;
+  line-height: 40rpx;
+  box-sizing: border-box;
+}
+
 .image-picker {
   display: flex;
   align-items: center;

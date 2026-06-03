@@ -1,0 +1,59 @@
+<view class="detail-page" wx:if="{{dish}}">
+  <view class="hero">
+    <t-image src="{{dish.image}}" t-class="hero-image" mode="aspectFill" />
+    <view class="hero-copy">
+      <view class="eyebrow">{{dish.isCustom ? 'Custom Dish' : 'Recipe'}}</view>
+      <view class="title">{{dish.name}}</view>
+      <view class="meta">{{dish.cookMinutes}} 分钟 · {{dish.difficulty}} · {{dish.flavor}}</view>
+    </view>
+  </view>
+
+  <view class="quick-facts">
+    <view class="fact">
+      <view class="fact-value">{{dish.servings}}</view>
+      <view class="fact-label">建议份量</view>
+    </view>
+    <view class="fact">
+      <view class="fact-value">{{dish.ingredients.length}}</view>
+      <view class="fact-label">备料项</view>
+    </view>
+    <view class="fact">
+      <view class="fact-value">{{dish.steps.length}}</view>
+      <view class="fact-label">步骤</view>
+    </view>
+  </view>
+
+  <view class="section" wx:if="{{dish.tagText || dish.notes}}">
+    <view class="section-title">适合什么时候吃</view>
+    <view class="tag-line" wx:if="{{dish.tagText}}">{{dish.tagText}}</view>
+    <view class="notes" wx:if="{{dish.notes}}">{{dish.notes}}</view>
+  </view>
+
+  <view class="section">
+    <view class="section-title">备料</view>
+    <view class="ingredient-list" wx:if="{{dish.ingredients.length}}">
+      <view class="ingredient" wx:for="{{dish.ingredients}}" wx:key="*this">{{item}}</view>
+    </view>
+    <view class="empty-copy" wx:else>这道菜还没记录备料，可以在管理菜品里补上。</view>
+  </view>
+
+  <view class="section">
+    <view class="section-title">做法步骤</view>
+    <view class="step-list" wx:if="{{dish.steps.length}}">
+      <view class="step" wx:for="{{dish.steps}}" wx:key="title">
+        <view class="step-index">{{index + 1}}</view>
+        <view class="step-copy">
+          <view class="step-title">{{item.title}}</view>
+          <view class="step-desc">{{item.description}}</view>
+        </view>
+      </view>
+    </view>
+    <view class="empty-copy" wx:else>这道菜还没记录步骤，可以在管理菜品里补上。</view>
+  </view>
+
+  <view class="footer {{inMenu ? '' : 'footer-single'}}">
+    <button class="secondary-btn" wx:if="{{inMenu}}" bindtap="goMenu">查看菜单</button>
+    <button class="primary-btn" bindtap="addToMenu">{{inMenu ? '再加一份' : '加入菜单'}}</button>
+  </view>
+</view>
+<t-toast id="t-toast" />

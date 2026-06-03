@@ -97,6 +97,28 @@
     </view>
 
     <view class="field">
+      <view class="field-label">备料</view>
+      <input
+        class="field-input"
+        value="{{form.ingredientsText}}"
+        placeholder="例如：豆角，蒜，干辣椒"
+        data-field="ingredientsText"
+        bindinput="updateField"
+      />
+    </view>
+
+    <view class="field">
+      <view class="field-label">做法步骤</view>
+      <textarea
+        class="field-textarea"
+        value="{{form.stepsText}}"
+        placeholder="每行一步，例如：\n豆角切段\n蒜末爆香\n下锅翻炒调味"
+        data-field="stepsText"
+        bindinput="updateField"
+      />
+    </view>
+
+    <view class="field">
       <view class="field-label">备注</view>
       <t-textarea
         value="{{form.notes}}"
