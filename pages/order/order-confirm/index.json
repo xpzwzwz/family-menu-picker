@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "确认今晚菜单",
+  "navigationBarTitleText": "确认菜单",
   "usingComponents": {
     "t-toast": "tdesign-miniprogram/toast/toast",
     "t-textarea": "tdesign-miniprogram/textarea/textarea",

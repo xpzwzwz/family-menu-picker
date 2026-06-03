@@ -1,24 +1,81 @@
 <view class="category-page">
   <view class="page-head">
-    <view class="eyebrow">Browse</view>
-    <view class="title">菜品分类</view>
-    <view class="subtitle">先定方向，再挑今晚具体吃什么。</view>
+    <view>
+      <view class="eyebrow">Dishes</view>
+      <view class="title">选菜</view>
+    </view>
+    <view class="head-copy">按分类滑动挑菜</view>
   </view>
 
-  <view class="category-grid">
-    <view
-      class="category-card"
-      wx:for="{{list}}"
-      wx:key="groupId"
-      data-id="{{item.groupId}}"
-      data-name="{{item.name}}"
-      bindtap="openCategory"
-    >
-      <view>
-        <view class="category-name">{{item.name}}</view>
-        <view class="category-desc">{{item.description}}</view>
+  <view class="picker-shell" style="height: {{scrollHeight}}px;">
+    <scroll-view class="category-sidebar" scroll-y="{{true}}" enhanced="{{true}}" show-scrollbar="{{false}}" style="height: {{scrollHeight}}px;">
+      <view
+        class="category-tab {{activeCategoryId === item.id ? 'category-tab-active' : ''}}"
+        wx:for="{{sections}}"
+        wx:key="id"
+        data-id="{{item.id}}"
+        bindtap="selectCategory"
+      >
+        <view class="category-tab-name">{{item.name}}</view>
+        <view class="category-tab-count">{{item.count}} 道</view>
       </view>
-      <view class="category-count">{{item.children[0].children.length}} 道</view>
-    </view>
+    </scroll-view>
+
+    <scroll-view
+      class="dish-scroll"
+      scroll-y="{{true}}"
+      enhanced="{{true}}"
+      show-scrollbar="{{false}}"
+      scroll-with-animation="{{true}}"
+      scroll-top="{{scrollTop}}"
+      bindscroll="onDishScroll"
+      style="height: {{scrollHeight}}px;"
+    >
+      <view
+        id="section-{{section.id}}"
+        class="dish-section"
+        wx:for="{{sections}}"
+        wx:for-item="section"
+        wx:for-index="sectionIndex"
+        wx:key="id"
+      >
+        <view class="section-head">
+          <view>
+            <view class="section-title">{{section.name}}</view>
+            <view class="section-desc">{{section.description}}</view>
+          </view>
+          <view class="section-count">{{section.count}} 道</view>
+        </view>
+
+        <view
+          class="dish-row"
+          wx:for="{{section.goodsList}}"
+          wx:for-item="goods"
+          wx:for-index="goodsIndex"
+          wx:key="spuId"
+        >
+          <t-image src="{{goods.thumb}}" t-class="dish-image" mode="aspectFill" />
+          <view class="dish-info">
+            <view class="dish-title">{{goods.title}}</view>
+            <view class="dish-meta">{{goods.cookMinutes}} 分钟 · {{goods.difficulty}} · {{goods.flavor}}</view>
+            <view class="dish-tags">
+              <text wx:for="{{goods.tags}}" wx:key="*this">{{item}}</text>
+            </view>
+          </view>
+          <button
+            class="add-btn"
+            data-section-index="{{sectionIndex}}"
+            data-goods-index="{{goodsIndex}}"
+            catchtap="addDish"
+          >
+            +
+          </button>
+        </view>
+      </view>
+
+      <view class="scroll-bottom" />
+    </scroll-view>
   </view>
+
+  <t-toast id="t-toast" />
 </view>

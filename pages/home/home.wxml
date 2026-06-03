@@ -2,15 +2,15 @@
   <view class="hero">
     <view class="hero-top">
       <view>
-        <view class="eyebrow">Family Menu Picker</view>
-        <view class="title">今晚吃什么</view>
+        <view class="eyebrow">光盘小分队</view>
+        <view class="title">今天吃什么</view>
       </view>
-      <view class="menu-pill" bindtap="navToMenu">已选 {{totalMenuCount}}</view>
+      <view class="menu-pill" bindtap="navToMenu">菜单 {{totalMenuCount}}</view>
     </view>
-    <view class="subtitle">随机搭一桌，尽量兼顾荤素和做饭时间。</view>
+    <view class="subtitle">随机搭一餐，尽量兼顾荤素和做饭时间。</view>
     <view class="hero-actions">
-      <button class="primary-btn" bindtap="randomDinnerSet">随机换一桌</button>
-      <button class="secondary-btn" bindtap="addRecommendationToMenu">加入今晚菜单</button>
+      <button class="primary-btn" bindtap="randomDinnerSet">随机换一餐</button>
+      <button class="secondary-btn" bindtap="addRecommendationToMenu">加入菜单</button>
     </view>
   </view>
 

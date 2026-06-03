@@ -1,17 +1,23 @@
 page {
   background: #f4f5f1;
   min-height: 100vh;
-  padding-bottom: calc(env(safe-area-inset-bottom) + 112rpx);
+  overflow: hidden;
 }
 
 .category-page {
-  padding: 28rpx 24rpx 40rpx;
+  height: 100vh;
+  padding: 22rpx 18rpx calc(env(safe-area-inset-bottom) + 112rpx);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 
 .page-head {
-  background: #ffffff;
-  border-radius: 8rpx;
-  padding: 30rpx;
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 10rpx 6rpx 18rpx;
 }
 
 .eyebrow {
@@ -22,55 +28,187 @@ page {
 }
 
 .title {
+  margin-top: 4rpx;
   color: #1f241f;
-  font-size: 44rpx;
+  font-size: 42rpx;
   font-weight: 700;
-  line-height: 58rpx;
-  margin-top: 8rpx;
+  line-height: 54rpx;
 }
 
-.subtitle {
+.head-copy {
   color: #69736d;
-  font-size: 26rpx;
-  line-height: 38rpx;
-  margin-top: 8rpx;
+  font-size: 24rpx;
+  line-height: 36rpx;
 }
 
-.category-grid {
+.picker-shell {
   display: grid;
-  gap: 18rpx;
-  margin-top: 24rpx;
+  grid-template-columns: 160rpx minmax(0, 1fr);
+  gap: 16rpx;
 }
 
-.category-card {
-  align-items: center;
-  background: #ffffff;
+.category-sidebar,
+.dish-scroll {
+  height: 100%;
+}
+
+.category-sidebar {
   border-radius: 8rpx;
-  display: flex;
-  justify-content: space-between;
-  padding: 28rpx;
+  background: #eceee8;
+  overflow: hidden;
 }
 
-.category-name {
-  color: #1f241f;
-  font-size: 32rpx;
-  font-weight: 700;
-  line-height: 44rpx;
-}
-
-.category-desc {
+.category-tab {
+  position: relative;
+  min-height: 116rpx;
+  padding: 22rpx 14rpx 18rpx 22rpx;
+  box-sizing: border-box;
   color: #69736d;
-  font-size: 24rpx;
-  line-height: 34rpx;
-  margin-top: 8rpx;
 }
 
-.category-count {
-  background: #eef4e7;
-  border-radius: 6rpx;
-  color: #48613f;
+.category-tab-active {
+  background: #ffffff;
+  color: #1f241f;
+}
+
+.category-tab-active::before {
+  position: absolute;
+  left: 0;
+  top: 24rpx;
+  width: 8rpx;
+  height: 52rpx;
+  border-radius: 0 8rpx 8rpx 0;
+  background: #d54941;
+  content: '';
+}
+
+.category-tab-name {
+  font-size: 26rpx;
+  font-weight: 700;
+  line-height: 36rpx;
+}
+
+.category-tab-count {
+  margin-top: 6rpx;
+  font-size: 22rpx;
+  line-height: 30rpx;
+}
+
+.dish-section {
+  margin-bottom: 18rpx;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6rpx 4rpx 14rpx;
+}
+
+.section-title {
+  color: #1f241f;
+  font-size: 34rpx;
+  font-weight: 700;
+  line-height: 46rpx;
+}
+
+.section-desc {
+  margin-top: 2rpx;
+  color: #69736d;
+  font-size: 23rpx;
+  line-height: 32rpx;
+}
+
+.section-count {
   flex-shrink: 0;
-  font-size: 24rpx;
-  line-height: 34rpx;
-  padding: 10rpx 14rpx;
+  padding: 6rpx 10rpx;
+  border-radius: 6rpx;
+  background: #eef4e7;
+  color: #48613f;
+  font-size: 22rpx;
+  line-height: 30rpx;
+}
+
+.dish-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  min-height: 164rpx;
+  margin-bottom: 12rpx;
+  padding: 16rpx;
+  border-radius: 8rpx;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.dish-image {
+  flex-shrink: 0;
+  width: 116rpx;
+  height: 116rpx;
+  border-radius: 8rpx;
+  overflow: hidden;
+}
+
+.dish-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.dish-title {
+  color: #1f241f;
+  font-size: 28rpx;
+  font-weight: 700;
+  line-height: 38rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dish-meta {
+  margin-top: 6rpx;
+  color: #69736d;
+  font-size: 22rpx;
+  line-height: 32rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dish-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6rpx;
+  margin-top: 10rpx;
+  max-height: 42rpx;
+  overflow: hidden;
+}
+
+.dish-tags text {
+  padding: 4rpx 8rpx;
+  border-radius: 6rpx;
+  background: #f4f5f1;
+  color: #69736d;
+  font-size: 20rpx;
+  line-height: 28rpx;
+}
+
+.add-btn {
+  flex-shrink: 0;
+  width: 56rpx;
+  height: 56rpx;
+  padding: 0;
+  border-radius: 8rpx;
+  background: #d54941;
+  color: #ffffff;
+  font-size: 36rpx;
+  font-weight: 600;
+  line-height: 52rpx;
+}
+
+.add-btn::after {
+  border: 0;
+}
+
+.scroll-bottom {
+  height: 24rpx;
 }

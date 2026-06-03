@@ -1,8 +1,8 @@
 <view class="custom-dish-page">
   <view class="page-head">
-    <view class="eyebrow">Custom Dish</view>
+    <view class="eyebrow">Dish Library</view>
     <view class="title">{{modeTitle}}</view>
-    <view class="subtitle">把家里常吃的菜加进来，之后会出现在菜品列表和随机推荐里。</view>
+    <view class="subtitle">把菜品改成家里习惯的做法，之后选菜和随机搭配都会按这里来。</view>
   </view>
 
   <view class="form-section">
@@ -15,6 +15,20 @@
         data-field="name"
         bindinput="updateField"
       />
+    </view>
+
+    <view class="field">
+      <view class="field-label">菜品图片</view>
+      <view class="image-picker" bindtap="chooseImage">
+        <t-image wx:if="{{form.image}}" src="{{form.image}}" t-class="dish-preview" mode="aspectFill" />
+        <view class="image-placeholder" wx:else>
+          <t-icon name="image" size="48rpx" color="#d54941" />
+        </view>
+        <view class="image-copy">
+          <view class="image-title">{{uploadingImage ? '正在保存图片' : '更换图片'}}</view>
+          <view class="image-desc">不上传就使用默认占位图</view>
+        </view>
+      </view>
     </view>
 
     <view class="field">

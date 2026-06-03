@@ -1,11 +1,11 @@
-import Dialog from 'tdesign-miniprogram/dialog/index';
 import Toast from 'tdesign-miniprogram/toast/index';
-import { readLastConfirmedMenu, readMenuHistory, readTonightMenu, reuseMenuHistoryEntry } from '../../model/dishes';
+import { readLastConfirmedMenu, readMenuHistory, readTonightMenu } from '../../model/dishes';
+import { readFeedbackList, readUserProfile } from '../../model/user';
 
 const actionList = [
   {
-    title: '随机一桌',
-    desc: '回到首页重新生成今晚搭配',
+    title: '随机一餐',
+    desc: '回到首页重新生成这一餐搭配',
     type: 'home',
     icon: 'refresh',
   },
@@ -16,10 +16,16 @@ const actionList = [
     icon: 'app',
   },
   {
-    title: '查看今晚菜单',
+    title: '查看我的菜单',
     desc: '调整份数或确认菜单',
     type: 'menu',
     icon: 'cart',
+  },
+  {
+    title: '菜单历史',
+    desc: '查看和复用确认过的菜单',
+    type: 'menuHistory',
+    icon: 'time',
   },
   {
     title: '新增菜品',
@@ -29,47 +35,33 @@ const actionList = [
   },
   {
     title: '管理菜品',
-    desc: '编辑或删除自定义菜品',
+    desc: '编辑或移除家里的常吃菜',
     type: 'manageDish',
     icon: 'view-list',
   },
+  {
+    title: '用户资料',
+    desc: '设置昵称、角色和口味偏好',
+    type: 'profile',
+    icon: 'user',
+  },
+  {
+    title: '问题反馈',
+    desc: '记录问题、建议和菜品数据反馈',
+    type: 'feedback',
+    icon: 'chat',
+  },
 ];
-
-function formatConfirmedAt(timestamp) {
-  if (!timestamp) return '暂无';
-  const date = new Date(timestamp);
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
-  const hour = String(date.getHours()).padStart(2, '0');
-  const minute = String(date.getMinutes()).padStart(2, '0');
-  return `${month}月${day}日 ${hour}:${minute}`;
-}
-
-function formatHistoryEntry(entry) {
-  const goodsList = Array.isArray(entry.goodsList) ? entry.goodsList : [];
-  const summary = entry.summary || {};
-  return {
-    id: entry.id,
-    confirmedAtText: formatConfirmedAt(entry.confirmedAt),
-    dishCount: goodsList.length,
-    totalCookMinutes: summary.totalCookMinutes || 0,
-    dishNames: goodsList
-      .slice(0, 3)
-      .map((goods) => goods.title)
-      .filter(Boolean)
-      .join(' / '),
-    note: entry.note || '',
-  };
-}
 
 const getDefaultData = () => ({
   actionList,
   selectedCount: 0,
   totalCookMinutes: 0,
-  lastConfirmedAtText: '暂无',
   lastConfirmedCount: 0,
-  lastConfirmedNote: '',
-  historyList: [],
+  historyCount: 0,
+  feedbackCount: 0,
+  userProfile: readUserProfile(),
+  avatarText: '光',
   versionNo: '',
 });
 
@@ -93,14 +85,17 @@ Page({
   init() {
     const menu = readTonightMenu();
     const lastConfirmed = readLastConfirmedMenu();
-    const historyList = readMenuHistory().map(formatHistoryEntry);
+    const historyCount = readMenuHistory().length;
+    const feedbackCount = readFeedbackList().length;
+    const userProfile = readUserProfile();
     this.setData({
+      userProfile,
+      avatarText: userProfile.nickname.slice(0, 1) || '光',
       selectedCount: menu.reduce((sum, item) => sum + (item.quantity || 1), 0),
       totalCookMinutes: menu.reduce((sum, item) => sum + (item.cookMinutes || 0) * (item.quantity || 1), 0),
-      lastConfirmedAtText: formatConfirmedAt(lastConfirmed && lastConfirmed.confirmedAt),
       lastConfirmedCount: lastConfirmed ? lastConfirmed.goodsList.length : 0,
-      lastConfirmedNote: lastConfirmed && lastConfirmed.note ? lastConfirmed.note : '',
-      historyList,
+      historyCount,
+      feedbackCount,
     });
   },
 
@@ -127,6 +122,18 @@ Page({
         wx.navigateTo({ url: '/pages/dish/manage/index' });
         break;
       }
+      case 'menuHistory': {
+        wx.navigateTo({ url: '/pages/menu/history/index' });
+        break;
+      }
+      case 'profile': {
+        wx.navigateTo({ url: '/pages/user/profile/index' });
+        break;
+      }
+      case 'feedback': {
+        wx.navigateTo({ url: '/pages/user/feedback/index' });
+        break;
+      }
       default: {
         Toast({
           context: this,
@@ -138,29 +145,6 @@ Page({
         break;
       }
     }
-  },
-
-  reuseHistoryMenu(event) {
-    const { id } = event.currentTarget.dataset;
-    Dialog.confirm({
-      title: '替换今晚菜单？',
-      content: '会用这条历史菜单覆盖当前已选菜品。',
-      confirmBtn: '替换',
-      cancelBtn: '取消',
-    })
-      .then(() => {
-        const nextMenu = reuseMenuHistoryEntry(id);
-        if (!nextMenu.length) {
-          Toast({
-            context: this,
-            selector: '#t-toast',
-            message: '没有找到这条历史菜单',
-          });
-          return;
-        }
-        wx.switchTab({ url: '/pages/cart/index' });
-      })
-      .catch(() => {});
   },
 
   getVersionInfo() {

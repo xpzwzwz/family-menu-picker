@@ -1,0 +1,46 @@
+<view class="feedback-page">
+  <view class="page-head">
+    <view class="eyebrow">Feedback</view>
+    <view class="title">问题反馈</view>
+    <view class="subtitle">告诉我们哪里不好用，或者你希望光盘小分队下一步支持什么。</view>
+  </view>
+
+  <view class="form-section">
+    <view class="field">
+      <view class="field-label">反馈类型</view>
+      <view class="chip-row">
+        <view
+          class="chip {{form.type === item.value ? 'chip-active' : ''}}"
+          wx:for="{{feedbackTypes}}"
+          wx:key="value"
+          data-value="{{item.value}}"
+          bindtap="selectType"
+        >
+          {{item.label}}
+        </view>
+      </view>
+    </view>
+
+    <view class="field">
+      <view class="field-label">反馈内容</view>
+      <t-textarea
+        value="{{form.content}}"
+        placeholder="例如：菜品列表不能滚动，或者希望能按早餐/午餐筛选。"
+        maxlength="{{200}}"
+        data-field="content"
+        bindchange="updateField"
+      />
+    </view>
+
+    <view class="field">
+      <view class="field-label">联系方式（选填）</view>
+      <input class="field-input" value="{{form.contact}}" placeholder="微信号或手机号，方便追问" data-field="contact" bindinput="updateField" />
+    </view>
+  </view>
+
+  <view class="footer">
+    <button class="submit-btn" bindtap="submit">提交反馈</button>
+  </view>
+
+  <t-toast id="t-toast" />
+</view>

@@ -221,7 +221,7 @@ Page({
     Toast({
       context: this,
       selector: '#t-toast',
-      message: `${title} 已在今晚菜单中`,
+      message: `${title} 已在菜单中`,
     });
   },
 
@@ -234,12 +234,12 @@ Page({
       goods: { spuId, skuId },
     } = e.detail;
     Dialog.confirm({
-      content: '确认从今晚菜单删除这道菜吗?',
+      content: '确认从菜单删除这道菜吗?',
       confirmBtn: '确定',
       cancelBtn: '取消',
     }).then(() => {
       this.deleteGoodsService({ spuId, skuId }).then(() => {
-        Toast({ context: this, selector: '#t-toast', message: '已从今晚菜单删除' });
+        Toast({ context: this, selector: '#t-toast', message: '已从菜单删除' });
         this.refreshData();
       });
     });

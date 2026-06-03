@@ -6,7 +6,7 @@ Component({
     },
     tip: {
       type: String,
-      value: '今晚菜单还是空的',
+      value: '菜单还是空的',
     },
     btnText: {
       type: String,

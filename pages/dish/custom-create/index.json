@@ -1,6 +1,8 @@
 {
   "navigationBarTitleText": "新增菜品",
   "usingComponents": {
+    "t-image": "/components/webp-image/index",
+    "t-icon": "tdesign-miniprogram/icon/icon",
     "t-toast": "tdesign-miniprogram/toast/toast",
     "t-textarea": "tdesign-miniprogram/textarea/textarea"
   }

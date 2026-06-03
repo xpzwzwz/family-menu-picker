@@ -1,6 +1,13 @@
 import Dialog from 'tdesign-miniprogram/dialog/index';
 import Toast from 'tdesign-miniprogram/toast/index';
-import { deleteCustomDish, dishCategories, readCustomDishes } from '../../../model/dishes';
+import {
+  defaultDishIds,
+  deleteDish,
+  dishCategories,
+  getManageableDishes,
+  hasRemovedDefaultDishes,
+  restoreDishDefaults,
+} from '../../../model/dishes';
 
 const categoryNameMap = dishCategories.reduce((result, category) => {
   return {
@@ -22,6 +29,7 @@ function formatDish(dish) {
 Page({
   data: {
     dishList: [],
+    canRestore: false,
   },
 
   onShow() {
@@ -29,8 +37,10 @@ Page({
   },
 
   refreshDishes() {
+    const dishList = getManageableDishes().map(formatDish);
     this.setData({
-      dishList: readCustomDishes().map(formatDish),
+      dishList,
+      canRestore: hasRemovedDefaultDishes(),
     });
   },
 
@@ -54,20 +64,28 @@ Page({
   deleteDish(event) {
     const { id } = event.currentTarget.dataset;
     Dialog.confirm({
-      title: '删除这道菜？',
-      content: '删除后不会再出现在菜品列表和随机推荐里。',
-      confirmBtn: '删除',
+      title: '移除这道菜？',
+      content: '移除后不会再出现在菜品列表和随机推荐里。',
+      confirmBtn: '移除',
       cancelBtn: '取消',
     })
       .then(() => {
-        const deleted = deleteCustomDish(id);
+        const deleted = deleteDish(id);
         if (!deleted) {
           this.showToast('没有找到这道菜');
           return;
         }
         this.refreshDishes();
-        this.showToast('已删除菜品');
+        this.showToast('已移除菜品');
       })
       .catch(() => {});
+  },
+
+  restoreDefaultDishes() {
+    defaultDishIds.forEach((id) => {
+      restoreDishDefaults(id);
+    });
+    this.refreshDishes();
+    this.showToast('已恢复初始菜品');
   },
 });

@@ -69,7 +69,7 @@ Page({
     Toast({
       context: this,
       selector: '#t-toast',
-      message: '已加入今晚菜单',
+      message: '已加入菜单',
     });
   },
 

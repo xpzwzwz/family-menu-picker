@@ -1,6 +1,6 @@
 <block wx:if="{{cartGroupData.isNotEmpty}}">
   <view class="menu-header">
-    <view class="menu-title">今晚菜单</view>
+    <view class="menu-title">我的菜单</view>
     <view class="menu-subtitle">共 {{cartGroupData.selectedGoodsCount}} 份 · 预计 {{cartGroupData.totalCookMinutes}} 分钟</view>
   </view>
   <cart-group

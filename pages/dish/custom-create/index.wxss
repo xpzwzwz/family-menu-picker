@@ -67,6 +67,51 @@ page {
   box-sizing: border-box;
 }
 
+.image-picker {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  min-height: 136rpx;
+  padding: 16rpx;
+  border-radius: 8rpx;
+  background: #f7f7f7;
+  box-sizing: border-box;
+}
+
+.dish-preview,
+.image-placeholder {
+  width: 104rpx;
+  height: 104rpx;
+  flex-shrink: 0;
+  border-radius: 8rpx;
+  overflow: hidden;
+}
+
+.image-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff0ee;
+}
+
+.image-copy {
+  min-width: 0;
+}
+
+.image-title {
+  color: #1f1f1f;
+  font-size: 28rpx;
+  font-weight: 600;
+  line-height: 40rpx;
+}
+
+.image-desc {
+  margin-top: 6rpx;
+  color: #777;
+  font-size: 24rpx;
+  line-height: 34rpx;
+}
+
 .two-col {
   display: grid;
   grid-template-columns: 1fr 1fr;

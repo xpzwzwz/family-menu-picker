@@ -60,7 +60,7 @@ Page({
       Toast({
         context: this,
         selector: '#t-toast',
-        message: '请先选择今晚菜单',
+        message: '请先选择菜单',
       });
       return;
     }
@@ -74,7 +74,7 @@ Page({
     Toast({
       context: this,
       selector: '#t-toast',
-      message: '今晚菜单已确认',
+      message: '菜单已确认',
     });
   },
 });

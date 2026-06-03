@@ -9,7 +9,7 @@ function mockFetchHome() {
       swiper: genSwiperImageList(),
       tabList: [
         {
-          text: '今晚推荐',
+          text: '今日推荐',
           key: 0,
         },
         {

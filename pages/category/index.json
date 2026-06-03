@@ -1,4 +1,7 @@
 {
   "navigationBarTitleText": "菜品",
-  "usingComponents": {}
+  "usingComponents": {
+    "t-image": "/components/webp-image/index",
+    "t-toast": "tdesign-miniprogram/toast/toast"
+  }
 }

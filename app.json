@@ -1,6 +1,6 @@
 {
   "pages": ["pages/home/home", "pages/category/index", "pages/cart/index", "pages/usercenter/index"],
-  "subpackages": [
+  "subPackages": [
     {
       "root": "pages/goods",
       "name": "goods",
@@ -15,6 +15,16 @@
       "root": "pages/dish",
       "name": "dish",
       "pages": ["custom-create/index", "manage/index"]
+    },
+    {
+      "root": "pages/user",
+      "name": "user",
+      "pages": ["profile/index", "feedback/index"]
+    },
+    {
+      "root": "pages/menu",
+      "name": "menu",
+      "pages": ["history/index"]
     }
   ],
   "tabBar": {
@@ -26,7 +36,7 @@
     "list": [
       {
         "pagePath": "pages/home/home",
-        "text": "今晚吃什么"
+        "text": "今天吃什么"
       },
       {
         "pagePath": "pages/category/index",
@@ -34,7 +44,7 @@
       },
       {
         "pagePath": "pages/cart/index",
-        "text": "今晚菜单"
+        "text": "我的菜单"
       },
       {
         "pagePath": "pages/usercenter/index",
@@ -47,7 +57,7 @@
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "今晚吃什么",
+    "navigationBarTitleText": "今天吃什么",
     "navigationBarTextStyle": "black"
   },
   "sitemapLocation": "sitemap.json"

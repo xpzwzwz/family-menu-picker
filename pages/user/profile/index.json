@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "用户资料",
+  "usingComponents": {
+    "t-textarea": "tdesign-miniprogram/textarea/textarea",
+    "t-toast": "tdesign-miniprogram/toast/toast"
+  }
+}

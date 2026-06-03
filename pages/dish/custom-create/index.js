@@ -1,5 +1,6 @@
 import Toast from 'tdesign-miniprogram/toast/index';
-import { addCustomDish, dishCategories, getCustomDishById, updateCustomDish } from '../../../model/dishes';
+import { addCustomDish, dishCategories, getDishById, getDishPlaceholderImage, updateDish } from '../../../model/dishes';
+import { uploadDishImage } from '../../../services/dish/uploadImage';
 
 const difficultyOptions = ['简单', '中等', '费事'];
 
@@ -10,6 +11,7 @@ function getDefaultForm() {
     cookMinutes: '',
     difficulty: '简单',
     flavor: '',
+    image: '',
     tagsText: '',
     notes: '',
   };
@@ -22,6 +24,7 @@ function formatDishForm(dish) {
     cookMinutes: String(dish.cookMinutes || ''),
     difficulty: dish.difficulty || '简单',
     flavor: dish.flavor || '',
+    image: dish.image || getDishPlaceholderImage(dish.category),
     tagsText: Array.isArray(dish.tags) ? dish.tags.join('，') : '',
     notes: dish.notes || '',
   };
@@ -35,12 +38,13 @@ Page({
     form: getDefaultForm(),
     categoryOptions: dishCategories,
     difficultyOptions,
+    uploadingImage: false,
   },
 
   onLoad(options = {}) {
     if (!options.id) return;
 
-    const dish = getCustomDishById(options.id);
+    const dish = getDishById(options.id);
     if (!dish) {
       this.showToast('没有找到这道菜');
       setTimeout(() => {
@@ -67,7 +71,11 @@ Page({
 
   selectCategory(event) {
     const { value } = event.currentTarget.dataset;
-    this.setData({ 'form.category': value });
+    const nextData = { 'form.category': value };
+    if (!this.data.form.image || this.data.form.image.startsWith('/assets/dishes/')) {
+      nextData['form.image'] = getDishPlaceholderImage(value);
+    }
+    this.setData(nextData);
   },
 
   selectDifficulty(event) {
@@ -80,6 +88,30 @@ Page({
       context: this,
       selector: '#t-toast',
       message,
+    });
+  },
+
+  chooseImage() {
+    wx.chooseMedia({
+      count: 1,
+      mediaType: ['image'],
+      sourceType: ['album', 'camera'],
+      success: async (res) => {
+        const file = res.tempFiles && res.tempFiles[0];
+        if (!file || !file.tempFilePath) return;
+        this.setData({ uploadingImage: true });
+        try {
+          const imageUrl = await uploadDishImage(file.tempFilePath);
+          this.setData({ 'form.image': imageUrl });
+          this.showToast('图片已保存');
+        } catch (error) {
+          this.setData({ 'form.image': file.tempFilePath });
+          this.showToast('图片暂存到本机');
+        } finally {
+          this.setData({ uploadingImage: false });
+        }
+      },
+      fail: () => {},
     });
   },
 
@@ -100,7 +132,7 @@ Page({
     }
 
     if (this.data.editingId) {
-      const updatedDish = updateCustomDish(this.data.editingId, this.data.form);
+      const updatedDish = updateDish(this.data.editingId, this.data.form);
       if (!updatedDish) {
         this.showToast('没有找到这道菜');
         return;

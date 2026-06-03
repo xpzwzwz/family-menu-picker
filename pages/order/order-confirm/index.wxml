@@ -2,7 +2,7 @@
   <view class="confirm-head">
     <view>
       <view class="eyebrow">Final Menu</view>
-      <view class="title">确认今晚菜单</view>
+      <view class="title">确认菜单</view>
     </view>
     <button class="back-btn" bindtap="goBackToMenu">返回修改</button>
   </view>
@@ -36,7 +36,7 @@
 
   <view class="empty-state" wx:else>
     <view class="empty-title">还没有选择菜品</view>
-    <view class="empty-desc">返回今晚菜单或菜品页，先加几道菜。</view>
+    <view class="empty-desc">返回我的菜单或菜品页，先加几道菜。</view>
   </view>
 
   <view class="note-card">
@@ -50,7 +50,7 @@
   </view>
 
   <view class="confirm-footer">
-    <button class="confirm-btn" bindtap="submitOrder">确认今晚菜单</button>
+    <button class="confirm-btn" bindtap="submitOrder">确认菜单</button>
   </view>
 
   <t-toast id="t-toast" />

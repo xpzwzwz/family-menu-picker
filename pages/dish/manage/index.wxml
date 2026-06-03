@@ -1,8 +1,8 @@
 <view class="manage-page">
   <view class="page-head">
-    <view class="eyebrow">Custom Dish</view>
+    <view class="eyebrow">Dish Library</view>
     <view class="title">管理菜品</view>
-    <view class="subtitle">这里只管理自己新增的菜，系统内置菜品保持不变。</view>
+    <view class="subtitle">调整家里的常吃菜，之后选菜和随机搭配都会按这里来。</view>
   </view>
 
   <view class="toolbar">
@@ -10,6 +10,7 @@
       <t-icon name="add" size="32rpx" color="#ffffff" />
       <text>新增菜品</text>
     </button>
+    <button class="restore-btn" wx:if="{{canRestore}}" bindtap="restoreDefaultDishes">恢复初始菜品</button>
   </view>
 
   <view class="dish-list" wx:if="{{dishList.length}}">
@@ -25,13 +26,13 @@
       </view>
       <view class="dish-actions">
         <button class="action-btn edit-btn" catchtap="editDish" data-id="{{item.id}}">编辑</button>
-        <button class="action-btn delete-btn" catchtap="deleteDish" data-id="{{item.id}}">删除</button>
+        <button class="action-btn delete-btn" catchtap="deleteDish" data-id="{{item.id}}">移除</button>
       </view>
     </view>
   </view>
 
   <view class="empty-state" wx:else>
-    <view class="empty-title">还没有自定义菜品</view>
+    <view class="empty-title">菜品库空了</view>
     <view class="empty-desc">先加几道家里常吃的菜，之后选菜和随机搭配都会用到。</view>
     <button class="empty-btn" bindtap="goCreate">新增菜品</button>
   </view>

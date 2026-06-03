@@ -1,7 +1,7 @@
 export default [
   {
     icon: 'home',
-    text: '今晚吃什么',
+    text: '今天吃什么',
     url: 'pages/home/home',
   },
   {
@@ -11,7 +11,7 @@ export default [
   },
   {
     icon: 'cart',
-    text: '今晚菜单',
+    text: '我的菜单',
     url: 'pages/cart/index',
   },
   {

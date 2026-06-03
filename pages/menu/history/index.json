@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "菜单历史",
+  "usingComponents": {
+    "t-dialog": "tdesign-miniprogram/dialog/dialog",
+    "t-toast": "tdesign-miniprogram/toast/toast"
+  }
+}

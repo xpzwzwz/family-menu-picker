@@ -1,10 +1,19 @@
 const STORE_ID = 'family-kitchen';
 const STORE_NAME = '家庭厨房';
-const DEFAULT_IMAGE = 'https://tdesign.gtimg.com/miniprogram/template/retail/goods/nz-09a.png';
+const DEFAULT_IMAGE = '/assets/dishes/default.svg';
+const DISH_PLACEHOLDER_IMAGES = {
+  quick: '/assets/dishes/quick.svg',
+  meat: '/assets/dishes/meat.svg',
+  vegetable: '/assets/dishes/vegetable.svg',
+  soup: '/assets/dishes/soup.svg',
+  staple: '/assets/dishes/staple.svg',
+  takeout: '/assets/dishes/takeout.svg',
+};
 const MENU_STORAGE_KEY = 'familyMenuPicker.tonightMenu';
 const LAST_CONFIRMED_MENU_STORAGE_KEY = 'familyMenuPicker.lastConfirmedMenu';
 const MENU_HISTORY_STORAGE_KEY = 'familyMenuPicker.menuHistory';
 const CUSTOM_DISHES_STORAGE_KEY = 'familyMenuPicker.customDishes';
+const USER_DISHES_STORAGE_KEY = 'familyMenuPicker.userDishes';
 const MAX_MENU_HISTORY_COUNT = 20;
 
 export const dishCategories = [
@@ -16,12 +25,16 @@ export const dishCategories = [
   { id: 'takeout', name: '外卖备选', description: '不想做饭时兜底' },
 ];
 
+export function getDishPlaceholderImage(category) {
+  return DISH_PLACEHOLDER_IMAGES[category] || DEFAULT_IMAGE;
+}
+
 export const dishes = [
   {
     id: 'tomato-egg',
     name: '番茄炒蛋',
     category: 'quick',
-    image: 'https://tdesign.gtimg.com/miniprogram/template/retail/goods/muy-3a.png',
+    image: getDishPlaceholderImage('quick'),
     cookMinutes: 12,
     difficulty: '简单',
     flavor: '酸甜',
@@ -33,7 +46,7 @@ export const dishes = [
     id: 'pepper-beef',
     name: '青椒牛肉',
     category: 'meat',
-    image: 'https://tdesign.gtimg.com/miniprogram/template/retail/goods/dz-3a.png',
+    image: getDishPlaceholderImage('meat'),
     cookMinutes: 25,
     difficulty: '中等',
     flavor: '咸香',
@@ -45,7 +58,7 @@ export const dishes = [
     id: 'garlic-lettuce',
     name: '蒜蓉生菜',
     category: 'vegetable',
-    image: 'https://tdesign.gtimg.com/miniprogram/template/retail/goods/nz-09a.png',
+    image: getDishPlaceholderImage('vegetable'),
     cookMinutes: 8,
     difficulty: '简单',
     flavor: '清爽',
@@ -57,7 +70,7 @@ export const dishes = [
     id: 'corn-rib-soup',
     name: '玉米排骨汤',
     category: 'soup',
-    image: 'https://tdesign.gtimg.com/miniprogram/template/retail/goods/muy-3b.png',
+    image: getDishPlaceholderImage('soup'),
     cookMinutes: 50,
     difficulty: '中等',
     flavor: '鲜甜',
@@ -69,7 +82,7 @@ export const dishes = [
     id: 'egg-fried-rice',
     name: '鸡蛋炒饭',
     category: 'staple',
-    image: 'https://tdesign.gtimg.com/miniprogram/template/retail/goods/nz-08b.png',
+    image: getDishPlaceholderImage('staple'),
     cookMinutes: 15,
     difficulty: '简单',
     flavor: '咸香',
@@ -81,7 +94,7 @@ export const dishes = [
     id: 'mapo-tofu',
     name: '麻婆豆腐',
     category: 'quick',
-    image: 'https://tdesign.gtimg.com/miniprogram/template/retail/goods/mz-20a1.png',
+    image: getDishPlaceholderImage('quick'),
     cookMinutes: 18,
     difficulty: '简单',
     flavor: '微辣',
@@ -93,7 +106,7 @@ export const dishes = [
     id: 'steamed-fish',
     name: '清蒸鱼',
     category: 'meat',
-    image: 'https://tdesign.gtimg.com/miniprogram/template/retail/goods/dz-2a.png',
+    image: getDishPlaceholderImage('meat'),
     cookMinutes: 22,
     difficulty: '中等',
     flavor: '鲜香',
@@ -105,7 +118,7 @@ export const dishes = [
     id: 'mushroom-greens',
     name: '香菇青菜',
     category: 'vegetable',
-    image: 'https://tdesign.gtimg.com/miniprogram/template/retail/goods/nz-17a.png',
+    image: getDishPlaceholderImage('vegetable'),
     cookMinutes: 12,
     difficulty: '简单',
     flavor: '鲜香',
@@ -117,7 +130,7 @@ export const dishes = [
     id: 'seaweed-egg-soup',
     name: '紫菜蛋花汤',
     category: 'soup',
-    image: 'https://tdesign.gtimg.com/miniprogram/template/retail/goods/gh-2b.png',
+    image: getDishPlaceholderImage('soup'),
     cookMinutes: 8,
     difficulty: '简单',
     flavor: '清淡',
@@ -129,7 +142,7 @@ export const dishes = [
     id: 'noodle-soup',
     name: '番茄鸡蛋面',
     category: 'staple',
-    image: 'https://tdesign.gtimg.com/miniprogram/template/retail/goods/nz-08a.png',
+    image: getDishPlaceholderImage('staple'),
     cookMinutes: 18,
     difficulty: '简单',
     flavor: '酸甜',
@@ -141,7 +154,7 @@ export const dishes = [
     id: 'takeout-rice',
     name: '附近烧腊饭',
     category: 'takeout',
-    image: 'https://tdesign.gtimg.com/miniprogram/template/retail/goods/mz-11a1.png',
+    image: getDishPlaceholderImage('takeout'),
     cookMinutes: 5,
     difficulty: '外卖',
     flavor: '咸香',
@@ -153,7 +166,7 @@ export const dishes = [
     id: 'hotpot-kit',
     name: '家庭小火锅',
     category: 'takeout',
-    image: 'https://tdesign.gtimg.com/miniprogram/template/retail/goods/mz-12b.png',
+    image: getDishPlaceholderImage('takeout'),
     cookMinutes: 20,
     difficulty: '简单',
     flavor: '热辣',
@@ -162,6 +175,8 @@ export const dishes = [
     notes: '适合人多但没人想决定吃什么的时候。',
   },
 ];
+
+export const defaultDishIds = dishes.map((dish) => dish.id);
 
 function readStorageValue(key, fallback) {
   const wxApi = typeof wx !== 'undefined' ? wx : null;
@@ -196,11 +211,12 @@ function getPayloadTags(payload) {
 }
 
 function buildCustomDish(payload = {}, id = `custom-${Date.now()}`) {
+  const { category } = payload;
   return {
     id,
     name: String(payload.name || '').trim(),
-    category: payload.category,
-    image: payload.image || DEFAULT_IMAGE,
+    category,
+    image: payload.image || getDishPlaceholderImage(category),
     cookMinutes: Math.max(Number(payload.cookMinutes) || 0, 1),
     difficulty: payload.difficulty || '简单',
     flavor: String(payload.flavor || '').trim() || '家常',
@@ -211,9 +227,58 @@ function buildCustomDish(payload = {}, id = `custom-${Date.now()}`) {
   };
 }
 
+function buildUserDish(payload = {}, id = `custom-${Date.now()}`, isCustom = true) {
+  return {
+    ...buildCustomDish(payload, id),
+    isCustom,
+  };
+}
+
 function normalizeCustomDish(dish) {
   if (!dish || !dish.id || !dish.name || !dish.category) return null;
   return buildCustomDish(dish, dish.id);
+}
+
+function normalizeDishOverride(dish) {
+  if (!dish || !dish.id || !dish.name || !dish.category) return null;
+  return buildUserDish(dish, dish.id, false);
+}
+
+function readHiddenDishIds() {
+  const legacyHiddenDishIds = readStorageValue('familyMenuPicker.hiddenDishIds', []);
+  if (Array.isArray(legacyHiddenDishIds)) return legacyHiddenDishIds.map(String).filter(Boolean);
+  return [];
+}
+
+export function readUserDishes() {
+  const stored = readStorageValue(USER_DISHES_STORAGE_KEY, null);
+  if (stored && typeof stored === 'object' && !Array.isArray(stored)) {
+    const custom = Array.isArray(stored.custom) ? stored.custom.map(normalizeCustomDish).filter(Boolean) : [];
+    const overrides =
+      stored.overrides && typeof stored.overrides === 'object'
+        ? Object.entries(stored.overrides).reduce((result, [id, dish]) => {
+            const normalizedDish = normalizeDishOverride({ ...dish, id });
+            if (normalizedDish) result[id] = normalizedDish;
+            return result;
+          }, {})
+        : {};
+    const hidden = Array.isArray(stored.hidden) ? stored.hidden.map(String).filter(Boolean) : [];
+    return { custom, overrides, hidden };
+  }
+
+  return {
+    custom: readCustomDishes(),
+    overrides: {},
+    hidden: readHiddenDishIds(),
+  };
+}
+
+export function saveUserDishes(userDishes = {}) {
+  return writeStorageValue(USER_DISHES_STORAGE_KEY, {
+    custom: Array.isArray(userDishes.custom) ? userDishes.custom : [],
+    overrides: userDishes.overrides && typeof userDishes.overrides === 'object' ? userDishes.overrides : {},
+    hidden: Array.isArray(userDishes.hidden) ? userDishes.hidden : [],
+  });
 }
 
 export function readCustomDishes() {
@@ -223,40 +288,123 @@ export function readCustomDishes() {
 }
 
 export function saveCustomDishes(customDishes) {
+  const userDishes = readUserDishes();
+  saveUserDishes({
+    ...userDishes,
+    custom: Array.isArray(customDishes) ? customDishes : [],
+  });
   return writeStorageValue(CUSTOM_DISHES_STORAGE_KEY, Array.isArray(customDishes) ? customDishes : []);
 }
 
 export function addCustomDish(payload = {}) {
   const customDish = buildCustomDish(payload);
-  const next = [customDish, ...readCustomDishes().filter((dish) => dish.id !== customDish.id)];
-  saveCustomDishes(next);
+  const userDishes = readUserDishes();
+  const next = [customDish, ...userDishes.custom.filter((dish) => dish.id !== customDish.id)];
+  saveUserDishes({ ...userDishes, custom: next });
+  writeStorageValue(CUSTOM_DISHES_STORAGE_KEY, next);
   return customDish;
 }
 
 export function getCustomDishById(id) {
-  return readCustomDishes().find((dish) => dish.id === id) || null;
+  return readUserDishes().custom.find((dish) => dish.id === id) || null;
 }
 
 export function updateCustomDish(id, patch = {}) {
-  const customDishes = readCustomDishes();
+  const userDishes = readUserDishes();
+  const customDishes = userDishes.custom;
   const existing = customDishes.find((dish) => dish.id === id);
   if (!existing) return null;
 
   const updatedDish = buildCustomDish({ ...existing, ...patch }, id);
-  saveCustomDishes(customDishes.map((dish) => (dish.id === id ? updatedDish : dish)));
+  const next = customDishes.map((dish) => (dish.id === id ? updatedDish : dish));
+  saveUserDishes({ ...userDishes, custom: next });
+  writeStorageValue(CUSTOM_DISHES_STORAGE_KEY, next);
   return updatedDish;
 }
 
 export function deleteCustomDish(id) {
-  const customDishes = readCustomDishes();
+  const userDishes = readUserDishes();
+  const customDishes = userDishes.custom;
   const next = customDishes.filter((dish) => dish.id !== id);
   if (next.length === customDishes.length) return false;
-  saveCustomDishes(next);
+  saveUserDishes({ ...userDishes, custom: next });
+  writeStorageValue(CUSTOM_DISHES_STORAGE_KEY, next);
   return true;
 }
 
+export function getDishById(id) {
+  return getAllDishes().find((dish) => dish.id === id) || null;
+}
+
+export function getManageableDishes() {
+  return getAllDishes();
+}
+
+export function hasRemovedDefaultDishes() {
+  return readUserDishes().hidden.length > 0;
+}
+
+export function updateDish(id, patch = {}) {
+  const userDishes = readUserDishes();
+  const customDish = userDishes.custom.find((dish) => dish.id === id);
+  if (customDish) return updateCustomDish(id, patch);
+
+  const baseDish = dishes.find((dish) => dish.id === id);
+  if (!baseDish) return null;
+
+  const updatedDish = buildUserDish({ ...baseDish, ...userDishes.overrides[id], ...patch }, id, false);
+  const hidden = userDishes.hidden.filter((hiddenId) => hiddenId !== id);
+  saveUserDishes({
+    ...userDishes,
+    overrides: {
+      ...userDishes.overrides,
+      [id]: updatedDish,
+    },
+    hidden,
+  });
+  return updatedDish;
+}
+
+export function deleteDish(id) {
+  if (deleteCustomDish(id)) return true;
+
+  const userDishes = readUserDishes();
+  const baseDish = dishes.find((dish) => dish.id === id);
+  if (!baseDish || userDishes.hidden.includes(id)) return false;
+
+  saveUserDishes({
+    ...userDishes,
+    hidden: [...userDishes.hidden, id],
+  });
+  return true;
+}
+
+export function restoreDishDefaults(id) {
+  const baseDish = dishes.find((dish) => dish.id === id);
+  if (!baseDish) return null;
+
+  const userDishes = readUserDishes();
+  const overrides = { ...userDishes.overrides };
+  delete overrides[id];
+  saveUserDishes({
+    ...userDishes,
+    overrides,
+    hidden: userDishes.hidden.filter((hiddenId) => hiddenId !== id),
+  });
+  return baseDish;
+}
+
 function getAllDishes() {
-  return [...dishes, ...readCustomDishes()];
+  const userDishes = readUserDishes();
+  const hidden = new Set(userDishes.hidden);
+  const defaults = dishes
+    .filter((dish) => !hidden.has(dish.id))
+    .map((dish) => ({ ...dish, ...userDishes.overrides[dish.id], id: dish.id, isCustom: false }));
+  return [...defaults, ...userDishes.custom];
+}
+
+export function readAllDishes() {
+  return getAllDishes();
 }
 
 function getTagText(dish) {
@@ -344,6 +492,19 @@ export function getDishGoodsList({ categoryId = 'all', pageNum = 1, pageSize = 2
     spuList: page,
     totalCount: source.length,
   };
+}
+
+export function getDishSelectionSections() {
+  return dishCategories.map((category) => {
+    const dishesInCategory = getDishesByCategory(category.id);
+    return {
+      id: category.id,
+      name: category.name,
+      description: category.description,
+      count: dishesInCategory.length,
+      goodsList: dishesInCategory.map((dish) => toGoodsCard(dish)),
+    };
+  });
 }
 
 function pickByCategory(categoryId, offset = 0) {

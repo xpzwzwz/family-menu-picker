@@ -1,0 +1,29 @@
+<view class="history-page">
+  <view class="page-head">
+    <view class="eyebrow">History</view>
+    <view class="title">菜单历史</view>
+    <view class="subtitle">确认过的菜单会保存在这里，可以一键复用。</view>
+  </view>
+
+  <view class="history-list" wx:if="{{historyList.length}}">
+    <view class="history-card" wx:for="{{historyList}}" wx:key="id">
+      <view class="history-head">
+        <view class="history-title-wrap">
+          <view class="history-time">{{item.confirmedAtText}}</view>
+          <view class="history-count">{{item.dishCount}} 道 · {{item.totalCookMinutes}} 分钟</view>
+        </view>
+        <button class="reuse-btn" catchtap="reuseHistoryMenu" data-id="{{item.id}}">复用</button>
+      </view>
+      <view class="history-dishes">{{item.dishNames}}</view>
+      <view class="history-note" wx:if="{{item.note}}">{{item.note}}</view>
+    </view>
+  </view>
+
+  <view class="empty-state" wx:else>
+    <view class="empty-title">暂无历史菜单</view>
+    <view class="empty-desc">确认菜单后，会自动保存到这里。</view>
+  </view>
+
+  <t-dialog id="t-dialog" />
+  <t-toast id="t-toast" />
+</view>

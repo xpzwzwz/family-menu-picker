@@ -1,0 +1,41 @@
+<view class="profile-page">
+  <view class="page-head">
+    <view class="eyebrow">Profile</view>
+    <view class="title">用户资料</view>
+    <view class="subtitle">这些信息只用于本机展示，方便家里人识别和记录口味。</view>
+  </view>
+
+  <view class="form-section">
+    <view class="field">
+      <view class="field-label">昵称</view>
+      <input class="field-input" value="{{form.nickname}}" placeholder="例如：小王" data-field="nickname" bindinput="updateField" />
+    </view>
+
+    <view class="field">
+      <view class="field-label">家庭角色</view>
+      <input class="field-input" value="{{form.role}}" placeholder="例如：掌勺人、采购员" data-field="role" bindinput="updateField" />
+    </view>
+
+    <view class="field">
+      <view class="field-label">口味偏好</view>
+      <input
+        class="field-input"
+        value="{{form.flavorPreference}}"
+        placeholder="例如：少辣、多汤、偏清淡"
+        data-field="flavorPreference"
+        bindinput="updateField"
+      />
+    </view>
+
+    <view class="field">
+      <view class="field-label">备注</view>
+      <t-textarea value="{{form.note}}" placeholder="例如：周末常备菜、孩子不吃辣。" maxlength="{{80}}" data-field="note" bindchange="updateField" />
+    </view>
+  </view>
+
+  <view class="footer">
+    <button class="save-btn" bindtap="saveProfile">保存资料</button>
+  </view>
+
+  <t-toast id="t-toast" />
+</view>

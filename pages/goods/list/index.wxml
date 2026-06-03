@@ -4,7 +4,7 @@
       <view class="eyebrow">Dishes</view>
       <view class="title">{{categoryName}}</view>
     </view>
-    <button class="menu-btn" bindtap="goMenu">今晚菜单</button>
+    <button class="menu-btn" bindtap="goMenu">我的菜单</button>
   </view>
 
   <view class="empty-wrap" wx:if="{{goodsList.length === 0 && hasLoaded}}">
@@ -23,7 +23,7 @@
         <view class="dish-tags">
           <text wx:for="{{item.tags}}" wx:key="*this">{{item}}</text>
         </view>
-        <button class="add-btn" data-index="{{index}}" bindtap="handleAddCart">加入今晚菜单</button>
+        <button class="add-btn" data-index="{{index}}" bindtap="handleAddCart">加入菜单</button>
       </view>
     </view>
   </view>
