@@ -37,6 +37,7 @@ Page({
       tags: [],
     },
     note: '',
+    confirmedMenu: null,
   },
 
   onLoad() {
@@ -65,16 +66,29 @@ Page({
       return;
     }
 
-    saveConfirmedMenu({
+    const confirmedMenu = saveConfirmedMenu({
       goodsList: this.data.goodsList,
       summary: this.data.summary,
       note: this.data.note,
     });
 
+    this.setData({ confirmedMenu });
     Toast({
       context: this,
       selector: '#t-toast',
       message: '菜单已确认',
     });
+  },
+
+  goBasket() {
+    wx.navigateTo({ url: '/pages/menu/basket/index' });
+  },
+
+  goHistory() {
+    wx.navigateTo({ url: '/pages/menu/history/index' });
+  },
+
+  goHome() {
+    wx.switchTab({ url: '/pages/home/home' });
   },
 });

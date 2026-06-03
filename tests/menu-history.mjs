@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readMenuHistory, saveConfirmedMenu } from '../model/dishes.js';
+import { readLastConfirmedMenu, readMenuHistory, saveConfirmedMenu } from '../model/dishes.js';
 
 const storage = new Map();
 
@@ -43,6 +43,8 @@ const saved = saveConfirmedMenu({
 });
 assert.equal(saved.id, 'menu-1700000000000');
 assert.equal(parseStored('familyMenuPicker.lastConfirmedMenu').note, '少辣');
+assert.equal(readLastConfirmedMenu().id, saved.id);
+assert.equal(readLastConfirmedMenu().goodsList[0].title, '菜 1');
 assert.deepEqual(readMenuHistory().map((entry) => entry.id), ['menu-1700000000000']);
 
 storage.clear();

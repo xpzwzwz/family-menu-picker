@@ -1,4 +1,4 @@
-<view class="confirm-page">
+<view class="confirm-page" wx:if="{{!confirmedMenu}}">
   <view class="confirm-head">
     <view>
       <view class="eyebrow">Final Menu</view>
@@ -51,6 +51,25 @@
 
   <view class="confirm-footer">
     <button class="confirm-btn" bindtap="submitOrder">确认菜单</button>
+  </view>
+
+  <t-toast id="t-toast" />
+</view>
+
+<view class="result-page" wx:else>
+  <view class="result-card">
+    <view class="result-icon">
+      <t-icon name="check" size="56rpx" color="#ffffff" />
+    </view>
+    <view class="result-title">菜单已确认</view>
+    <view class="result-desc">这份菜单已经保存到菜单历史，接下来可以照着菜篮子买菜，或者回首页继续随机下一餐。</view>
+    <view class="result-summary">共 {{summary.totalQuantity}} 份 · 预计 {{summary.totalCookMinutes}} 分钟</view>
+  </view>
+
+  <view class="result-actions">
+    <button class="result-btn primary-result-btn" bindtap="goBasket">查看菜篮子</button>
+    <button class="result-btn" bindtap="goHistory">菜单历史</button>
+    <button class="result-btn" bindtap="goHome">回到首页</button>
   </view>
 
   <t-toast id="t-toast" />
