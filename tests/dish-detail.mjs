@@ -35,18 +35,24 @@ const customDish = addCustomDish({
   flavor: '清爽',
   ingredientsText: '西兰花，蒜，盐',
   stepsText: '西兰花焯水\n蒜末爆香\n下锅翻炒调味',
+  stepImages: ['wxfile://step-1.png', '', 'wxfile://step-3.png'],
 });
 
 assert.deepEqual(customDish.ingredients, ['西兰花', '蒜', '盐']);
 assert.deepEqual(customDish.steps.map((step) => step.title), ['西兰花焯水', '蒜末爆香', '下锅翻炒调味']);
 assert.equal(customDish.steps[0].description, '西兰花焯水');
+assert.equal(customDish.steps[0].image, 'wxfile://step-1.png');
+assert.equal(customDish.steps[1].image, '');
+assert.equal(toGoodsCard(customDish).steps[2].image, 'wxfile://step-3.png');
 
 const updatedDish = updateDish(customDish.id, {
   ingredientsText: '西兰花，蒜，蚝油',
   stepsText: '切小朵\n炒香蒜末\n加蚝油收味',
+  stepImages: ['', 'wxfile://garlic.png', ''],
 });
 
 assert.deepEqual(updatedDish.ingredients, ['西兰花', '蒜', '蚝油']);
 assert.deepEqual(updatedDish.steps.map((step) => step.title), ['切小朵', '炒香蒜末', '加蚝油收味']);
+assert.equal(updatedDish.steps[1].image, 'wxfile://garlic.png');
 
 console.log('dish detail checks passed');

@@ -1,4 +1,5 @@
 const USER_PROFILE_STORAGE_KEY = 'familyMenuPicker.userProfile';
+const SQUAD_MEMBERS_STORAGE_KEY = 'familyMenuPicker.squadMembers';
 const FEEDBACK_LIST_STORAGE_KEY = 'familyMenuPicker.feedbackList';
 const MAX_FEEDBACK_COUNT = 50;
 
@@ -53,6 +54,78 @@ export function readUserProfile() {
 
 export function saveUserProfile(profile = {}) {
   return writeStorageValue(USER_PROFILE_STORAGE_KEY, normalizeUserProfile(profile));
+}
+
+export function getDefaultSquadMembers() {
+  return [
+    {
+      id: 'self',
+      name: '我',
+      role: '家庭成员',
+      flavorPreference: '',
+      isSelf: true,
+    },
+  ];
+}
+
+function normalizeSquadMember(member = {}, fallbackId = `member-${Date.now()}`) {
+  const id = String(member.id || fallbackId).trim();
+  const name = String(member.name || '').trim();
+  if (!id || !name) return null;
+  return {
+    id,
+    name,
+    role: String(member.role || '家庭成员').trim() || '家庭成员',
+    flavorPreference: String(member.flavorPreference || '').trim(),
+    isSelf: id === 'self' || !!member.isSelf,
+  };
+}
+
+export function readSquadMembers() {
+  const stored = readStorageValue(SQUAD_MEMBERS_STORAGE_KEY, null);
+  if (!Array.isArray(stored)) return getDefaultSquadMembers();
+  const members = stored.map((member) => normalizeSquadMember(member)).filter(Boolean);
+  if (!members.some((member) => member.id === 'self')) {
+    members.unshift(getDefaultSquadMembers()[0]);
+  }
+  return members.length ? members : getDefaultSquadMembers();
+}
+
+function saveSquadMembers(members) {
+  return writeStorageValue(SQUAD_MEMBERS_STORAGE_KEY, members.map((member) => normalizeSquadMember(member)).filter(Boolean));
+}
+
+export function addSquadMember(payload = {}) {
+  const member = normalizeSquadMember(
+    {
+      ...payload,
+      id: `member-${Date.now()}`,
+    },
+    `member-${Date.now()}`,
+  );
+  if (!member) throw new Error('请输入成员名称');
+  const next = [...readSquadMembers(), member];
+  saveSquadMembers(next);
+  return member;
+}
+
+export function updateSquadMember(id, patch = {}) {
+  const members = readSquadMembers();
+  const existing = members.find((member) => member.id === id);
+  if (!existing) return null;
+  const updated = normalizeSquadMember({ ...existing, ...patch, id: existing.id, isSelf: existing.isSelf }, existing.id);
+  if (!updated) throw new Error('请输入成员名称');
+  saveSquadMembers(members.map((member) => (member.id === id ? updated : member)));
+  return updated;
+}
+
+export function deleteSquadMember(id) {
+  if (!id || id === 'self') return false;
+  const members = readSquadMembers();
+  const next = members.filter((member) => member.id !== id);
+  if (next.length === members.length) return false;
+  saveSquadMembers(next);
+  return true;
 }
 
 function getFeedbackTypeName(type) {

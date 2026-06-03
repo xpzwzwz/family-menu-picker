@@ -296,19 +296,25 @@ function parseIngredients(ingredientsText) {
     .filter(Boolean);
 }
 
-function parseSteps(stepsText) {
+function normalizeStepImage(image) {
+  return String(image || '').trim();
+}
+
+function parseSteps(stepsText, stepImages = []) {
+  const images = Array.isArray(stepImages) ? stepImages : [];
   if (!stepsText) return [];
   if (Array.isArray(stepsText)) {
     return stepsText
       .map((step, index) => {
         if (typeof step === 'string') {
           const text = step.trim();
-          return text ? { title: text, description: text } : null;
+          return text ? { title: text, description: text, image: normalizeStepImage(images[index]) } : null;
         }
         if (!step || typeof step !== 'object') return null;
         const title = String(step.title || step.description || `第 ${index + 1} 步`).trim();
         const description = String(step.description || step.title || '').trim();
-        return title && description ? { title, description } : null;
+        const image = normalizeStepImage(step.image || images[index]);
+        return title && description ? { title, description, image } : null;
       })
       .filter(Boolean);
   }
@@ -316,7 +322,7 @@ function parseSteps(stepsText) {
     .split(/\n+/)
     .map((step) => step.trim())
     .filter(Boolean)
-    .map((step) => ({ title: step, description: step }));
+    .map((step, index) => ({ title: step, description: step, image: normalizeStepImage(images[index]) }));
 }
 
 function getPayloadTags(payload) {
@@ -329,6 +335,10 @@ function getPayloadIngredients(payload) {
 
 function getPayloadSteps(payload) {
   return Object.prototype.hasOwnProperty.call(payload, 'stepsText') ? payload.stepsText : payload.steps;
+}
+
+function getPayloadStepImages(payload) {
+  return Array.isArray(payload.stepImages) ? payload.stepImages : [];
 }
 
 function buildCustomDish(payload = {}, id = `custom-${Date.now()}`) {
@@ -344,7 +354,7 @@ function buildCustomDish(payload = {}, id = `custom-${Date.now()}`) {
     servings: Number(payload.servings) || 3,
     tags: parseTags(getPayloadTags(payload)),
     ingredients: parseIngredients(getPayloadIngredients(payload)),
-    steps: parseSteps(getPayloadSteps(payload)),
+    steps: parseSteps(getPayloadSteps(payload), getPayloadStepImages(payload)),
     notes: String(payload.notes || '').trim(),
     isCustom: true,
   };
