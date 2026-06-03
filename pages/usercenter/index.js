@@ -22,6 +22,12 @@ const actionList = [
     icon: 'cart',
   },
   {
+    title: '菜篮子',
+    desc: '汇总这顿饭要买的备料',
+    type: 'basket',
+    icon: 'shop',
+  },
+  {
     title: '菜单历史',
     desc: '查看和复用确认过的菜单',
     type: 'menuHistory',
@@ -103,6 +109,10 @@ Page({
       }
       case 'menu': {
         wx.switchTab({ url: '/pages/cart/index' });
+        break;
+      }
+      case 'basket': {
+        wx.navigateTo({ url: '/pages/menu/basket/index' });
         break;
       }
       case 'customDish': {

@@ -24,7 +24,7 @@
     {
       "root": "pages/menu",
       "name": "menu",
-      "pages": ["history/index"]
+      "pages": ["history/index", "basket/index"]
     }
   ],
   "tabBar": {

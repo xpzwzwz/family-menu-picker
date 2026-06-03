@@ -216,6 +216,10 @@ Page({
     wx.switchTab({ url: '/pages/category/index' });
   },
 
+  goBasket() {
+    wx.navigateTo({ url: '/pages/menu/basket/index' });
+  },
+
   goGoodsDetail(e) {
     const { spuId } = e.detail.goods;
     if (!spuId) return;

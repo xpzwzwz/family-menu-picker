@@ -1,0 +1,50 @@
+<view class="basket-page">
+  <view class="page-head">
+    <view class="eyebrow">Basket</view>
+    <view class="title">菜篮子</view>
+    <view class="subtitle">按当前菜单汇总备料，买菜时勾掉已经拿到的东西。</view>
+  </view>
+
+  <view class="summary-card">
+    <view>
+      <view class="summary-title">{{basket.totalDishCount}} 道菜 · {{basket.totalIngredientCount}} 项备料</view>
+      <view class="summary-desc">{{progressText}}</view>
+    </view>
+    <button class="clear-btn" bindtap="clearChecked">清空勾选</button>
+  </view>
+
+  <view class="ingredient-list" wx:if="{{basket.items.length}}">
+    <view
+      class="ingredient-item {{item.checked ? 'ingredient-checked' : ''}}"
+      wx:for="{{basket.items}}"
+      wx:key="id"
+      data-id="{{item.id}}"
+      data-checked="{{item.checked}}"
+      bindtap="toggleItem"
+    >
+      <t-icon
+        name="{{item.checked ? 'check-circle-filled' : 'circle'}}"
+        size="40rpx"
+        color="{{item.checked ? '#d54941' : '#b8b8b8'}}"
+      />
+      <view class="ingredient-copy">
+        <view class="ingredient-name">{{item.name}}</view>
+        <view class="ingredient-meta">{{item.count}} 份用到 · {{item.dishes.join(' / ')}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty-state" wx:else>
+    <view class="empty-title">菜篮子还是空的</view>
+    <view class="empty-desc">先去选几道菜，系统会自动把备料汇总到这里。</view>
+    <button class="empty-btn" bindtap="goPickDishes">去选菜</button>
+  </view>
+
+  <view class="footer">
+    <button class="secondary-btn" bindtap="goPickDishes">继续选菜</button>
+    <button class="primary-btn" bindtap="goMenu">查看菜单</button>
+  </view>
+
+  <t-dialog id="t-dialog" />
+  <t-toast id="t-toast" />
+</view>
