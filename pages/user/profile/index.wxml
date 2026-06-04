@@ -1,10 +1,63 @@
 <view class="profile-page">
   <view class="page-head">
     <view class="eyebrow">Squad</view>
-    <view class="title">小分队成员</view>
-    <view class="subtitle">先在本机维护一起吃饭的人。正式多人共享需要接入云端后让成员加入同一个小分队。</view>
+    <view class="title">云端小分队</view>
+    <view class="subtitle">创建房间后分享邀请码，家里人打开后可以查看并加入，也可以随时退出。</view>
   </view>
 
+  <view class="cloud-card">
+    <view class="cloud-title">我的 ID</view>
+    <view class="cloud-value">{{cloudUser ? cloudUser.userId : '未登录'}}</view>
+    <view class="cloud-error" wx:if="{{cloudError}}">{{cloudError}}</view>
+  </view>
+
+  <view class="cloud-card" wx:if="{{cloudRoom}}">
+    <view class="cloud-head">
+      <view>
+        <view class="cloud-title">{{cloudRoom.name}}</view>
+        <view class="cloud-value">邀请码 {{cloudRoom.inviteCode}}</view>
+      </view>
+      <button class="mini-btn" open-type="share">分享</button>
+    </view>
+    <view class="cloud-members">
+      <view class="cloud-member" wx:for="{{cloudRoom.members}}" wx:key="userId">
+        <view class="member-avatar">{{item.name.slice(0, 1)}}</view>
+        <view class="member-copy">
+          <view class="member-name">{{item.name}}</view>
+          <view class="member-meta">{{item.role}}</view>
+          <view class="member-pref" wx:if="{{item.flavorPreference}}">{{item.flavorPreference}}</view>
+        </view>
+      </view>
+    </view>
+    <button class="leave-btn" bindtap="leaveRoom">退出小分队</button>
+  </view>
+
+  <view class="form-section" wx:else>
+    <view class="field">
+      <view class="field-label">房间名称</view>
+      <input class="field-input" value="{{roomName}}" placeholder="例如：周末饭搭子" data-field="roomName" bindinput="updateCloudField" />
+    </view>
+    <view class="field">
+      <view class="field-label">我在小分队里的名字</view>
+      <input class="field-input" value="{{memberName}}" placeholder="例如：小王" data-field="memberName" bindinput="updateCloudField" />
+    </view>
+    <button class="save-btn" bindtap="createRoom">创建云端小分队</button>
+  </view>
+
+  <view class="form-section">
+    <view class="field">
+      <view class="field-label">加入邀请码</view>
+      <input class="field-input" value="{{inviteCode}}" placeholder="输入别人分享的邀请码" data-field="inviteCode" bindinput="updateCloudField" />
+    </view>
+    <button class="cancel-btn" bindtap="previewInvite">查看房间</button>
+    <view class="join-preview" wx:if="{{joinPreview}}">
+      <view class="join-title">{{joinPreview.name}}</view>
+      <view class="join-desc">{{joinPreview.memberCount}} 位成员 · 邀请码 {{joinPreview.inviteCode}}</view>
+      <button class="save-btn" bindtap="joinRoom">加入这个小分队</button>
+    </view>
+  </view>
+
+  <view class="section-title">本机成员</view>
   <view class="member-list">
     <view class="member-card" wx:for="{{members}}" wx:key="id">
       <view class="member-avatar">{{item.name.slice(0, 1)}}</view>

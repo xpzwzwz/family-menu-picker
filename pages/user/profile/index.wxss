@@ -41,6 +41,100 @@ page {
   box-shadow: 0 8rpx 24rpx rgba(31, 31, 31, 0.06);
 }
 
+.cloud-card {
+  margin-bottom: 22rpx;
+  padding: 24rpx;
+  border-radius: 8rpx;
+  background: #fff;
+  box-shadow: 0 8rpx 24rpx rgba(31, 31, 31, 0.06);
+}
+
+.cloud-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+}
+
+.cloud-title {
+  color: #1f1f1f;
+  font-size: 30rpx;
+  font-weight: 700;
+  line-height: 42rpx;
+}
+
+.cloud-value,
+.cloud-error,
+.join-desc {
+  margin-top: 6rpx;
+  color: #777;
+  font-size: 24rpx;
+  line-height: 34rpx;
+  word-break: break-all;
+}
+
+.cloud-error {
+  color: #d54941;
+}
+
+.cloud-members {
+  display: grid;
+  gap: 14rpx;
+  margin-top: 20rpx;
+}
+
+.cloud-member {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 16rpx;
+  border-radius: 8rpx;
+  background: #f7f7f7;
+}
+
+.mini-btn {
+  width: 104rpx;
+  height: 56rpx;
+  padding: 0;
+  border-radius: 8rpx;
+  background: #fff0ee;
+  color: #d54941;
+  font-size: 24rpx;
+  line-height: 56rpx;
+}
+
+.leave-btn {
+  height: 72rpx;
+  margin-top: 20rpx;
+  border-radius: 8rpx;
+  background: #f7f7f7;
+  color: #666;
+  font-size: 26rpx;
+  line-height: 72rpx;
+}
+
+.join-preview {
+  margin-top: 18rpx;
+  padding: 18rpx;
+  border-radius: 8rpx;
+  background: #f7f7f7;
+}
+
+.join-title {
+  color: #1f1f1f;
+  font-size: 28rpx;
+  font-weight: 700;
+  line-height: 40rpx;
+}
+
+.section-title {
+  margin: 28rpx 8rpx 16rpx;
+  color: #333;
+  font-size: 30rpx;
+  font-weight: 600;
+  line-height: 42rpx;
+}
+
 .member-list {
   display: grid;
   gap: 18rpx;
@@ -171,6 +265,8 @@ page {
 
 .save-btn::after,
 .cancel-btn::after,
-.text-btn::after {
+.text-btn::after,
+.mini-btn::after,
+.leave-btn::after {
   border: 0;
 }
