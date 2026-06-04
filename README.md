@@ -1,6 +1,6 @@
 # 光盘小分队
 
-家庭内部用的微信小程序，用来解决“今天吃什么”。当前版本只使用本地 mock 数据和本地存储，不接入后端、登录、支付、地址或订单系统。
+家庭内部用的微信小程序，用来解决“今天吃什么”。当前版本支持本地菜品/菜单管理，并提供一个轻量 Python 后端用于 OSS 图片上传签名和云端小分队房间。
 
 ## 功能
 
@@ -11,6 +11,8 @@
 5. 确认页保存最终菜单和家庭备注。
 6. 我的页面可以查看最近确认的菜单，并复用历史菜单。
 7. 支持维护菜品库：新增菜品、编辑已有菜品、移除不想推荐的菜。
+8. 支持菜篮子：按当前菜单汇总备料并勾选已买。
+9. 支持云端小分队：每人有自己的 ID，可创建房间、分享邀请码、加入和退出。
 
 ## 技术栈
 
@@ -18,6 +20,8 @@
 - JavaScript / WXML / WXSS
 - TDesign Miniprogram
 - 本地 mock 数据与微信本地存储
+- FastAPI 后端
+- SQLite 云端小分队存储
 
 ## 目录
 
@@ -31,8 +35,12 @@ pages/order/order-confirm/       确认菜单
 pages/dish/custom-create/        添加/编辑菜品
 pages/dish/manage/               管理菜品库
 pages/usercenter/                我的/历史菜单
+pages/menu/basket/               菜篮子
+pages/menu/history/              菜单历史
 model/dishes.js                  菜品 mock 数据、菜单存储与历史记录
+model/user.js                    本地成员与反馈数据
 services/                        mock service 层
+backend/                         OSS 签名与云端小分队 API
 components/                      通用组件
 ```
 
@@ -72,19 +80,22 @@ components/                      通用组件
 
 ## 图片上传
 
-菜品图片默认使用本地分类占位图。新增或编辑菜品时，用户可以选择自己的图片；如果配置了后端 API，小程序会先压缩图片，再直传到 OSS。
+菜品图片默认使用本地分类占位图。新增或编辑菜品时，用户可以选择自己的图片；如果配置了后端 API，小程序会先压缩图片，再直传到 OSS。云端小分队也复用同一个后端地址。
 
 1. 启动后端签名服务：
 
    ```bash
    cd ~/family-menu-picker
-   python3 -m venv .venv
-   . .venv/bin/activate
-   pip install -r backend/requirements.txt
    cp backend/.env.example backend/.env
    # 在 backend/.env 中填写 OSS_ACCESS_KEY_ID / OSS_ACCESS_KEY_SECRET 等配置
    set -a && . backend/.env && set +a
-   uvicorn backend.main:app --host 0.0.0.0 --port 8787
+
+   # 方式一：使用 uv 临时环境
+   uv run --with fastapi==0.115.6 --with uvicorn==0.34.0 --with pydantic==2.10.4 uvicorn backend.main:app --host 0.0.0.0 --port 8787
+
+   # 方式二：使用你自己的 Python 虚拟环境
+   # pip install -r backend/requirements.txt
+   # uvicorn backend.main:app --host 0.0.0.0 --port 8787
    ```
 
 2. 在 `config/api.js` 中配置后端地址，例如：
@@ -97,15 +108,35 @@ components/                      通用组件
 
 后端只负责签发 OSS 上传表单，不接收图片内容，也不会把 OSS Secret 返回给小程序。
 
+## 云端小分队
+
+云端小分队使用后端 SQLite 存储房间和成员关系。小程序通过 `wx.login()` 获取临时 code，后端在本地开发模式下把 code 映射成稳定的开发 openid；正式上线时可以在后端配置 `WECHAT_APPID` / `WECHAT_SECRET` 后接入微信 `code2Session`。
+
+核心接口：
+
+```text
+POST /api/squad/login
+POST /api/squad/rooms
+GET  /api/squad/rooms/{roomId}
+GET  /api/squad/rooms/invite/{inviteCode}
+POST /api/squad/rooms/invite/{inviteCode}/join
+POST /api/squad/rooms/{roomId}/leave
+```
+
+本地数据库默认写入 `backend/squad.sqlite3`，该文件不提交。可以用环境变量 `SQUAD_DB_PATH` 指定位置。
+
 ## 测试
 
 ```bash
-PYTHONPATH=backend python3 -m unittest backend/tests/test_oss_image_upload.py
+cd backend
+uv run --with fastapi==0.115.6 --with uvicorn==0.34.0 --with pydantic==2.10.4 --with httpx python -m unittest tests.test_oss_image_upload tests.test_squad_api
+cd ..
 node tests/custom-dishes.mjs
 node tests/menu-history.mjs
 node tests/manage-custom-dishes.mjs
 node tests/reuse-menu-history.mjs
 node tests/user-profile-feedback.mjs
+node tests/squad-members.mjs
 ```
 
 也可以运行核心链路的静态检查：
