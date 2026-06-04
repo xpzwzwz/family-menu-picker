@@ -15,5 +15,6 @@ project.private.config.json
 .eslintcache
 .env
 backend/.env
+backend/*.sqlite3
 __pycache__/
 *.pyc
