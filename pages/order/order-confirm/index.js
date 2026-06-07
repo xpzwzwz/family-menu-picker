@@ -1,5 +1,5 @@
 import Toast from 'tdesign-miniprogram/toast/index';
-import { saveConfirmedMenu } from '../../../model/dishes';
+import { readLastConfirmedMenu, saveConfirmedMenu } from '../../../model/dishes';
 
 function readSelectedMenu() {
   const stored = wx.getStorageSync('order.goodsRequestList');
@@ -40,11 +40,34 @@ Page({
     confirmedMenu: null,
   },
 
-  onLoad() {
+  onLoad(options = {}) {
+    if (options.source === 'confirmed') {
+      this.showConfirmedMenu();
+      return;
+    }
     const goodsList = readSelectedMenu();
     this.setData({
       goodsList,
       summary: summarizeMenu(goodsList),
+    });
+  },
+
+  showConfirmedMenu() {
+    const confirmedMenu = readLastConfirmedMenu();
+    if (!confirmedMenu || !Array.isArray(confirmedMenu.goodsList)) {
+      this.setData({
+        goodsList: [],
+        summary: summarizeMenu([]),
+        confirmedMenu: null,
+      });
+      return;
+    }
+    const { goodsList } = confirmedMenu;
+    this.setData({
+      goodsList,
+      summary: confirmedMenu.summary || summarizeMenu(goodsList),
+      note: confirmedMenu.note || '',
+      confirmedMenu,
     });
   },
 
@@ -66,22 +89,30 @@ Page({
       return;
     }
 
-    const confirmedMenu = saveConfirmedMenu({
-      goodsList: this.data.goodsList,
-      summary: this.data.summary,
-      note: this.data.note,
-    });
+    try {
+      const confirmedMenu = saveConfirmedMenu({
+        goodsList: this.data.goodsList,
+        summary: this.data.summary,
+        note: this.data.note,
+      });
 
-    this.setData({ confirmedMenu });
-    Toast({
-      context: this,
-      selector: '#t-toast',
-      message: '菜单已确认',
-    });
+      this.setData({ confirmedMenu });
+      Toast({
+        context: this,
+        selector: '#t-toast',
+        message: '菜单已确认',
+      });
+    } catch (error) {
+      Toast({
+        context: this,
+        selector: '#t-toast',
+        message: '刚才没保存上，再点一次试试',
+      });
+    }
   },
 
   goBasket() {
-    wx.navigateTo({ url: '/pages/menu/basket/index' });
+    wx.navigateTo({ url: '/pages/menu/basket/index?source=confirmed' });
   },
 
   goHistory() {

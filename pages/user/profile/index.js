@@ -1,46 +1,40 @@
 import Toast from 'tdesign-miniprogram/toast/index';
-import { addSquadMember, deleteSquadMember, readSquadMembers, updateSquadMember } from '../../../model/user';
 import {
-  createCloudRoom,
-  joinCloudRoom,
+  bindCloudPhone,
+  disbandCloudRoom,
   leaveCloudRoom,
-  previewCloudRoom,
   readCloudRoom,
+  readCloudRooms,
   readCloudUser,
+  refreshCloudUser,
   refreshCloudRoom,
+  refreshCloudRooms,
+  updateCloudMemberName,
+  updateCloudRoomName,
 } from '../../../services/squad/cloudSquad';
-
-function getDefaultForm() {
-  return {
-    id: '',
-    name: '',
-    role: '',
-    flavorPreference: '',
-  };
-}
 
 Page({
   data: {
-    members: [],
-    form: getDefaultForm(),
-    editingId: '',
-    submitText: '添加成员',
     cloudUser: null,
     cloudRoom: null,
-    inviteCode: '',
-    roomName: '光盘小分队',
+    cloudRooms: [],
     memberName: '我',
-    joinPreview: null,
     cloudError: '',
+    phoneBinding: false,
+    isRoomOwner: false,
+    editingRoomName: false,
+    roomNameDraft: '',
+    roomSaving: false,
+    editingMemberName: false,
+    memberNameDraft: '',
+    memberSaving: false,
   },
 
   onLoad(options = {}) {
     if (options.inviteCode) {
-      this.setData({ inviteCode: options.inviteCode });
-      this.previewInvite();
+      wx.navigateTo({ url: `/pages/user/squad-join/index?inviteCode=${options.inviteCode}` });
     }
-    this.refreshMembers();
-    this.refreshCloudState();
+    this.loginAndRefreshCloudState();
   },
 
   onShow() {
@@ -50,31 +44,56 @@ Page({
   onShareAppMessage() {
     const { cloudRoom } = this.data;
     return {
-      title: cloudRoom ? `加入${cloudRoom.name}` : '加入我的光盘小分队',
+      title: cloudRoom ? `加入${cloudRoom.name}` : '加入我的小分队',
       path: cloudRoom
-        ? `/pages/user/profile/index?inviteCode=${cloudRoom.inviteCode}`
-        : '/pages/user/profile/index',
+        ? `/pages/user/squad-join/index?inviteCode=${cloudRoom.inviteCode}`
+        : '/pages/user/squad-join/index',
     };
   },
 
-  refreshMembers() {
-    this.setData({ members: readSquadMembers() });
+  loginAndRefreshCloudState() {
+    refreshCloudUser(this.data.memberName)
+      .then((cloudUser) => {
+        this.setData({ cloudUser, cloudError: '' });
+        this.refreshCloudState();
+      })
+      .catch((error) => {
+        this.setData({
+          cloudUser: readCloudUser(),
+          cloudError: friendlyError(error, '这会儿还没连上，稍后再试一下'),
+        });
+        this.refreshCloudState();
+      });
   },
 
   refreshCloudState() {
     const cloudUser = readCloudUser();
     const cloudRoom = readCloudRoom();
-    this.setData({ cloudUser, cloudRoom });
+    const cloudRooms = readCloudRooms();
+    this.setCloudState(cloudUser, cloudRoom, { cloudRooms });
+    if (cloudUser && cloudUser.userId) {
+      refreshCloudRooms()
+        .then((rooms) => this.setCloudState(readCloudUser(), readCloudRoom(), { cloudRooms: rooms, cloudError: '' }))
+        .catch(() => {});
+    }
     if (cloudRoom && cloudRoom.roomId) {
       refreshCloudRoom(cloudRoom.roomId)
-        .then((room) => this.setData({ cloudRoom: room, cloudError: '' }))
-        .catch((error) => this.setData({ cloudError: error.message || '刷新小分队失败' }));
+        .then((room) => this.setCloudState(readCloudUser(), room, { cloudRooms: readCloudRooms(), cloudError: '' }))
+        .catch(() => this.setData({ cloudError: '小分队菜单还没同步好，稍后再看' }));
     }
   },
 
-  updateField(event) {
-    const { field } = event.currentTarget.dataset;
-    this.setData({ [`form.${field}`]: event.detail.value });
+  setCloudState(cloudUser, cloudRoom, extra = {}) {
+    const isRoomOwner = Boolean(cloudUser && cloudRoom && cloudRoom.ownerUserId === cloudUser.userId);
+    this.setData({
+      cloudUser,
+      cloudRoom,
+      cloudRooms: extra.cloudRooms || this.data.cloudRooms,
+      isRoomOwner,
+      roomNameDraft: cloudRoom ? cloudRoom.name : '',
+      memberNameDraft: getMyMemberName(cloudUser, cloudRoom),
+      ...extra,
+    });
   },
 
   updateCloudField(event) {
@@ -82,102 +101,122 @@ Page({
     this.setData({ [field]: event.detail.value });
   },
 
-  startEdit(event) {
-    const { id } = event.currentTarget.dataset;
-    const member = this.data.members.find((item) => item.id === id);
-    if (!member) return;
-    this.setData({
-      editingId: id,
-      submitText: '保存成员',
-      form: {
-        id: member.id,
-        name: member.name,
-        role: member.role,
-        flavorPreference: member.flavorPreference,
-      },
-    });
-  },
-
-  resetForm() {
-    this.setData({
-      editingId: '',
-      submitText: '添加成员',
-      form: getDefaultForm(),
-    });
-  },
-
-  saveProfile() {
-    const { name } = this.data.form;
-    if (!String(name || '').trim()) {
-      Toast({
-        context: this,
-        selector: '#t-toast',
-        message: '请输入成员名称',
-      });
+  bindPhone(event) {
+    const phoneCode = event.detail && event.detail.code;
+    if (!phoneCode) {
+      this.setData({ cloudError: '你还没有同意使用手机号' });
       return;
     }
-    if (this.data.editingId) {
-      updateSquadMember(this.data.editingId, this.data.form);
-    } else {
-      addSquadMember(this.data.form);
-    }
-    this.refreshMembers();
-    this.resetForm();
-    Toast({
-      context: this,
-      selector: '#t-toast',
-      message: '已保存成员',
+    this.setData({ phoneBinding: true, cloudError: '' });
+    bindCloudPhone(phoneCode)
+      .then((cloudUser) => {
+        this.setData({ cloudUser, phoneBinding: false, cloudError: '' });
+        Toast({ context: this, selector: '#t-toast', message: '手机号已添加' });
+      })
+      .catch(() => {
+        this.setData({
+          phoneBinding: false,
+          cloudError: '手机号暂时加不上，稍后再试',
+        });
+      });
+  },
+
+  openSquadPage(event) {
+    const { page } = event.currentTarget.dataset;
+    const urlMap = {
+      list: '/pages/user/squad-list/index',
+      create: '/pages/user/squad-create/index',
+      join: '/pages/user/squad-join/index',
+    };
+    if (urlMap[page]) wx.navigateTo({ url: urlMap[page] });
+  },
+
+  startEditRoomName() {
+    const { cloudRoom } = this.data;
+    if (!cloudRoom) return;
+    this.setData({ editingRoomName: true, roomNameDraft: cloudRoom.name, cloudError: '' });
+  },
+
+  cancelEditRoomName() {
+    const { cloudRoom } = this.data;
+    this.setData({
+      editingRoomName: false,
+      roomNameDraft: cloudRoom ? cloudRoom.name : this.data.roomName,
+      cloudError: '',
     });
   },
 
-  removeMember(event) {
-    const { id } = event.currentTarget.dataset;
-    if (!deleteSquadMember(id)) {
-      Toast({
-        context: this,
-        selector: '#t-toast',
-        message: '默认成员不能删除',
-      });
+  saveRoomName() {
+    const { cloudRoom, roomNameDraft } = this.data;
+    if (!cloudRoom) return;
+    const name = String(roomNameDraft || '').trim();
+    if (!name) {
+      this.setData({ cloudError: '小分队名称不能为空' });
       return;
     }
-    this.refreshMembers();
-    if (this.data.editingId === id) this.resetForm();
-    Toast({
-      context: this,
-      selector: '#t-toast',
-      message: '已移除成员',
+    this.setData({ roomSaving: true, cloudError: '' });
+    updateCloudRoomName(cloudRoom.roomId, name)
+      .then((room) => {
+        this.setCloudState(readCloudUser(), room, {
+          editingRoomName: false,
+          roomSaving: false,
+          cloudRooms: readCloudRooms(),
+          cloudError: '',
+        });
+        Toast({ context: this, selector: '#t-toast', message: '小分队名称已保存' });
+      })
+      .catch((error) =>
+        this.setData({
+          roomSaving: false,
+          cloudError: friendlyError(error, '还没保存好，稍后再试'),
+        }),
+      );
+  },
+
+  startEditMemberName() {
+    const { cloudUser, cloudRoom } = this.data;
+    if (!cloudUser || !cloudRoom) return;
+    this.setData({
+      editingMemberName: true,
+      memberNameDraft: getMyMemberName(cloudUser, cloudRoom),
+      cloudError: '',
     });
   },
 
-  createRoom() {
-    createCloudRoom({
-      name: this.data.roomName,
-      memberName: this.data.memberName,
-    })
-      .then((room) => {
-        this.setData({ cloudRoom: room, cloudUser: readCloudUser(), cloudError: '' });
-        Toast({ context: this, selector: '#t-toast', message: '已创建小分队' });
-      })
-      .catch((error) => this.setData({ cloudError: error.message || '创建失败' }));
+  cancelEditMemberName() {
+    const { cloudUser, cloudRoom } = this.data;
+    this.setData({
+      editingMemberName: false,
+      memberNameDraft: getMyMemberName(cloudUser, cloudRoom),
+      cloudError: '',
+    });
   },
 
-  previewInvite() {
-    previewCloudRoom(this.data.inviteCode)
-      .then((preview) => this.setData({ joinPreview: preview, cloudError: '' }))
-      .catch((error) => this.setData({ joinPreview: null, cloudError: error.message || '没有找到小分队' }));
-  },
-
-  joinRoom() {
-    joinCloudRoom(this.data.inviteCode, {
-      memberName: this.data.memberName,
-      role: '成员',
-      flavorPreference: '',
-    })
+  saveMemberName() {
+    const { cloudRoom, memberNameDraft } = this.data;
+    if (!cloudRoom) return;
+    const memberName = String(memberNameDraft || '').trim();
+    if (!memberName) {
+      this.setData({ cloudError: '名字不能为空' });
+      return;
+    }
+    this.setData({ memberSaving: true, cloudError: '' });
+    updateCloudMemberName(cloudRoom.roomId, memberName)
       .then((room) => {
-        this.setData({ cloudRoom: room, cloudUser: readCloudUser(), joinPreview: null, cloudError: '' });
-        Toast({ context: this, selector: '#t-toast', message: '已加入小分队' });
+        this.setCloudState(readCloudUser(), room, {
+          editingMemberName: false,
+          memberSaving: false,
+          cloudRooms: readCloudRooms(),
+          cloudError: '',
+        });
+        Toast({ context: this, selector: '#t-toast', message: '名字已保存' });
       })
-      .catch((error) => this.setData({ cloudError: error.message || '加入失败' }));
+      .catch((error) =>
+        this.setData({
+          memberSaving: false,
+          cloudError: friendlyError(error, '还没保存好，稍后再试'),
+        }),
+      );
   },
 
   leaveRoom() {
@@ -185,9 +224,51 @@ Page({
     if (!cloudRoom) return;
     leaveCloudRoom(cloudRoom.roomId)
       .then(() => {
-        this.setData({ cloudRoom: null, cloudError: '' });
-        Toast({ context: this, selector: '#t-toast', message: '已退出小分队' });
+        this.setCloudState(readCloudUser(), readCloudRoom(), { cloudRooms: readCloudRooms(), cloudError: '' });
+        Toast({ context: this, selector: '#t-toast', message: '已经离开这个小分队' });
       })
-      .catch((error) => this.setData({ cloudError: error.message || '退出失败' }));
+      .catch(() => this.setData({ cloudError: '现在还离不开，稍后再试' }));
+  },
+
+  disbandRoom() {
+    const { cloudRoom } = this.data;
+    if (!cloudRoom) return;
+    wx.showModal({
+      title: '解散这个小分队？',
+      content: '解散后，队员需要重新创建或加入新的小分队。',
+      confirmText: '解散',
+      confirmColor: '#d54941',
+      success: (res) => {
+        if (!res.confirm) return;
+        disbandCloudRoom(cloudRoom.roomId)
+          .then(() => {
+            this.setCloudState(readCloudUser(), readCloudRoom(), {
+              cloudRooms: readCloudRooms(),
+              cloudError: '',
+              editingRoomName: false,
+            });
+            Toast({ context: this, selector: '#t-toast', message: '小分队已解散' });
+          })
+          .catch((error) => this.setData({ cloudError: friendlyError(error, '还没解散好，稍后再试') }));
+      },
+    });
   },
 });
+
+function friendlyError(error, fallback) {
+  const message = String((error && error.message) || '').trim();
+  if (!message) return fallback;
+  if (message.includes('配置') || message.includes('后端') || message.includes('请求') || message.includes('code')) {
+    return fallback;
+  }
+  if (message.includes('not') || message.includes('User') || message.includes('WeChat')) {
+    return fallback;
+  }
+  return message;
+}
+
+function getMyMemberName(cloudUser, cloudRoom) {
+  if (!cloudUser || !cloudRoom || !Array.isArray(cloudRoom.members)) return '';
+  const member = cloudRoom.members.find((item) => item.userId === cloudUser.userId);
+  return member ? member.name : '';
+}

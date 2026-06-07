@@ -59,7 +59,7 @@ export function genSettleDetail(params) {
       storeGoodsList: [
         {
           storeId: '1000',
-          storeName: '家庭厨房',
+          storeName: '小分队厨房',
           remark: null,
           goodsCount: 1,
           deliveryFee: '0',
@@ -141,7 +141,7 @@ export function genSettleDetail(params) {
   resp.data.totalPayAmount = totalPrice - totalDiscountPrice;
   resp.data.totalGoodsCount = list.reduce((pre, cur) => pre + cur.quantity, 0);
   resp.data.settleType = 1;
-  resp.data.userAddress = { name: '家庭菜单', phone: '', address: '今晚在家吃' };
+  resp.data.userAddress = { name: '小分队菜单', phone: '', address: '今晚一起吃' };
 
   if (userAddressReq) {
     resp.data.settleType = 1;

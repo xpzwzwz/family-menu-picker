@@ -1,6 +1,7 @@
 import Toast from 'tdesign-miniprogram/toast/index';
 import { addCustomDish, dishCategories, getDishById, getDishPlaceholderImage, updateDish } from '../../../model/dishes';
 import { uploadDishImage } from '../../../services/dish/uploadImage';
+import { buildStepPreviews, syncStepImagesWithSteps } from './stepImages';
 
 const difficultyOptions = ['简单', '中等', '费事'];
 
@@ -34,17 +35,6 @@ function formatDishForm(dish) {
     stepImages: Array.isArray(dish.steps) ? dish.steps.map((step) => step.image || '') : [],
     notes: dish.notes || '',
   };
-}
-
-function buildStepPreviews(stepsText, stepImages = []) {
-  return String(stepsText || '')
-    .split(/\n+/)
-    .map((step) => step.trim())
-    .filter(Boolean)
-    .map((text, index) => ({
-      text,
-      image: stepImages[index] || '',
-    }));
 }
 
 Page({
@@ -86,10 +76,18 @@ Page({
 
   updateField(event) {
     const { field } = event.currentTarget.dataset;
+    if (field === 'stepsText') {
+      const stepImages = syncStepImagesWithSteps(this.data.stepPreviews, event.detail.value);
+      this.setData({
+        'form.stepsText': event.detail.value,
+        'form.stepImages': stepImages,
+        stepPreviews: buildStepPreviews(event.detail.value, stepImages),
+      });
+      return;
+    }
     this.setData({
       [`form.${field}`]: event.detail.value,
     });
-    if (field === 'stepsText') this.refreshStepPreviews(event.detail.value);
   },
 
   refreshStepPreviews(nextStepsText = this.data.form.stepsText) {

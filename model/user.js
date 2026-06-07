@@ -32,7 +32,7 @@ function writeStorageValue(key, value) {
 export function getDefaultUserProfile() {
   return {
     nickname: '光盘队员',
-    role: '家庭成员',
+    role: '小分队成员',
     flavorPreference: '',
     note: '',
   };
@@ -61,7 +61,7 @@ export function getDefaultSquadMembers() {
     {
       id: 'self',
       name: '我',
-      role: '家庭成员',
+      role: '小分队成员',
       flavorPreference: '',
       isSelf: true,
     },
@@ -75,7 +75,7 @@ function normalizeSquadMember(member = {}, fallbackId = `member-${Date.now()}`) 
   return {
     id,
     name,
-    role: String(member.role || '家庭成员').trim() || '家庭成员',
+    role: String(member.role || '小分队成员').trim() || '小分队成员',
     flavorPreference: String(member.flavorPreference || '').trim(),
     isSelf: id === 'self' || !!member.isSelf,
   };
@@ -92,7 +92,10 @@ export function readSquadMembers() {
 }
 
 function saveSquadMembers(members) {
-  return writeStorageValue(SQUAD_MEMBERS_STORAGE_KEY, members.map((member) => normalizeSquadMember(member)).filter(Boolean));
+  return writeStorageValue(
+    SQUAD_MEMBERS_STORAGE_KEY,
+    members.map((member) => normalizeSquadMember(member)).filter(Boolean),
+  );
 }
 
 export function addSquadMember(payload = {}) {
@@ -113,7 +116,10 @@ export function updateSquadMember(id, patch = {}) {
   const members = readSquadMembers();
   const existing = members.find((member) => member.id === id);
   if (!existing) return null;
-  const updated = normalizeSquadMember({ ...existing, ...patch, id: existing.id, isSelf: existing.isSelf }, existing.id);
+  const updated = normalizeSquadMember(
+    { ...existing, ...patch, id: existing.id, isSelf: existing.isSelf },
+    existing.id,
+  );
   if (!updated) throw new Error('请输入成员名称');
   saveSquadMembers(members.map((member) => (member.id === id ? updated : member)));
   return updated;

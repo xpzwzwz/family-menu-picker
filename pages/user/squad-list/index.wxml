@@ -1,0 +1,30 @@
+<view class="squad-page">
+  <view class="page-head">
+    <view class="eyebrow">Squad</view>
+    <view class="title">小分队列表</view>
+    <view class="subtitle">选择这一餐要使用的小分队。</view>
+  </view>
+
+  <view class="empty-card" wx:if="{{!cloudRooms.length}}">
+    <view class="empty-title">还没有小分队</view>
+    <view class="empty-desc">先创建一个小分队，或者输入队友分享的口令加入。</view>
+  </view>
+
+  <view class="room-list" wx:else>
+    <view
+      class="room-card {{cloudRoom && cloudRoom.roomId === item.roomId ? 'active' : ''}}"
+      wx:for="{{cloudRooms}}"
+      wx:key="roomId"
+      data-room-id="{{item.roomId}}"
+      bindtap="switchRoom"
+    >
+      <view class="room-main">
+        <view class="room-name">{{item.name}}</view>
+        <view class="room-meta">{{item.members.length}} 位队员 · 口令 {{item.inviteCode}}</view>
+      </view>
+      <view class="room-status">{{cloudRoom && cloudRoom.roomId === item.roomId ? '当前' : '切换'}}</view>
+    </view>
+  </view>
+
+  <t-toast id="t-toast" />
+</view>

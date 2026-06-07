@@ -1,0 +1,34 @@
+<view class="squad-page">
+  <view class="page-head">
+    <view class="eyebrow">Squad</view>
+    <view class="title">创建小分队</view>
+    <view class="subtitle">开一个新的小分队菜单，之后可以分享口令给队员。</view>
+  </view>
+
+  <view class="form-section">
+    <view class="field">
+      <view class="field-label">小分队名称</view>
+      <input
+        class="field-input"
+        value="{{roomName}}"
+        placeholder="例如：周末饭搭子"
+        data-field="roomName"
+        bindinput="updateField"
+      />
+    </view>
+    <view class="field">
+      <view class="field-label">大家怎么称呼我</view>
+      <input
+        class="field-input"
+        value="{{memberName}}"
+        placeholder="例如：小王"
+        data-field="memberName"
+        bindinput="updateField"
+      />
+    </view>
+    <button class="save-btn" bindtap="createRoom" disabled="{{saving}}">创建小分队</button>
+    <view class="cloud-error" wx:if="{{cloudError}}">{{cloudError}}</view>
+  </view>
+
+  <t-toast id="t-toast" />
+</view>

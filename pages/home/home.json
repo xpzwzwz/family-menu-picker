@@ -6,6 +6,7 @@
   "usingComponents": {
     "t-image": "/components/webp-image/index",
     "t-icon": "tdesign-miniprogram/icon/icon",
+    "t-stepper": "tdesign-miniprogram/stepper/stepper",
     "t-toast": "tdesign-miniprogram/toast/toast"
   }
 }

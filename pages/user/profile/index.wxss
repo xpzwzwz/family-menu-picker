@@ -56,11 +56,55 @@ page {
   gap: 18rpx;
 }
 
+.card-label {
+  margin-bottom: 16rpx;
+  color: #777;
+  font-size: 24rpx;
+  font-weight: 600;
+  line-height: 34rpx;
+}
+
+.room-name-area {
+  flex: 1;
+  min-width: 0;
+}
+
+.room-name-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.room-edit {
+  display: grid;
+  gap: 12rpx;
+}
+
+.room-name-input {
+  height: 72rpx;
+  padding: 0 20rpx;
+  border-radius: 8rpx;
+  background: #f7f7f7;
+  color: #1f1f1f;
+  font-size: 28rpx;
+  box-sizing: border-box;
+}
+
+.room-edit-actions {
+  display: flex;
+  justify-content: flex-start;
+  gap: 12rpx;
+}
+
 .cloud-title {
+  min-width: 0;
   color: #1f1f1f;
   font-size: 30rpx;
   font-weight: 700;
   line-height: 42rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .cloud-value,
@@ -75,6 +119,51 @@ page {
 
 .cloud-error {
   color: #d54941;
+}
+
+.phone-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+  margin-top: 20rpx;
+  padding: 18rpx;
+  border-radius: 8rpx;
+  background: #f7f7f7;
+}
+
+.phone-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.phone-title {
+  color: #1f1f1f;
+  font-size: 28rpx;
+  font-weight: 700;
+  line-height: 40rpx;
+}
+
+.phone-desc {
+  margin-top: 4rpx;
+  color: #777;
+  font-size: 24rpx;
+  line-height: 34rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.phone-btn {
+  width: 116rpx;
+  height: 60rpx;
+  padding: 0;
+  border-radius: 8rpx;
+  background: #26332c;
+  color: #fff;
+  font-size: 24rpx;
+  font-weight: 600;
+  line-height: 60rpx;
 }
 
 .cloud-members {
@@ -92,6 +181,15 @@ page {
   background: #f7f7f7;
 }
 
+.member-edit {
+  display: grid;
+  gap: 12rpx;
+  margin-top: 14rpx;
+  padding: 16rpx;
+  border-radius: 8rpx;
+  background: #f7f7f7;
+}
+
 .mini-btn {
   width: 104rpx;
   height: 56rpx;
@@ -101,6 +199,24 @@ page {
   color: #d54941;
   font-size: 24rpx;
   line-height: 56rpx;
+}
+
+.text-btn {
+  width: auto;
+  min-width: 104rpx;
+  height: 52rpx;
+  margin: 0;
+  padding: 0 18rpx;
+  border-radius: 8rpx;
+  background: #fff0ee;
+  color: #d54941;
+  font-size: 24rpx;
+  line-height: 52rpx;
+}
+
+.text-btn.muted {
+  background: #f7f7f7;
+  color: #666;
 }
 
 .leave-btn {
@@ -113,6 +229,11 @@ page {
   line-height: 72rpx;
 }
 
+.leave-btn.danger {
+  background: #fff0ee;
+  color: #d54941;
+}
+
 .join-preview {
   margin-top: 18rpx;
   padding: 18rpx;
@@ -120,35 +241,49 @@ page {
   background: #f7f7f7;
 }
 
+.entry-list {
+  display: grid;
+  gap: 14rpx;
+}
+
+.entry-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  padding: 18rpx;
+  border-radius: 8rpx;
+  background: #f7f7f7;
+}
+
+.entry-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.entry-title {
+  color: #1f1f1f;
+  font-size: 28rpx;
+  font-weight: 700;
+  line-height: 40rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.entry-desc {
+  margin-top: 4rpx;
+  color: #777;
+  font-size: 24rpx;
+  line-height: 34rpx;
+  word-break: break-all;
+}
+
 .join-title {
   color: #1f1f1f;
   font-size: 28rpx;
   font-weight: 700;
   line-height: 40rpx;
-}
-
-.section-title {
-  margin: 28rpx 8rpx 16rpx;
-  color: #333;
-  font-size: 30rpx;
-  font-weight: 600;
-  line-height: 42rpx;
-}
-
-.member-list {
-  display: grid;
-  gap: 18rpx;
-  margin-bottom: 22rpx;
-}
-
-.member-card {
-  display: flex;
-  align-items: center;
-  gap: 18rpx;
-  padding: 22rpx;
-  border-radius: 8rpx;
-  background: #fff;
-  box-shadow: 0 8rpx 24rpx rgba(31, 31, 31, 0.06);
 }
 
 .member-avatar {
@@ -189,28 +324,6 @@ page {
   white-space: nowrap;
 }
 
-.member-actions {
-  display: grid;
-  gap: 8rpx;
-  flex-shrink: 0;
-}
-
-.text-btn {
-  width: 92rpx;
-  height: 48rpx;
-  padding: 0;
-  border-radius: 8rpx;
-  background: #fff0ee;
-  color: #d54941;
-  font-size: 24rpx;
-  line-height: 48rpx;
-}
-
-.muted-btn {
-  background: #f7f7f7;
-  color: #777;
-}
-
 .field {
   margin-bottom: 28rpx;
 }
@@ -237,15 +350,7 @@ page {
   box-sizing: border-box;
 }
 
-.footer {
-  display: grid;
-  gap: 16rpx;
-  margin-top: 32rpx;
-  padding-bottom: env(safe-area-inset-bottom);
-}
-
-.save-btn,
-.cancel-btn {
+.save-btn {
   height: 92rpx;
   border-radius: 8rpx;
   font-size: 30rpx;
@@ -258,15 +363,15 @@ page {
   color: #fff;
 }
 
-.cancel-btn {
-  background: #fff;
-  color: #666;
+.save-btn[disabled] {
+  background: #e5e5e5;
+  color: #999;
 }
 
 .save-btn::after,
-.cancel-btn::after,
-.text-btn::after,
+.phone-btn::after,
 .mini-btn::after,
+.text-btn::after,
 .leave-btn::after {
   border: 0;
 }

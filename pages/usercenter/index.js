@@ -1,6 +1,6 @@
 import Toast from 'tdesign-miniprogram/toast/index';
 import { readTonightMenu } from '../../model/dishes';
-import { readUserProfile } from '../../model/user';
+import { readCloudRoom, readCloudUser } from '../../services/squad/cloudSquad';
 
 const actionList = [
   {
@@ -17,7 +17,7 @@ const actionList = [
   },
   {
     title: '查看我的菜单',
-    desc: '调整份数或确认菜单',
+    desc: '调整份数，吃完后放进历史',
     type: 'menu',
     icon: 'cart',
   },
@@ -35,25 +35,19 @@ const actionList = [
   },
   {
     title: '新增菜品',
-    desc: '把家里常吃的菜加进来',
+    desc: '把队里常吃的菜加进来',
     type: 'customDish',
     icon: 'add',
   },
   {
     title: '管理菜品',
-    desc: '编辑或移除家里的常吃菜',
+    desc: '编辑或移除队里常吃菜',
     type: 'manageDish',
     icon: 'view-list',
   },
   {
-    title: '小分队成员',
-    desc: '添加家里一起点菜的人',
-    type: 'profile',
-    icon: 'usergroup',
-  },
-  {
-    title: '问题反馈',
-    desc: '记录问题、建议和菜品数据反馈',
+    title: '提个想法',
+    desc: '哪里不好用，或者想加什么，都可以说',
     type: 'feedback',
     icon: 'chat',
   },
@@ -63,8 +57,11 @@ const getDefaultData = () => ({
   actionList,
   selectedCount: 0,
   totalCookMinutes: 0,
-  userProfile: readUserProfile(),
-  avatarText: '光',
+  cloudUser: readCloudUser(),
+  cloudRoom: readCloudRoom(),
+  currentMemberName: '微信用户',
+  currentSquadName: '我的小分队',
+  currentIdentityText: '添加手机号，邀请队员一起用',
   versionNo: '',
 });
 
@@ -87,10 +84,16 @@ Page({
 
   init() {
     const menu = readTonightMenu();
-    const userProfile = readUserProfile();
+    const cloudUser = readCloudUser();
+    const cloudRoom = readCloudRoom();
+    const currentMemberName = getCurrentMemberName(cloudUser, cloudRoom);
+    const currentSquadName = cloudRoom && cloudRoom.name ? cloudRoom.name : '我的小分队';
     this.setData({
-      userProfile,
-      avatarText: userProfile.nickname.slice(0, 1) || '光',
+      cloudUser,
+      cloudRoom,
+      currentMemberName,
+      currentSquadName,
+      currentIdentityText: cloudUser ? `${currentMemberName} · 我的身份` : '添加手机号，邀请队员一起用',
       selectedCount: menu.reduce((sum, item) => sum + (item.quantity || 1), 0),
       totalCookMinutes: menu.reduce((sum, item) => sum + (item.cookMinutes || 0) * (item.quantity || 1), 0),
     });
@@ -139,7 +142,7 @@ Page({
         Toast({
           context: this,
           selector: '#t-toast',
-          message: '未知跳转',
+          message: '这个入口还没准备好',
           icon: '',
           duration: 1000,
         });
@@ -156,3 +159,9 @@ Page({
     });
   },
 });
+
+function getCurrentMemberName(cloudUser, cloudRoom) {
+  if (!cloudUser || !cloudRoom || !Array.isArray(cloudRoom.members)) return '微信用户';
+  const member = cloudRoom.members.find((item) => item.userId === cloudUser.userId);
+  return member && member.name ? member.name : '微信用户';
+}

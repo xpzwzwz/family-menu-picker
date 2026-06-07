@@ -1,5 +1,5 @@
 const STORE_ID = 'family-kitchen';
-const STORE_NAME = '家庭厨房';
+const STORE_NAME = '小分队厨房';
 const DEFAULT_IMAGE = '/assets/dishes/default.svg';
 const DISH_PLACEHOLDER_IMAGES = {
   quick: '/assets/dishes/quick.svg',
@@ -48,7 +48,7 @@ export const dishes = [
       { title: '炒番茄出汁', description: '番茄下锅炒软，加少许盐和糖调味。' },
       { title: '合炒收味', description: '倒回鸡蛋翻匀，撒葱花即可。' },
     ],
-    notes: '家里常备菜，适合选择困难时兜底。',
+    notes: '队里常备菜，适合选择困难时兜底。',
   },
   {
     id: 'pepper-beef',
@@ -238,7 +238,7 @@ export const dishes = [
   },
   {
     id: 'hotpot-kit',
-    name: '家庭小火锅',
+    name: '小分队小火锅',
     category: 'takeout',
     image: getDishPlaceholderImage('takeout'),
     cookMinutes: 20,
@@ -289,7 +289,8 @@ function parseTags(tagsText) {
 
 function parseIngredients(ingredientsText) {
   if (!ingredientsText) return [];
-  if (Array.isArray(ingredientsText)) return ingredientsText.map((ingredient) => String(ingredient).trim()).filter(Boolean);
+  if (Array.isArray(ingredientsText))
+    return ingredientsText.map((ingredient) => String(ingredient).trim()).filter(Boolean);
   return String(ingredientsText)
     .split(/[,，\n]/)
     .map((ingredient) => ingredient.trim())
@@ -330,7 +331,9 @@ function getPayloadTags(payload) {
 }
 
 function getPayloadIngredients(payload) {
-  return Object.prototype.hasOwnProperty.call(payload, 'ingredientsText') ? payload.ingredientsText : payload.ingredients;
+  return Object.prototype.hasOwnProperty.call(payload, 'ingredientsText')
+    ? payload.ingredientsText
+    : payload.ingredients;
 }
 
 function getPayloadSteps(payload) {
@@ -642,19 +645,74 @@ export function getDishSelectionSections() {
   });
 }
 
-function pickByCategory(categoryId, offset = 0) {
-  const source = getDishesByCategory(categoryId);
-  if (!source.length) return getAllDishes()[offset % getAllDishes().length];
-  return source[offset % source.length];
+function normalizeRecommendationCount(count, sourceLength) {
+  const parsed = Math.floor(Number(count) || 3);
+  return Math.max(1, Math.min(parsed, sourceLength || 1));
 }
 
-export function buildDinnerRecommendation(seed = Date.now()) {
+function createSeededRandom(seed) {
+  let state = Math.abs(Math.floor(Number(seed) || 0)) % 2147483647;
+  if (state === 0) state = 1;
+  return () => {
+    state = (state * 48271) % 2147483647;
+    return state / 2147483647;
+  };
+}
+
+function shuffleDishes(source, seed) {
+  const random = createSeededRandom(seed);
+  const result = [...source];
+  for (let index = result.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(random() * (index + 1));
+    [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
+  }
+  return result;
+}
+
+function isMeatLikeDish(dish) {
+  return dish.category === 'meat' || dish.tags.includes('荤菜') || dish.tags.includes('高蛋白');
+}
+
+function isVegetableLikeDish(dish) {
+  return dish.category === 'vegetable' || dish.tags.includes('素菜') || dish.tags.includes('清淡');
+}
+
+function pickFirstMatching(source, predicate, pickedIds) {
+  return source.find((dish) => predicate(dish) && !pickedIds.has(dish.id)) || null;
+}
+
+function pickRandomDinnerDishes(seed, count) {
+  const source = getAllDishes();
+  if (!source.length) return [];
+  const targetCount = normalizeRecommendationCount(count, source.length);
+  const shuffled = shuffleDishes(source, seed);
+  const picked = [];
+  const pickedIds = new Set();
+
+  if (targetCount >= 2) {
+    [
+      pickFirstMatching(shuffled, isMeatLikeDish, pickedIds),
+      pickFirstMatching(shuffled, isVegetableLikeDish, pickedIds),
+    ]
+      .filter(Boolean)
+      .forEach((dish) => {
+        picked.push(dish);
+        pickedIds.add(dish.id);
+      });
+  }
+
+  shuffled.forEach((dish) => {
+    if (picked.length >= targetCount || pickedIds.has(dish.id)) return;
+    picked.push(dish);
+    pickedIds.add(dish.id);
+  });
+
+  return shuffleDishes(picked, seed + targetCount);
+}
+
+export function buildDinnerRecommendation(seed = Date.now(), count = 3) {
   const offset = Math.abs(Number(seed) || 0);
-  const picked = [
-    pickByCategory('meat', offset),
-    pickByCategory('vegetable', offset + 1),
-    offset % 2 === 0 ? pickByCategory('soup', offset + 2) : pickByCategory('staple', offset + 2),
-  ];
+  const picked = pickRandomDinnerDishes(offset, count);
   const totalCookMinutes = picked.reduce((sum, dish) => sum + dish.cookMinutes, 0);
   return {
     id: `recommendation-${offset}`,
@@ -664,6 +722,24 @@ export function buildDinnerRecommendation(seed = Date.now()) {
     totalCookMinutes,
     tags: ['荤素搭配', totalCookMinutes <= 45 ? '不太费时间' : '适合慢慢做'],
   };
+}
+
+function getRecommendationSignature(recommendation) {
+  if (!recommendation || !Array.isArray(recommendation.dishes)) return '';
+  return recommendation.dishes.map((dish) => dish.id).join(',');
+}
+
+export function buildDifferentDinnerRecommendation(
+  currentRecommendation,
+  seed = Date.now(),
+  count = currentRecommendation?.dishes?.length || 3,
+) {
+  const currentSignature = getRecommendationSignature(currentRecommendation);
+  for (let step = 0; step < 12; step += 1) {
+    const recommendation = buildDinnerRecommendation(seed + step, count);
+    if (getRecommendationSignature(recommendation) !== currentSignature) return recommendation;
+  }
+  return buildDinnerRecommendation(seed, count);
 }
 
 export function readTonightMenu() {
@@ -714,6 +790,8 @@ export function saveConfirmedMenu({ confirmedAt = Date.now(), goodsList = [], su
 
   writeStorageValue(LAST_CONFIRMED_MENU_STORAGE_KEY, confirmedMenu);
   writeStorageValue(MENU_HISTORY_STORAGE_KEY, nextHistory);
+  writeStorageValue(MENU_STORAGE_KEY, []);
+  clearShoppingBasketChecked();
   return confirmedMenu;
 }
 
@@ -725,16 +803,20 @@ export function reuseMenuHistoryEntry(historyId) {
     quantity: Math.max(Number(goods.quantity) || 1, 1),
     isSelected: 1,
   }));
+  clearShoppingBasketChecked();
   return saveTonightMenu(nextMenu);
 }
 
-export function addDishesToTonightMenu(goodsList) {
+export function addDishesToTonightMenu(goodsList, options = {}) {
+  const incrementExisting = options.incrementExisting !== false;
   const current = readTonightMenu();
   const next = [...current];
   goodsList.forEach((goods) => {
     const existing = next.find((item) => item.spuId === goods.spuId && item.skuId === goods.skuId);
     if (existing) {
-      existing.quantity += goods.quantity || 1;
+      if (incrementExisting) {
+        existing.quantity += goods.quantity || 1;
+      }
       existing.isSelected = 1;
       if (goods.selectedBy) existing.selectedBy = goods.selectedBy;
       if (goods.selectedByName) existing.selectedByName = goods.selectedByName;

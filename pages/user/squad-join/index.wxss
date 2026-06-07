@@ -1,0 +1,37 @@
+@import "../squad-create/index.wxss";
+
+.cancel-btn {
+  height: 82rpx;
+  margin-bottom: 18rpx;
+  border-radius: 8rpx;
+  background: #f7f7f7;
+  color: #666;
+  font-size: 28rpx;
+  line-height: 82rpx;
+}
+
+.cancel-btn::after {
+  border: 0;
+}
+
+.join-preview {
+  margin-top: 18rpx;
+  padding: 18rpx;
+  border-radius: 8rpx;
+  background: #f7f7f7;
+}
+
+.join-title {
+  color: #1f1f1f;
+  font-size: 28rpx;
+  font-weight: 700;
+  line-height: 40rpx;
+}
+
+.join-desc {
+  margin-top: 6rpx;
+  margin-bottom: 18rpx;
+  color: #777;
+  font-size: 24rpx;
+  line-height: 34rpx;
+}

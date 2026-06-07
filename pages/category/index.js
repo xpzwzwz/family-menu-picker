@@ -1,6 +1,7 @@
 import Toast from 'tdesign-miniprogram/toast/index';
 import { addDishesToTonightMenu, getDishSelectionSections } from '../../model/dishes';
 import { readSquadMembers } from '../../model/user';
+import { readCloudRoom } from '../../services/squad/cloudSquad';
 
 const SECTION_TOP_OFFSET = 8;
 const TAB_BAR_HEIGHT = 76;
@@ -33,7 +34,17 @@ Page({
   },
 
   refreshMembers() {
-    const squadMembers = readSquadMembers();
+    const cloudRoom = readCloudRoom();
+    const cloudMembers =
+      cloudRoom && Array.isArray(cloudRoom.members)
+        ? cloudRoom.members
+            .map((member) => ({
+              id: member.userId,
+              name: member.name,
+            }))
+            .filter((member) => member.id && member.name)
+        : [];
+    const squadMembers = cloudMembers.length ? cloudMembers : readSquadMembers();
     const selectedMemberId = squadMembers.some((member) => member.id === this.data.selectedMemberId)
       ? this.data.selectedMemberId
       : squadMembers[0].id;
@@ -47,7 +58,10 @@ Page({
     query.exec((res) => {
       const headRect = res && res[0];
       const headHeight = headRect ? headRect.height : 70;
-      const bottomSafeArea = Math.max((windowInfo.screenHeight || 0) - (windowInfo.safeArea ? windowInfo.safeArea.bottom : 0), 0);
+      const bottomSafeArea = Math.max(
+        (windowInfo.screenHeight || 0) - (windowInfo.safeArea ? windowInfo.safeArea.bottom : 0),
+        0,
+      );
       const scrollHeight = Math.max(
         (windowInfo.windowHeight || 0) - headHeight - TAB_BAR_HEIGHT - bottomSafeArea - PAGE_VERTICAL_PADDING,
         260,
@@ -132,7 +146,8 @@ Page({
     const section = this.data.sections[sectionIndex];
     const goods = section && section.goodsList[goodsIndex];
     if (!goods) return;
-    const member = this.data.squadMembers.find((item) => item.id === this.data.selectedMemberId) || this.data.squadMembers[0];
+    const member =
+      this.data.squadMembers.find((item) => item.id === this.data.selectedMemberId) || this.data.squadMembers[0];
     addDishesToTonightMenu([
       {
         ...goods,

@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "问题反馈",
+  "navigationBarTitleText": "提个想法",
   "usingComponents": {
     "t-textarea": "tdesign-miniprogram/textarea/textarea",
     "t-toast": "tdesign-miniprogram/toast/toast"

@@ -2,7 +2,7 @@
   <view class="page-head">
     <view class="eyebrow">Dish Library</view>
     <view class="title">管理菜品</view>
-    <view class="subtitle">调整家里的常吃菜，之后选菜和随机搭配都会按这里来。</view>
+    <view class="subtitle">调整队里的常吃菜，之后选菜和随机搭配都会按这里来。</view>
   </view>
 
   <view class="toolbar">
@@ -33,7 +33,7 @@
 
   <view class="empty-state" wx:else>
     <view class="empty-title">菜品库空了</view>
-    <view class="empty-desc">先加几道家里常吃的菜，之后选菜和随机搭配都会用到。</view>
+    <view class="empty-desc">先加几道队里常吃的菜，之后选菜和随机搭配都会用到。</view>
     <button class="empty-btn" bindtap="goCreate">新增菜品</button>
   </view>
 

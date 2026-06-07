@@ -5,59 +5,67 @@
   data-goods="{{ goods }}"
   hidden="{{hiddenInData}}"
 >
-	<view class="wr-goods-card__main">
-		<view class="wr-goods-card__thumb thumb-class" bind:tap="clickThumbHandle">
-			<!-- data-src 是方便加购动画读取图片用的 -->
-			<t-image
-			  t-class="wr-goods-card__thumb-com"
-			  wx:if="{{ !!goods.thumb && !goods.hideKey.thumb }}"
-			  src="{{ goods.thumb }}"
-			  mode="{{ thumbMode }}"
-			  lazy-load="{{ lazyLoad }}"
-			/>
-			<slot name="thumb-cover" />
-		</view>
-		<view class="wr-goods-card__body">
-			<view class="wr-goods-card__long_content">
-				<view wx:if="{{ goods.title && !goods.hideKey.title }}" class="wr-goods-card__title title-class" style="-webkit-line-clamp: {{ goods.lineClamp }};">
-					<slot name="before-title" />
-					{{ goods.title }}
-				</view>
-				<slot name="after-title" />
-				<view wx:if="{{ goods.desc && !goods.hideKey.desc }}" class="wr-goods-card__desc desc-class">{{ goods.desc }}</view>
-				<slot name="after-desc" />
-				<view wx:if="{{ goods.selectedByName }}" class="wr-goods-card__picker">由 {{ goods.selectedByName }} 选择</view>
-				<view wx:if="{{ goods.specs && goods.specs.length > 0 && !goods.hideKey.specs }}" class="wr-goods-card__specs__desc specs-class" bind:tap="clickSpecsHandle">
-					<view class="wr-goods-card__specs__desc-text">{{ goods.specs }}</view>
-					<t-icon name="chevron-down" size="32rpx" color="#999999" />
-				</view>
-				<view class="goods_tips" wx:if="{{goods.stockQuantity !== 0 && goods.quantity >= goods.stockQuantity}}">库存不足</view>
-			</view>
-			<view class="wr-goods-card__short_content">
-				<block wx:if="{{goods.stockQuantity !== 0}}">
-					<slot name="price-prefix" />
-					<view wx:if="{{ goods.cookMinutes }}" class="wr-goods-card__meta">
-						{{ goods.cookMinutes }}分钟
-					</view>
-					<view wx:if="{{ goods.flavor }}" class="wr-goods-card__submeta">
-						{{ goods.flavor }}
-					</view>
-					<slot name="origin-price" />
-					<view wx:if="{{goods.num && !goods.hideKey.num}}" class="wr-goods-card__num num-class">
-						<text class="wr-goods-card__num__prefix">x </text>
-						{{ goods.num }}
-					</view>
-				</block>
-				<block wx:else>
-					<view class="no_storage">
-						<view>请重新选择商品规格</view>
-						<view class="no_storage__right">重选</view>
-					</view>
-				</block>
-			</view>
-			<slot name="append-body" />
-		</view>
-		<slot name="footer" />
-	</view>
-	<slot name="append-card" />
+  <view class="wr-goods-card__main">
+    <view class="wr-goods-card__thumb thumb-class" bind:tap="clickThumbHandle">
+      <!-- data-src 是方便加购动画读取图片用的 -->
+      <t-image
+        t-class="wr-goods-card__thumb-com"
+        wx:if="{{ !!goods.thumb && !goods.hideKey.thumb }}"
+        src="{{ goods.thumb }}"
+        mode="{{ thumbMode }}"
+        lazy-load="{{ lazyLoad }}"
+      />
+      <slot name="thumb-cover" />
+    </view>
+    <view class="wr-goods-card__body">
+      <view class="wr-goods-card__long_content">
+        <view
+          wx:if="{{ goods.title && !goods.hideKey.title }}"
+          class="wr-goods-card__title title-class"
+          style="-webkit-line-clamp: {{ goods.lineClamp }};"
+        >
+          <slot name="before-title" />
+          {{ goods.title }}
+        </view>
+        <slot name="after-title" />
+        <view wx:if="{{ goods.desc && !goods.hideKey.desc }}" class="wr-goods-card__desc desc-class"
+          >{{ goods.desc }}</view
+        >
+        <slot name="after-desc" />
+        <view wx:if="{{ goods.selectedByName }}" class="wr-goods-card__picker">由 {{ goods.selectedByName }} 选择</view>
+        <view
+          wx:if="{{ goods.specs && goods.specs.length > 0 && !goods.hideKey.specs }}"
+          class="wr-goods-card__specs__desc specs-class"
+          bind:tap="clickSpecsHandle"
+        >
+          <view class="wr-goods-card__specs__desc-text">{{ goods.specs }}</view>
+          <t-icon name="chevron-down" size="32rpx" color="#999999" />
+        </view>
+        <view class="goods_tips" wx:if="{{goods.stockQuantity !== 0 && goods.quantity >= goods.stockQuantity}}"
+          >份数较多</view
+        >
+      </view>
+      <view class="wr-goods-card__short_content">
+        <block wx:if="{{goods.stockQuantity !== 0}}">
+          <slot name="price-prefix" />
+          <view wx:if="{{ goods.cookMinutes }}" class="wr-goods-card__meta"> {{ goods.cookMinutes }}分钟 </view>
+          <view wx:if="{{ goods.flavor }}" class="wr-goods-card__submeta"> {{ goods.flavor }} </view>
+          <slot name="origin-price" />
+          <view wx:if="{{goods.num && !goods.hideKey.num}}" class="wr-goods-card__num num-class">
+            <text class="wr-goods-card__num__prefix">x </text>
+            {{ goods.num }}
+          </view>
+        </block>
+        <block wx:else>
+          <view class="no_storage">
+            <view>这道菜暂时不做</view>
+            <view class="no_storage__right">换一道</view>
+          </view>
+        </block>
+      </view>
+      <slot name="append-body" />
+    </view>
+    <slot name="footer" />
+  </view>
+  <slot name="append-card" />
 </view>

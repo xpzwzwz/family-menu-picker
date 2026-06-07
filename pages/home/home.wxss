@@ -55,6 +55,33 @@ page {
   margin-top: 20rpx;
 }
 
+.count-row {
+  align-items: center;
+  color: #dce7df;
+  display: flex;
+  font-size: 26rpx;
+  justify-content: space-between;
+  line-height: 40rpx;
+  margin-top: 22rpx;
+}
+
+.count-stepper {
+  color: #1f241f;
+  flex-shrink: 0;
+}
+
+.count-stepper-button {
+  background: #f3c969 !important;
+  border-color: #f3c969 !important;
+  color: #1f241f !important;
+}
+
+.count-stepper-input {
+  background: #ffffff !important;
+  color: #1f241f !important;
+  font-weight: 700 !important;
+}
+
 .hero-actions {
   display: grid;
   gap: 16rpx;

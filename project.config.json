@@ -1,7 +1,24 @@
 {
   "description": "项目配置文件，详见文档：https://developers.weixin.qq.com/miniprogram/dev/devtools/projectconfig.html",
   "packOptions": {
-    "ignore": [],
+    "ignore": [
+      {
+        "type": "folder",
+        "value": "backend"
+      },
+      {
+        "type": "folder",
+        "value": "docs"
+      },
+      {
+        "type": "folder",
+        "value": "tests"
+      },
+      {
+        "type": "file",
+        "value": "README.md"
+      }
+    ],
     "include": []
   },
   "setting": {
@@ -52,7 +69,7 @@
   },
   "compileType": "miniprogram",
   "libVersion": "3.13.0",
-  "appid": "wx1d4732c6f050a296",
+  "appid": "wx2ded8eeced1a0342",
   "projectname": "tdesign-miniprogram-starter-retail",
   "simulatorType": "wechat",
   "simulatorPluginLibVersion": {},
@@ -66,75 +83,80 @@
           "scene": null
         },
         {
-          "name": "示例页-商品分类",
-          "pathName": "pages/goods/category/index",
+          "name": "菜品",
+          "pathName": "pages/category/index",
           "query": "",
           "scene": null
         },
         {
-          "name": "示例页-个人中心",
+          "name": "我的菜单",
+          "pathName": "pages/cart/index",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "我的",
           "pathName": "pages/usercenter/index",
           "query": "",
           "scene": null
         },
         {
-          "name": "示例页-商品列表",
-          "pathName": "pages/goods/list/index",
+          "name": "确认菜单",
+          "pathName": "pages/order/order-confirm/index",
           "query": "",
           "scene": null
         },
         {
-          "name": "示例页-商品详情",
-          "pathName": "pages/goods/details/index",
+          "name": "自定义菜",
+          "pathName": "pages/dish/custom-create/index",
           "query": "",
           "scene": null
         },
         {
-          "name": "示例页-商品评论",
-          "pathName": "pages/goods/comments/index",
+          "name": "我的菜",
+          "pathName": "pages/dish/manage/index",
           "query": "",
           "scene": null
         },
         {
-          "name": "示例页-售后列表",
-          "pathName": "pages/order/after-service-list/index",
+          "name": "我的小分队",
+          "pathName": "pages/user/profile/index",
           "query": "",
           "scene": null
         },
         {
-          "name": "示例页-售后详情",
-          "pathName": "pages/order/after-service-detail/index",
-          "query": "rightsNo=123123423",
-          "scene": null
-        },
-        {
-          "name": "示例页-搜索页",
-          "pathName": "pages/goods/search/index",
+          "name": "小分队列表",
+          "pathName": "pages/user/squad-list/index",
           "query": "",
           "scene": null
         },
         {
-          "name": "示例页-搜索结果",
-          "pathName": "pages/goods/result/index",
+          "name": "创建小分队",
+          "pathName": "pages/user/squad-create/index",
           "query": "",
           "scene": null
         },
         {
-          "name": "示例页-商品评价",
-          "pathName": "pages/goods/comments/create/index",
+          "name": "加入小分队",
+          "pathName": "pages/user/squad-join/index",
           "query": "",
           "scene": null
         },
         {
-          "name": "示例页-申请售后",
-          "pathName": "pages/order/apply-service/index",
-          "query": "orderNo=132222623132329291&skuId=135691625",
+          "name": "提个想法",
+          "pathName": "pages/user/feedback/index",
           "scene": null
         },
         {
-          "name": "示例页-发票详情",
-          "pathName": "pages/order/invoice/index",
-          "query": "orderNo=132381532610540875",
+          "name": "菜单历史",
+          "pathName": "pages/menu/history/index",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "菜篮子",
+          "pathName": "pages/menu/basket/index",
+          "query": "",
           "scene": null
         }
       ]

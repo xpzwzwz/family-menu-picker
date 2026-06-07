@@ -1,0 +1,85 @@
+page {
+  background-color: #f6f4ef;
+}
+
+.squad-page {
+  min-height: 100vh;
+  padding: 28rpx 28rpx 48rpx;
+  box-sizing: border-box;
+}
+
+.page-head {
+  padding: 28rpx 8rpx 24rpx;
+}
+
+.eyebrow {
+  color: #d54941;
+  font-size: 24rpx;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.title {
+  margin-top: 8rpx;
+  color: #1f1f1f;
+  font-size: 48rpx;
+  font-weight: 700;
+  line-height: 64rpx;
+}
+
+.subtitle,
+.empty-desc,
+.room-meta {
+  margin-top: 8rpx;
+  color: #666;
+  font-size: 26rpx;
+  line-height: 38rpx;
+}
+
+.room-list {
+  display: grid;
+  gap: 18rpx;
+}
+
+.room-card,
+.empty-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+  padding: 24rpx;
+  border-radius: 8rpx;
+  background: #fff;
+  box-shadow: 0 8rpx 24rpx rgba(31, 31, 31, 0.06);
+}
+
+.room-card.active {
+  background: #fff0ee;
+}
+
+.room-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.room-name,
+.empty-title {
+  color: #1f1f1f;
+  font-size: 30rpx;
+  font-weight: 700;
+  line-height: 42rpx;
+}
+
+.room-meta {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.room-status {
+  flex-shrink: 0;
+  color: #d54941;
+  font-size: 24rpx;
+  font-weight: 600;
+  line-height: 34rpx;
+}

@@ -8,8 +8,20 @@ page {
   box-sizing: border-box;
 }
 
-.center-hero {
-  padding: 36rpx 8rpx 28rpx;
+.squad-panel {
+  margin-bottom: 28rpx;
+  padding: 28rpx;
+  border-radius: 8rpx;
+  background: #fff;
+  box-shadow: 0 8rpx 24rpx rgba(31, 31, 31, 0.06);
+  box-sizing: border-box;
+}
+
+.squad-panel__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
 }
 
 .eyebrow {
@@ -20,63 +32,50 @@ page {
 }
 
 .center-title {
-  margin-top: 8rpx;
+  margin-top: 16rpx;
   color: #1f1f1f;
-  font-size: 48rpx;
+  font-size: 42rpx;
   font-weight: 700;
-  line-height: 64rpx;
+  line-height: 54rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .center-desc {
-  margin-top: 12rpx;
+  margin-top: 8rpx;
   color: #666;
   font-size: 28rpx;
   line-height: 42rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.profile-card {
-  display: flex;
-  align-items: center;
-  gap: 20rpx;
-  margin-bottom: 28rpx;
-  padding: 24rpx;
-  border-radius: 8rpx;
-  background: #fff;
-  box-shadow: 0 8rpx 24rpx rgba(31, 31, 31, 0.06);
-  box-sizing: border-box;
-}
-
-.avatar {
+.manage-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 88rpx;
-  height: 88rpx;
-  flex-shrink: 0;
+  width: 112rpx;
+  height: 56rpx;
+  margin: 0;
+  padding: 0;
   border-radius: 8rpx;
   background: #26332c;
   color: #fff;
-  font-size: 36rpx;
-  font-weight: 700;
-  line-height: 88rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+  line-height: 56rpx;
+  box-sizing: border-box;
 }
 
-.profile-copy {
-  flex: 1;
-  min-width: 0;
+.manage-btn::after {
+  border: 0;
 }
 
-.profile-name {
-  color: #1f1f1f;
-  font-size: 32rpx;
-  font-weight: 700;
-  line-height: 44rpx;
-}
-
-.profile-meta,
 .profile-pref {
   margin-top: 4rpx;
-  color: #777;
+  color: #999;
   font-size: 24rpx;
   line-height: 34rpx;
   overflow: hidden;
@@ -84,11 +83,31 @@ page {
   white-space: nowrap;
 }
 
-.menu-summary {
-  margin: -12rpx 8rpx 28rpx;
+.menu-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16rpx;
+  margin-top: 24rpx;
+  padding-top: 24rpx;
+  border-top: 1rpx solid #f0eee9;
+}
+
+.menu-stat {
+  min-width: 0;
+}
+
+.menu-stat__value {
+  color: #333;
+  font-size: 34rpx;
+  font-weight: 700;
+  line-height: 44rpx;
+}
+
+.menu-stat__label {
+  margin-top: 2rpx;
   color: #777;
-  font-size: 26rpx;
-  line-height: 38rpx;
+  font-size: 24rpx;
+  line-height: 34rpx;
 }
 
 .section {

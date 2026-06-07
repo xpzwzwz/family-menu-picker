@@ -8,6 +8,22 @@
       <view class="menu-pill" bindtap="navToMenu">菜单 {{totalMenuCount}}</view>
     </view>
     <view class="subtitle">随机搭一餐，尽量兼顾荤素和做饭时间。</view>
+    <view class="count-row">
+      <text>随机 {{recommendationCount}} 道</text>
+      <t-stepper
+        t-class="count-stepper"
+        t-class-input="count-stepper-input"
+        t-class-minus="count-stepper-button"
+        t-class-plus="count-stepper-button"
+        value="{{recommendationCount}}"
+        min="{{1}}"
+        max="{{10}}"
+        integer
+        theme="filled"
+        size="medium"
+        bind:change="onRecommendationCountChange"
+      />
+    </view>
     <view class="hero-actions">
       <button class="primary-btn" bindtap="randomDinnerSet">随机换一餐</button>
       <button class="secondary-btn" bindtap="addRecommendationToMenu">加入菜单</button>

@@ -1,0 +1,39 @@
+<view class="squad-page">
+  <view class="page-head">
+    <view class="eyebrow">Squad</view>
+    <view class="title">加入小分队</view>
+    <view class="subtitle">输入队友分享给你的口令，确认后加入。</view>
+  </view>
+
+  <view class="form-section">
+    <view class="field">
+      <view class="field-label">加入口令</view>
+      <input
+        class="field-input"
+        value="{{inviteCode}}"
+        placeholder="输入口令"
+        data-field="inviteCode"
+        bindinput="updateField"
+      />
+    </view>
+    <view class="field">
+      <view class="field-label">大家怎么称呼我</view>
+      <input
+        class="field-input"
+        value="{{memberName}}"
+        placeholder="例如：小王"
+        data-field="memberName"
+        bindinput="updateField"
+      />
+    </view>
+    <button class="cancel-btn" bindtap="previewInvite">看看是哪一队</button>
+    <view class="join-preview" wx:if="{{joinPreview}}">
+      <view class="join-title">{{joinPreview.name}}</view>
+      <view class="join-desc">{{joinPreview.memberCount}} 位队员 · 口令 {{joinPreview.inviteCode}}</view>
+      <button class="save-btn" bindtap="joinRoom" disabled="{{joining}}">加入小分队</button>
+    </view>
+    <view class="cloud-error" wx:if="{{cloudError}}">{{cloudError}}</view>
+  </view>
+
+  <t-toast id="t-toast" />
+</view>

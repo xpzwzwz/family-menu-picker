@@ -1,0 +1,83 @@
+page {
+  background-color: #f6f4ef;
+}
+
+.squad-page {
+  min-height: 100vh;
+  padding: 28rpx 28rpx 48rpx;
+  box-sizing: border-box;
+}
+
+.page-head {
+  padding: 28rpx 8rpx 24rpx;
+}
+
+.eyebrow {
+  color: #d54941;
+  font-size: 24rpx;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.title {
+  margin-top: 8rpx;
+  color: #1f1f1f;
+  font-size: 48rpx;
+  font-weight: 700;
+  line-height: 64rpx;
+}
+
+.subtitle,
+.cloud-error {
+  margin-top: 10rpx;
+  color: #666;
+  font-size: 26rpx;
+  line-height: 38rpx;
+}
+
+.form-section {
+  padding: 28rpx 24rpx;
+  border-radius: 8rpx;
+  background: #fff;
+  box-shadow: 0 8rpx 24rpx rgba(31, 31, 31, 0.06);
+}
+
+.field {
+  margin-bottom: 28rpx;
+}
+
+.field-label {
+  margin-bottom: 12rpx;
+  color: #333;
+  font-size: 26rpx;
+  font-weight: 600;
+  line-height: 36rpx;
+}
+
+.field-input {
+  height: 88rpx;
+  padding: 0 22rpx;
+  border-radius: 8rpx;
+  background: #f7f7f7;
+  color: #1f1f1f;
+  font-size: 28rpx;
+  box-sizing: border-box;
+}
+
+.save-btn {
+  height: 92rpx;
+  border-radius: 8rpx;
+  background: #d54941;
+  color: #fff;
+  font-size: 30rpx;
+  font-weight: 700;
+  line-height: 92rpx;
+}
+
+.save-btn::after {
+  border: 0;
+}
+
+.cloud-error {
+  color: #d54941;
+}

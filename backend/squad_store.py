@@ -26,6 +26,9 @@ def init_db(conn: sqlite3.Connection) -> None:
           user_id TEXT PRIMARY KEY,
           openid TEXT NOT NULL UNIQUE,
           nickname TEXT NOT NULL,
+          phone_number TEXT NOT NULL DEFAULT '',
+          phone_country_code TEXT NOT NULL DEFAULT '',
+          phone_bound_at INTEGER NOT NULL DEFAULT 0,
           created_at INTEGER NOT NULL
         );
 
@@ -51,7 +54,18 @@ def init_db(conn: sqlite3.Connection) -> None:
         );
         """
     )
+    ensure_user_phone_columns(conn)
     conn.commit()
+
+
+def ensure_user_phone_columns(conn: sqlite3.Connection) -> None:
+    columns = {row["name"] for row in conn.execute("PRAGMA table_info(users)").fetchall()}
+    if "phone_number" not in columns:
+        conn.execute("ALTER TABLE users ADD COLUMN phone_number TEXT NOT NULL DEFAULT ''")
+    if "phone_country_code" not in columns:
+        conn.execute("ALTER TABLE users ADD COLUMN phone_country_code TEXT NOT NULL DEFAULT ''")
+    if "phone_bound_at" not in columns:
+        conn.execute("ALTER TABLE users ADD COLUMN phone_bound_at INTEGER NOT NULL DEFAULT 0")
 
 
 def now_ms() -> int:
@@ -67,12 +81,22 @@ def make_invite_code() -> str:
 
 
 def row_to_user(row: sqlite3.Row) -> dict:
+    phone_number = row["phone_number"] if "phone_number" in row.keys() else ""
     return {
         "userId": row["user_id"],
         "openid": row["openid"],
         "nickname": row["nickname"],
+        "hasPhone": bool(phone_number),
+        "maskedPhone": mask_phone(phone_number),
         "createdAt": row["created_at"],
     }
+
+
+def mask_phone(phone_number: str) -> str:
+    clean_phone = (phone_number or "").strip()
+    if len(clean_phone) < 7:
+        return ""
+    return f"{clean_phone[:3]}****{clean_phone[-4:]}"
 
 
 def row_to_member(row: sqlite3.Row) -> dict:
@@ -110,6 +134,24 @@ def require_user(user_id: str) -> dict | None:
     if not user_id:
         return None
     with connect() as conn:
+        row = conn.execute("SELECT * FROM users WHERE user_id = ?", (user_id,)).fetchone()
+        return row_to_user(row) if row else None
+
+
+def bind_user_phone(user_id: str, phone_number: str, country_code: str = "") -> dict | None:
+    clean_phone = (phone_number or "").strip()
+    if not user_id or not clean_phone:
+        return None
+    with connect() as conn:
+        conn.execute(
+            """
+            UPDATE users
+            SET phone_number = ?, phone_country_code = ?, phone_bound_at = ?
+            WHERE user_id = ?
+            """,
+            (clean_phone, (country_code or "").strip(), now_ms(), user_id),
+        )
+        conn.commit()
         row = conn.execute("SELECT * FROM users WHERE user_id = ?", (user_id,)).fetchone()
         return row_to_user(row) if row else None
 
@@ -160,6 +202,21 @@ def get_room(room_id: str) -> dict | None:
         return row_to_room(conn, row) if row else None
 
 
+def list_user_rooms(user_id: str) -> list[dict]:
+    with connect() as conn:
+        rows = conn.execute(
+            """
+            SELECT rooms.*
+            FROM rooms
+            INNER JOIN room_members ON room_members.room_id = rooms.room_id
+            WHERE room_members.user_id = ?
+            ORDER BY room_members.joined_at DESC, rooms.created_at DESC
+            """,
+            (user_id,),
+        ).fetchall()
+        return [row_to_room(conn, row) for row in rows]
+
+
 def get_room_preview(invite_code: str) -> dict | None:
     with connect() as conn:
         row = conn.execute("SELECT * FROM rooms WHERE invite_code = ?", ((invite_code or "").strip().upper(),)).fetchone()
@@ -202,6 +259,58 @@ def join_room(invite_code: str, user_id: str, member_name: str, role: str, flavo
         conn.commit()
         row = conn.execute("SELECT * FROM rooms WHERE room_id = ?", (room["room_id"],)).fetchone()
         return row_to_room(conn, row)
+
+
+def update_room_name(room_id: str, user_id: str, name: str) -> tuple[dict | None, str | None]:
+    clean_name = (name or "").strip()
+    if not clean_name:
+        return None, "name_required"
+    with connect() as conn:
+        room = conn.execute("SELECT * FROM rooms WHERE room_id = ?", (room_id,)).fetchone()
+        if not room:
+            return None, "not_found"
+        if room["owner_user_id"] != user_id:
+            return None, "not_owner"
+        conn.execute("UPDATE rooms SET name = ? WHERE room_id = ?", (clean_name, room_id))
+        conn.commit()
+        row = conn.execute("SELECT * FROM rooms WHERE room_id = ?", (room_id,)).fetchone()
+        return row_to_room(conn, row), None
+
+
+def update_member_name(room_id: str, user_id: str, member_name: str) -> tuple[dict | None, str | None]:
+    clean_name = (member_name or "").strip()
+    if not clean_name:
+        return None, "name_required"
+    with connect() as conn:
+        room = conn.execute("SELECT * FROM rooms WHERE room_id = ?", (room_id,)).fetchone()
+        if not room:
+            return None, "not_found"
+        member = conn.execute(
+            "SELECT * FROM room_members WHERE room_id = ? AND user_id = ?",
+            (room_id, user_id),
+        ).fetchone()
+        if not member:
+            return None, "not_member"
+        conn.execute(
+            "UPDATE room_members SET name = ? WHERE room_id = ? AND user_id = ?",
+            (clean_name, room_id, user_id),
+        )
+        conn.commit()
+        row = conn.execute("SELECT * FROM rooms WHERE room_id = ?", (room_id,)).fetchone()
+        return row_to_room(conn, row), None
+
+
+def disband_room(room_id: str, user_id: str) -> tuple[dict | None, str | None]:
+    with connect() as conn:
+        room = conn.execute("SELECT * FROM rooms WHERE room_id = ?", (room_id,)).fetchone()
+        if not room:
+            return None, "not_found"
+        if room["owner_user_id"] != user_id:
+            return None, "not_owner"
+        room_data = row_to_room(conn, room)
+        conn.execute("DELETE FROM rooms WHERE room_id = ?", (room_id,))
+        conn.commit()
+        return room_data, None
 
 
 def leave_room(room_id: str, user_id: str) -> tuple[dict | None, str | None]:

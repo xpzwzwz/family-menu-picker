@@ -1,6 +1,11 @@
 import Dialog from 'tdesign-miniprogram/dialog/index';
 import Toast from 'tdesign-miniprogram/toast/index';
-import { buildShoppingBasket, clearShoppingBasketChecked, toggleShoppingBasketItem } from '../../../model/dishes';
+import {
+  buildShoppingBasket,
+  clearShoppingBasketChecked,
+  readLastConfirmedMenu,
+  toggleShoppingBasketItem,
+} from '../../../model/dishes';
 
 Page({
   data: {
@@ -11,6 +16,16 @@ Page({
       totalDishCount: 0,
     },
     progressText: '暂无备料',
+    source: 'current',
+    menuButtonText: '查看菜单',
+  },
+
+  onLoad(options = {}) {
+    const source = options.source === 'confirmed' ? 'confirmed' : 'current';
+    this.setData({
+      source,
+      menuButtonText: source === 'confirmed' ? '查看刚确认的菜单' : '查看菜单',
+    });
   },
 
   onShow() {
@@ -23,7 +38,8 @@ Page({
   },
 
   refreshBasket() {
-    const basket = buildShoppingBasket();
+    const confirmedMenu = this.data.source === 'confirmed' ? readLastConfirmedMenu() : null;
+    const basket = buildShoppingBasket(confirmedMenu && confirmedMenu.goodsList ? confirmedMenu.goodsList : undefined);
     this.setData({
       basket,
       progressText: basket.totalIngredientCount
@@ -49,9 +65,9 @@ Page({
     }
 
     Dialog.confirm({
-      title: '清空已买状态？',
+      title: '把勾选都取消吗？',
       content: '只会取消勾选，不会修改菜单。',
-      confirmBtn: '清空',
+      confirmBtn: '取消勾选',
       cancelBtn: '取消',
     })
       .then(() => {
@@ -66,6 +82,10 @@ Page({
   },
 
   goMenu() {
+    if (this.data.source === 'confirmed') {
+      wx.navigateTo({ url: '/pages/order/order-confirm/index?source=confirmed' });
+      return;
+    }
     wx.switchTab({ url: '/pages/cart/index' });
   },
 });

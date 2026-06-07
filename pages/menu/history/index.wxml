@@ -21,7 +21,7 @@
 
   <view class="empty-state" wx:else>
     <view class="empty-title">暂无历史菜单</view>
-    <view class="empty-desc">确认菜单后，会自动保存到这里。</view>
+    <view class="empty-desc">点“本顿已完成”后，会自动保存到这里。</view>
   </view>
 
   <t-dialog id="t-dialog" />

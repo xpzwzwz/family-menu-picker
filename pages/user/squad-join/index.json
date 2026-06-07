@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "加入小分队",
+  "usingComponents": {
+    "t-toast": "tdesign-miniprogram/toast/toast"
+  }
+}

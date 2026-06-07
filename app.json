@@ -19,7 +19,7 @@
     {
       "root": "pages/user",
       "name": "user",
-      "pages": ["profile/index", "feedback/index"]
+      "pages": ["profile/index", "squad-list/index", "squad-create/index", "squad-join/index", "feedback/index"]
     },
     {
       "root": "pages/menu",

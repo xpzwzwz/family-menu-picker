@@ -1,23 +1,30 @@
 <view class="cart-bar__placeholder" wx:if="{{fixed}}" />
-<view class="cart-bar {{fixed ? 'cart-bar--fixed' : ''}} flex flex-v-center" style="bottom: {{fixed ? 'calc(' + bottomHeight + 'rpx + env(safe-area-inset-bottom))' : ''}};">
-	<t-icon
-	 size="40rpx"
-	 color="{{isAllSelected ? '#FA4126' : '#BBBBBB'}}"
-	 name="{{isAllSelected ? 'check-circle-filled' : 'circle'}}"
-	 class="cart-bar__check"
-	 catchtap="handleSelectAll"
-	/>
-	<text>全选</text>
-	<view class="cart-bar__total flex1">
-		<view>
-			<text class="cart-bar__total--bold text-padding-right">预计耗时</text>
-			<text class="cart-bar__total--bold cart-bar__total--price">{{totalAmount || 0}} 分钟</text>
-		</view>
-		<view>
-			<text class="cart-bar__total--normal">按已选择菜品估算</text>
-		</view>
-	</view>
-	<view catchtap="handleToSettle" class="{{!isDisabled ? '' : 'disabled-btn'}} account-btn" hover-class="{{!isDisabled ? '' : 'hover-btn'}}">
-		确认菜单({{totalGoodsNum}})
-	</view>
+<view
+  class="cart-bar {{fixed ? 'cart-bar--fixed' : ''}} flex flex-v-center"
+  style="bottom: {{fixed ? 'calc(' + bottomHeight + 'rpx + env(safe-area-inset-bottom))' : ''}};"
+>
+  <t-icon
+    size="40rpx"
+    color="{{isAllSelected ? '#FA4126' : '#BBBBBB'}}"
+    name="{{isAllSelected ? 'check-circle-filled' : 'circle'}}"
+    class="cart-bar__check"
+    catchtap="handleSelectAll"
+  />
+  <text>全选</text>
+  <view class="cart-bar__total flex1">
+    <view>
+      <text class="cart-bar__total--bold text-padding-right">预计耗时</text>
+      <text class="cart-bar__total--bold cart-bar__total--price">{{totalAmount || 0}} 分钟</text>
+    </view>
+    <view>
+      <text class="cart-bar__total--normal">按已选择菜品估算</text>
+    </view>
+  </view>
+  <view
+    catchtap="handleToSettle"
+    class="{{!isDisabled ? '' : 'disabled-btn'}} account-btn"
+    hover-class="{{!isDisabled ? '' : 'hover-btn'}}"
+  >
+    本顿已完成
+  </view>
 </view>

@@ -1,6 +1,6 @@
 # 光盘小分队
 
-家庭内部用的微信小程序，用来解决“今天吃什么”。当前版本支持本地菜品/菜单管理，并提供一个轻量 Python 后端用于 OSS 图片上传签名和云端小分队房间。
+小分队内部用的微信小程序，用来解决“今天吃什么”。当前版本支持本地菜品/菜单管理，并提供一个轻量 Python 后端用于 OSS 图片上传签名和云端小分队房间。
 
 ## 功能
 
@@ -8,7 +8,7 @@
 2. 推荐菜可以一键加入菜单。
 3. 菜品页可以按分类继续选菜。
 4. 我的菜单页可以改数量、全选、左滑移除菜品。
-5. 确认页保存最终菜单和家庭备注。
+5. 确认页保存最终菜单和小分队备注。
 6. 我的页面可以查看最近确认的菜单，并复用历史菜单。
 7. 支持维护菜品库：新增菜品、编辑已有菜品、移除不想推荐的菜。
 8. 支持菜篮子：按当前菜单汇总备料并勾选已买。
@@ -82,29 +82,37 @@ components/                      通用组件
 
 菜品图片默认使用本地分类占位图。新增或编辑菜品时，用户可以选择自己的图片；如果配置了后端 API，小程序会先压缩图片，再直传到 OSS。云端小分队也复用同一个后端地址。
 
-1. 启动后端签名服务：
+当前 `config/api.js` 已默认指向线上后端：
+
+```js
+export const API_BASE_URL = 'https://smart-uniai.com/family-menu-api';
+```
+
+如果只做本地小程序开发，可以直接使用这个线上后端。需要本地调试后端时，再按下面方式启动：
+
+1. 启动本地后端签名服务：
 
    ```bash
-   cd ~/family-menu-picker
-   cp backend/.env.example backend/.env
+   cd ~/family-menu-picker/backend
+   cp .env.example .env
    # 在 backend/.env 中填写 OSS_ACCESS_KEY_ID / OSS_ACCESS_KEY_SECRET 等配置
-   set -a && . backend/.env && set +a
+   set -a && . .env && set +a
 
    # 方式一：使用 uv 临时环境
-   uv run --with fastapi==0.115.6 --with uvicorn==0.34.0 --with pydantic==2.10.4 uvicorn backend.main:app --host 0.0.0.0 --port 8787
+   uv run --with fastapi==0.115.6 --with uvicorn==0.34.0 --with pydantic==2.10.4 uvicorn main:app --host 0.0.0.0 --port 8787
 
    # 方式二：使用你自己的 Python 虚拟环境
-   # pip install -r backend/requirements.txt
-   # uvicorn backend.main:app --host 0.0.0.0 --port 8787
+   # pip install -r requirements.txt
+   # uvicorn main:app --host 0.0.0.0 --port 8787
    ```
 
-2. 在 `config/api.js` 中配置后端地址，例如：
+2. 如果要切回本地后端，在 `config/api.js` 中临时改成：
 
    ```js
    export const API_BASE_URL = 'http://127.0.0.1:8787';
    ```
 
-3. 正式发布前，需要把后端域名加入微信小程序 request/uploadFile 合法域名。
+3. 正式发布前，需要在微信公众平台把 `https://smart-uniai.com` 加入 request/uploadFile 合法域名。
 
 后端只负责签发 OSS 上传表单，不接收图片内容，也不会把 OSS Secret 返回给小程序。
 
@@ -117,9 +125,13 @@ components/                      通用组件
 ```text
 POST /api/squad/login
 POST /api/squad/rooms
+GET  /api/squad/rooms
 GET  /api/squad/rooms/{roomId}
 GET  /api/squad/rooms/invite/{inviteCode}
 POST /api/squad/rooms/invite/{inviteCode}/join
+PATCH /api/squad/rooms/{roomId}
+PATCH /api/squad/rooms/{roomId}/me
+DELETE /api/squad/rooms/{roomId}
 POST /api/squad/rooms/{roomId}/leave
 ```
 

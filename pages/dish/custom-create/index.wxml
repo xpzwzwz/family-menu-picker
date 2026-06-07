@@ -2,7 +2,7 @@
   <view class="page-head">
     <view class="eyebrow">Dish Library</view>
     <view class="title">{{modeTitle}}</view>
-    <view class="subtitle">把菜品改成家里习惯的做法，之后选菜和随机搭配都会按这里来。</view>
+    <view class="subtitle">把菜品改成队里习惯的做法，之后选菜和随机搭配都会按这里来。</view>
   </view>
 
   <view class="form-section">
@@ -131,7 +131,9 @@
                 <view class="step-image-desc">有图就展示，没图不占位。</view>
               </view>
             </view>
-            <button class="remove-step-image" wx:if="{{item.image}}" catchtap="removeStepImage" data-index="{{index}}">移除图片</button>
+            <button class="remove-step-image" wx:if="{{item.image}}" catchtap="removeStepImage" data-index="{{index}}"
+              >移除图片</button
+            >
           </view>
         </view>
       </view>

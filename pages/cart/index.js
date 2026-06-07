@@ -1,7 +1,11 @@
 import Dialog from 'tdesign-miniprogram/dialog/index';
 import Toast from 'tdesign-miniprogram/toast/index';
 import { fetchCartGroupData } from '../../services/cart/cart';
-import { removeTonightMenuItem, updateTonightMenuItem } from '../../model/dishes';
+import { removeTonightMenuItem, saveConfirmedMenu, updateTonightMenuItem } from '../../model/dishes';
+
+function isDishSelected(value) {
+  return value === true || value === 1;
+}
 
 Page({
   data: {
@@ -68,7 +72,7 @@ Page({
         for (const goods of activity.goodsPromotionList) {
           if (goods.spuId === spuId && goods.skuId === skuId) {
             currentStore = store;
-            currentActivity = currentActivity;
+            currentActivity = activity;
             currentGoods = goods;
             return {
               currentStore,
@@ -95,13 +99,16 @@ Page({
   },
 
   selectGoodsService({ spuId, skuId, isSelected }) {
-    this.findGoods(spuId, skuId).currentGoods.isSelected = isSelected;
+    const { currentGoods } = this.findGoods(spuId, skuId);
+    if (!currentGoods) return Promise.reject(new Error('missing goods'));
+    currentGoods.isSelected = isSelected;
     updateTonightMenuItem(spuId, skuId, { isSelected: isSelected ? 1 : 0 });
     return Promise.resolve();
   },
 
   selectStoreService({ storeId, isSelected }) {
     const currentStore = this.data.cartGroupData.storeGoods.find((s) => s.storeId === storeId);
+    if (!currentStore) return Promise.reject(new Error('missing store'));
     currentStore.isSelected = isSelected;
     currentStore.promotionGoodsList.forEach((activity) => {
       activity.goodsPromotionList.forEach((goods) => {
@@ -113,7 +120,9 @@ Page({
   },
 
   changeQuantityService({ spuId, skuId, quantity }) {
-    this.findGoods(spuId, skuId).currentGoods.quantity = quantity;
+    const { currentGoods } = this.findGoods(spuId, skuId);
+    if (!currentGoods) return Promise.reject(new Error('missing goods'));
+    currentGoods.quantity = quantity;
     updateTonightMenuItem(spuId, skuId, { quantity });
     return Promise.resolve();
   },
@@ -158,6 +167,11 @@ Page({
       isSelected,
     } = e.detail;
     const { currentGoods } = this.findGoods(spuId, skuId);
+    if (!currentGoods) {
+      Toast({ context: this, selector: '#t-toast', message: '这道菜刚刚变动了，刷新后再试' });
+      this.refreshData();
+      return;
+    }
     Toast({
       context: this,
       selector: '#t-toast',
@@ -183,6 +197,11 @@ Page({
       quantity,
     } = e.detail;
     const { currentGoods } = this.findGoods(spuId, skuId);
+    if (!currentGoods) {
+      Toast({ context: this, selector: '#t-toast', message: '这道菜刚刚变动了，刷新后再试' });
+      this.refreshData();
+      return;
+    }
     const stockQuantity = currentGoods.stockQuantity > 0 ? currentGoods.stockQuantity : 0;
     if (quantity > stockQuantity) {
       if (currentGoods.quantity === stockQuantity && quantity - stockQuantity === 1) {
@@ -235,8 +254,8 @@ Page({
       goods: { spuId, skuId },
     } = e.detail;
     Dialog.confirm({
-      content: '确认从菜单删除这道菜吗?',
-      confirmBtn: '确定',
+      content: '从菜单里移除这道菜吗？',
+      confirmBtn: '移除',
       cancelBtn: '取消',
     }).then(() => {
       this.deleteGoodsService({ spuId, skuId }).then(() => {
@@ -251,7 +270,7 @@ Page({
     Toast({
       context: this,
       selector: '#t-toast',
-      message: `${isAllSelected ? '取消' : '点击'}了全选按钮`,
+      message: isAllSelected ? '已取消全选' : '已全选',
     });
     this.selectStoreService({ storeId: 'family-kitchen', isSelected: !isAllSelected }).then(() => this.refreshData());
   },
@@ -261,14 +280,39 @@ Page({
     this.data.cartGroupData.storeGoods.forEach((store) => {
       store.promotionGoodsList.forEach((promotion) => {
         promotion.goodsPromotionList.forEach((m) => {
-          if (m.isSelected === 1) {
+          if (isDishSelected(m.isSelected)) {
             goodsRequestList.push(m);
           }
         });
       });
     });
-    wx.setStorageSync('order.goodsRequestList', JSON.stringify(goodsRequestList));
-    wx.navigateTo({ url: '/pages/order/order-confirm/index?type=cart' });
+    if (!goodsRequestList.length) {
+      Toast({
+        context: this,
+        selector: '#t-toast',
+        message: '先选几道菜',
+      });
+      return;
+    }
+    saveConfirmedMenu({
+      goodsList: goodsRequestList,
+      summary: {
+        totalQuantity: goodsRequestList.reduce((sum, item) => sum + (item.quantity || 1), 0),
+        totalCookMinutes: goodsRequestList.reduce(
+          (sum, item) => sum + (item.cookMinutes || 0) * (item.quantity || 1),
+          0,
+        ),
+        tags: [],
+      },
+      note: '',
+    });
+    Toast({
+      context: this,
+      selector: '#t-toast',
+      message: '已放入菜单历史',
+    });
+    this.setData({ cartGroupData: null });
+    this.refreshData();
   },
   onGotoHome() {
     wx.switchTab({ url: '/pages/category/index' });

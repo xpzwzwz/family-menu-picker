@@ -36,13 +36,13 @@
 
   <view class="empty-state" wx:else>
     <view class="empty-title">菜篮子还是空的</view>
-    <view class="empty-desc">先去选几道菜，系统会自动把备料汇总到这里。</view>
+    <view class="empty-desc">先去选几道菜，这里会帮你列出要买的东西。</view>
     <button class="empty-btn" bindtap="goPickDishes">去选菜</button>
   </view>
 
   <view class="footer">
     <button class="secondary-btn" bindtap="goPickDishes">继续选菜</button>
-    <button class="primary-btn" bindtap="goMenu">查看菜单</button>
+    <button class="primary-btn" bindtap="goMenu">{{menuButtonText}}</button>
   </view>
 
   <t-dialog id="t-dialog" />

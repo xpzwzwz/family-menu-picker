@@ -69,9 +69,9 @@ assert.equal(vegetableSection.name, '素菜');
 assert.equal(vegetableSection.goodsList.some((goods) => goods.spuId === saved.id), true);
 assert.equal(selectionSections.every((section) => Array.isArray(section.goodsList)), true);
 
-const recommendation = buildDinnerRecommendation(1);
+const recommendations = Array.from({ length: 30 }, (_, index) => buildDinnerRecommendation(index));
 assert.equal(
-  recommendation.dishes.some((dish) => dish.id === saved.id),
+  recommendations.some((recommendation) => recommendation.dishes.some((dish) => dish.id === saved.id)),
   true,
 );
 

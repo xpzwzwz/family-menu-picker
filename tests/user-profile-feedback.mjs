@@ -25,7 +25,7 @@ Date.now = () => 1800000000000;
 storage.clear();
 const defaultProfile = getDefaultUserProfile();
 assert.equal(defaultProfile.nickname, '光盘队员');
-assert.equal(defaultProfile.role, '家庭成员');
+assert.equal(defaultProfile.role, '小分队成员');
 assert.deepEqual(readUserProfile(), defaultProfile);
 
 const savedProfile = saveUserProfile({

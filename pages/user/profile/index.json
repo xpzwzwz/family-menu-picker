@@ -1,6 +1,7 @@
 {
-  "navigationBarTitleText": "小分队成员",
+  "navigationBarTitleText": "我的小分队",
   "usingComponents": {
+    "t-icon": "tdesign-miniprogram/icon/icon",
     "t-toast": "tdesign-miniprogram/toast/toast"
   }
 }

@@ -31,7 +31,7 @@ Page({
       Toast({
         context: this,
         selector: '#t-toast',
-        message: '已记录反馈',
+        message: '已经记下来了',
       });
       setTimeout(() => {
         wx.navigateBack();
@@ -40,7 +40,7 @@ Page({
       Toast({
         context: this,
         selector: '#t-toast',
-        message: error.message || '请完善反馈内容',
+        message: error.message || '先写一点内容吧',
       });
     }
   },

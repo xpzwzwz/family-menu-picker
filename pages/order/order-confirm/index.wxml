@@ -1,7 +1,7 @@
 <view class="confirm-page" wx:if="{{!confirmedMenu}}">
   <view class="confirm-head">
     <view>
-      <view class="eyebrow">Final Menu</view>
+      <view class="eyebrow">Menu</view>
       <view class="title">确认菜单</view>
     </view>
     <button class="back-btn" bindtap="goBackToMenu">返回修改</button>
@@ -10,11 +10,11 @@
   <view class="summary-card">
     <view class="summary-item">
       <view class="summary-value">{{summary.totalQuantity}}</view>
-      <view class="summary-label">总份数</view>
+      <view class="summary-label">份数</view>
     </view>
     <view class="summary-item">
       <view class="summary-value">{{summary.totalCookMinutes}}</view>
-      <view class="summary-label">预计分钟</view>
+      <view class="summary-label">大约用时</view>
     </view>
   </view>
 
@@ -40,7 +40,7 @@
   </view>
 
   <view class="note-card">
-    <view class="note-title">家庭备注</view>
+    <view class="note-title">小分队备注</view>
     <t-textarea
       value="{{note}}"
       placeholder="例如：少辣、米饭多煮一点、谁负责洗菜。"
@@ -64,6 +64,18 @@
     <view class="result-title">菜单已确认</view>
     <view class="result-desc">这份菜单已经保存到菜单历史，接下来可以照着菜篮子买菜，或者回首页继续随机下一餐。</view>
     <view class="result-summary">共 {{summary.totalQuantity}} 份 · 预计 {{summary.totalCookMinutes}} 分钟</view>
+  </view>
+
+  <view class="menu-list confirmed-menu-list" wx:if="{{goodsList.length}}">
+    <view class="menu-card" wx:for="{{goodsList}}" wx:key="spuId">
+      <t-image src="{{item.thumb}}" t-class="dish-image" mode="aspectFill" />
+      <view class="dish-info">
+        <view class="dish-title">{{item.title}}</view>
+        <view class="dish-meta">{{item.cookMinutes}} 分钟 · {{item.difficulty}} · {{item.flavor}}</view>
+        <view class="dish-note">{{item.notes}}</view>
+      </view>
+      <view class="dish-quantity">x{{item.quantity}}</view>
+    </view>
   </view>
 
   <view class="result-actions">
