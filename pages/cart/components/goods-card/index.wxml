@@ -32,7 +32,15 @@
           >{{ goods.desc }}</view
         >
         <slot name="after-desc" />
-        <view wx:if="{{ goods.selectedByName }}" class="wr-goods-card__picker">由 {{ goods.selectedByName }} 选择</view>
+        <view wx:if="{{ goods.pickerName }}" class="wr-goods-card__picker">
+          <image
+            wx:if="{{ goods.pickerAvatar }}"
+            class="wr-goods-card__picker-avatar"
+            src="{{ goods.pickerAvatar }}"
+            mode="aspectFill"
+          />
+          <text>{{ goods.pickerName }} 点的</text>
+        </view>
         <view
           wx:if="{{ goods.specs && goods.specs.length > 0 && !goods.hideKey.specs }}"
           class="wr-goods-card__specs__desc specs-class"

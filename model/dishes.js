@@ -909,42 +909,92 @@ function isVegetableLikeDish(dish) {
   return dish.category === 'vegetable' || dish.tags.includes('素菜') || dish.tags.includes('清淡');
 }
 
-function pickFirstMatching(source, predicate, pickedIds) {
-  return source.find((dish) => predicate(dish) && !pickedIds.has(dish.id)) || null;
+// 算「像不像」时忽略的调料/辅料,避免两道菜因为都放葱姜蒜盐就被判为撞菜
+const SEASONING_INGREDIENTS = [
+  '盐', '糖', '油', '酱油', '生抽', '老抽', '蚝油', '料酒', '醋', '香油', '香菜',
+  '葱', '姜', '蒜', '淀粉', '水', '清水', '味精', '鸡精', '胡椒', '花椒', '八角', '香叶',
+];
+
+function mainIngredients(dish) {
+  const list = Array.isArray(dish.ingredients) ? dish.ingredients : [];
+  return list.filter((name) => !SEASONING_INGREDIENTS.some((seasoning) => String(name).includes(seasoning)));
 }
 
-function pickRandomDinnerDishes(seed, count) {
+// 把菜归到一个「类型」上做多样性判断:汤 / 主食 / 荤 / 素 / 其他
+function dishFoodType(dish) {
+  const tags = Array.isArray(dish.tags) ? dish.tags : [];
+  if (dish.category === 'soup' || tags.includes('汤')) return 'soup';
+  if (dish.category === 'staple' || tags.includes('主食')) return 'staple';
+  if (isMeatLikeDish(dish)) return 'meat';
+  if (isVegetableLikeDish(dish)) return 'veg';
+  return 'other';
+}
+
+function sharesMainIngredient(dish, picked) {
+  const mine = mainIngredients(dish);
+  if (!mine.length) return false;
+  return picked.some((other) => {
+    const theirs = mainIngredients(other);
+    return mine.some((name) => theirs.includes(name));
+  });
+}
+
+// 多样性打分:类型没和已选撞 +2,主食材没撞 +1。分越高越优先被选。
+function diversityScore(dish, picked) {
+  const typeUsed = picked.some((other) => dishFoodType(other) === dishFoodType(dish));
+  const ingredientClash = sharesMainIngredient(dish, picked);
+  return (typeUsed ? 0 : 2) + (ingredientClash ? 0 : 1);
+}
+
+function pushDish(picked, pickedIds, dish) {
+  if (!dish || pickedIds.has(dish.id)) return false;
+  picked.push(dish);
+  pickedIds.add(dish.id);
+  return true;
+}
+
+// 按「类型不撞 + 食材不撞」贪心填满剩余空位;实在凑不齐时也会退而求其次填满
+function diverseFill(shuffled, picked, pickedIds, targetCount) {
+  while (picked.length < targetCount) {
+    let best = null;
+    let bestScore = -1;
+    shuffled.forEach((dish) => {
+      if (pickedIds.has(dish.id)) return;
+      const score = diversityScore(dish, picked);
+      if (score > bestScore) {
+        best = dish;
+        bestScore = score;
+      }
+    });
+    if (!pushDish(picked, pickedIds, best)) break;
+  }
+}
+
+// seed:随机种子;count:几道菜;lockedDishes:用户锁定要保留的菜(换一餐时不动它们)
+function pickRandomDinnerDishes(seed, count, lockedDishes = []) {
   const source = getAllDishes();
   if (!source.length) return [];
   const targetCount = normalizeRecommendationCount(count, source.length);
   const shuffled = shuffleDishes(source, seed);
+  const byId = new Map(source.map((dish) => [dish.id, dish]));
   const picked = [];
   const pickedIds = new Set();
 
-  if (targetCount >= 2) {
-    [
-      pickFirstMatching(shuffled, isMeatLikeDish, pickedIds),
-      pickFirstMatching(shuffled, isVegetableLikeDish, pickedIds),
-    ]
-      .filter(Boolean)
-      .forEach((dish) => {
-        picked.push(dish);
-        pickedIds.add(dish.id);
-      });
-  }
-
-  shuffled.forEach((dish) => {
-    if (picked.length >= targetCount || pickedIds.has(dish.id)) return;
-    picked.push(dish);
-    pickedIds.add(dish.id);
+  // 1) 先放锁定的菜(去重、按上限截断、确认仍在菜库里),它们始终保留在结果靠前
+  (Array.isArray(lockedDishes) ? lockedDishes : []).forEach((locked) => {
+    if (picked.length >= targetCount) return;
+    pushDish(picked, pickedIds, locked && byId.get(locked.id));
   });
 
-  return shuffleDishes(picked, seed + targetCount);
+  // 2) 其余空位按多样性贪心填满:类型(荤/素/汤/主食)不撞 + 主食材不撞优先,
+  //    这样两道菜不会同是「汤」或同是「番茄」,自然也就荤素/品类错开了
+  diverseFill(shuffled, picked, pickedIds, targetCount);
+  return picked;
 }
 
-export function buildDinnerRecommendation(seed = Date.now(), count = 3) {
+export function buildDinnerRecommendation(seed = Date.now(), count = 3, lockedDishes = []) {
   const offset = Math.abs(Number(seed) || 0);
-  const picked = pickRandomDinnerDishes(offset, count);
+  const picked = pickRandomDinnerDishes(offset, count, lockedDishes);
   const totalCookMinutes = picked.reduce((sum, dish) => sum + dish.cookMinutes, 0);
   return {
     id: `recommendation-${offset}`,
@@ -965,13 +1015,14 @@ export function buildDifferentDinnerRecommendation(
   currentRecommendation,
   seed = Date.now(),
   count = currentRecommendation?.dishes?.length || 3,
+  lockedDishes = [],
 ) {
   const currentSignature = getRecommendationSignature(currentRecommendation);
   for (let step = 0; step < 12; step += 1) {
-    const recommendation = buildDinnerRecommendation(seed + step, count);
+    const recommendation = buildDinnerRecommendation(seed + step, count, lockedDishes);
     if (getRecommendationSignature(recommendation) !== currentSignature) return recommendation;
   }
-  return buildDinnerRecommendation(seed, count);
+  return buildDinnerRecommendation(seed, count, lockedDishes);
 }
 
 export function readTonightMenu() {
@@ -1245,8 +1296,12 @@ export function buildCartGroupData(menu = readTonightMenu()) {
   // 之后给菜换了图(如补了真实照片)旧菜单项不会自动更新，这里按 spuId 兜底刷新。
   const freshMenu = menu.map((item) => {
     const dish = getDishById(item.dishId || item.spuId);
-    if (!dish || !dish.image) return item;
-    return { ...item, thumb: dish.image, primaryImage: dish.image };
+    // 统一的「谁的菜」:点菜页选的成员(selectedByName)优先,否则用服务端盖的添加者(addedByName)。
+    // 头像只在用添加者兜底时显示(成员名没有配套头像,避免名字和头像对不上)。
+    const pickerName = item.selectedByName || item.addedByName || '';
+    const pickerAvatar = item.selectedByName ? '' : item.addedByAvatar || '';
+    const withImage = dish && dish.image ? { ...item, thumb: dish.image, primaryImage: dish.image } : { ...item };
+    return { ...withImage, pickerName, pickerAvatar };
   });
   const selectedGoods = freshMenu.filter((item) => item.isSelected);
   const totalCookMinutes = selectedGoods.reduce((sum, item) => sum + (item.cookMinutes || 0) * (item.quantity || 1), 0);

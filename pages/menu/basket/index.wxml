@@ -18,30 +18,43 @@
     <button class="share-btn2" open-type="share">分享给队友</button>
   </view>
 
+  <view class="groups-toolbar" wx:if="{{basket.groups.length}}">
+    <text class="groups-hint">点分类标题可收起/展开</text>
+    <text class="groups-toggle-all" bindtap="toggleAllGroups">{{allCollapsed ? '展开全部' : '收起全部'}}</text>
+  </view>
+
   <view class="ingredient-groups" wx:if="{{basket.groups.length}}">
     <view class="ingredient-group" wx:for="{{basket.groups}}" wx:key="key" wx:for-item="group" wx:for-index="gi">
-      <view class="group-head">
+      <view class="group-head" data-key="{{group.key}}" bindtap="toggleGroup">
         <text class="group-icon">{{group.icon}}</text>
         <text class="group-label">{{group.label}}</text>
         <text class="group-count">{{group.checkedCount}}/{{group.totalCount}}</text>
-      </view>
-      <view
-        class="ingredient-item {{item.checked ? 'ingredient-checked' : ''}}"
-        wx:for="{{group.items}}"
-        wx:key="id"
-        wx:for-item="item"
-        data-id="{{item.id}}"
-        data-checked="{{item.checked}}"
-        bindtap="toggleItem"
-      >
         <t-icon
-          name="{{item.checked ? 'check-circle-filled' : 'circle'}}"
-          size="40rpx"
-          color="{{item.checked ? '#48613f' : '#b8b8b8'}}"
+          class="group-chevron {{collapsed[group.key] ? '' : 'group-chevron-open'}}"
+          name="chevron-down"
+          size="36rpx"
+          color="#9aa39c"
         />
-        <view class="ingredient-copy">
-          <view class="ingredient-name">{{item.name}}</view>
-          <view class="ingredient-meta">{{item.count}} 份用到 · {{item.dishes.join(' / ')}}</view>
+      </view>
+      <view class="group-items" wx:if="{{!collapsed[group.key]}}">
+        <view
+          class="ingredient-item {{item.checked ? 'ingredient-checked' : ''}}"
+          wx:for="{{group.items}}"
+          wx:key="id"
+          wx:for-item="item"
+          data-id="{{item.id}}"
+          data-checked="{{item.checked}}"
+          bindtap="toggleItem"
+        >
+          <t-icon
+            name="{{item.checked ? 'check-circle-filled' : 'circle'}}"
+            size="40rpx"
+            color="{{item.checked ? '#48613f' : '#b8b8b8'}}"
+          />
+          <view class="ingredient-copy">
+            <view class="ingredient-name">{{item.name}}</view>
+            <view class="ingredient-meta">{{item.count}} 份用到 · {{item.dishes.join(' / ')}}</view>
+          </view>
         </view>
       </view>
     </view>

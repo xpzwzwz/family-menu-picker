@@ -132,52 +132,51 @@ Page({
     });
   },
 
-  chooseImage() {
-    wx.chooseMedia({
-      count: 1,
-      mediaType: ['image'],
-      sourceType: ['album', 'camera'],
-      success: async (res) => {
-        const file = res.tempFiles && res.tempFiles[0];
-        if (!file || !file.tempFilePath) return;
-        this.setData({ uploadingImage: true });
-        try {
-          const imageUrl = await uploadDishImage(file.tempFilePath);
-          this.setData({ 'form.image': imageUrl });
-          this.showToast('图片已保存');
-        } catch (error) {
-          this.setData({ 'form.image': file.tempFilePath });
-          this.showToast('图片暂存到本机');
-        } finally {
-          this.setData({ uploadingImage: false });
-        }
+  // 先让用户明确选「拍照 / 从相册选择」，再按所选来源调起 chooseMedia，
+  // 选完压缩并上传到 OSS；失败则暂存本机临时路径，并给出可见提示。
+  pickAndUploadImage(onUploaded, { okMsg = '图片已保存', tempMsg = '图片暂存到本机' } = {}) {
+    wx.showActionSheet({
+      itemList: ['拍照', '从相册选择'],
+      success: ({ tapIndex }) => {
+        wx.chooseMedia({
+          count: 1,
+          mediaType: ['image'],
+          sourceType: tapIndex === 0 ? ['camera'] : ['album'],
+          success: async (res) => {
+            const file = res.tempFiles && res.tempFiles[0];
+            if (!file || !file.tempFilePath) return;
+            this.setData({ uploadingImage: true });
+            try {
+              const imageUrl = await uploadDishImage(file.tempFilePath);
+              onUploaded(imageUrl);
+              this.showToast(okMsg);
+            } catch (error) {
+              onUploaded(file.tempFilePath);
+              this.showToast(tempMsg);
+            } finally {
+              this.setData({ uploadingImage: false });
+            }
+          },
+          fail: (err) => {
+            if (err && err.errMsg && err.errMsg.indexOf('cancel') === -1) {
+              this.showToast('打开相机/相册失败');
+            }
+          },
+        });
       },
       fail: () => {},
     });
   },
 
+  chooseImage() {
+    this.pickAndUploadImage((url) => this.setData({ 'form.image': url }));
+  },
+
   chooseStepImage(event) {
     const { index } = event.currentTarget.dataset;
-    wx.chooseMedia({
-      count: 1,
-      mediaType: ['image'],
-      sourceType: ['album', 'camera'],
-      success: async (res) => {
-        const file = res.tempFiles && res.tempFiles[0];
-        if (!file || !file.tempFilePath) return;
-        this.setData({ uploadingImage: true });
-        try {
-          const imageUrl = await uploadDishImage(file.tempFilePath);
-          this.setStepImage(index, imageUrl);
-          this.showToast('步骤图已保存');
-        } catch (error) {
-          this.setStepImage(index, file.tempFilePath);
-          this.showToast('步骤图暂存到本机');
-        } finally {
-          this.setData({ uploadingImage: false });
-        }
-      },
-      fail: () => {},
+    this.pickAndUploadImage((url) => this.setStepImage(index, url), {
+      okMsg: '步骤图已保存',
+      tempMsg: '步骤图暂存到本机',
     });
   },
 

@@ -28,6 +28,7 @@
       <button class="primary-btn" bindtap="randomDinnerSet">随机换一餐</button>
       <button class="secondary-btn" bindtap="addRecommendationToMenu">加入菜单</button>
     </view>
+    <view class="hero-hint">🎲 摇摇手机也能换一餐 · 点 🔒 锁住想留下的菜</view>
   </view>
 
   <view class="cleanplate-strip" bindtap="goCheckinRecords">
@@ -50,7 +51,10 @@
   </view>
 
   <view class="dish-grid" wx:if="{{recommendation}}">
-    <view class="dish-card" wx:for="{{recommendation.dishes}}" wx:key="id" data-id="{{item.id}}" bindtap="goDishDetail">
+    <view class="dish-card {{item.locked ? 'dish-locked' : ''}}" wx:for="{{recommendation.dishes}}" wx:key="id" data-id="{{item.id}}" bindtap="goDishDetail">
+      <view class="lock-badge {{item.locked ? 'lock-on' : ''}}" catchtap="toggleLock" data-id="{{item.id}}">
+        <t-icon name="{{item.locked ? 'lock-on' : 'lock-off'}}" size="32rpx" color="{{item.locked ? '#1f241f' : '#9aa39c'}}" />
+      </view>
       <t-image src="{{item.image}}" t-class="dish-image" mode="aspectFill" />
       <view class="dish-body">
         <view class="dish-name">{{item.name}}</view>

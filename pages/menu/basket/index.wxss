@@ -191,6 +191,34 @@ page {
   font-size: 24rpx;
 }
 
+.group-chevron {
+  margin-left: 12rpx;
+  transition: transform 0.2s ease;
+}
+
+.group-chevron-open {
+  transform: rotate(180deg);
+}
+
+.groups-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 24rpx;
+  padding: 0 8rpx;
+}
+
+.groups-hint {
+  color: #9aa39c;
+  font-size: 22rpx;
+}
+
+.groups-toggle-all {
+  color: #48613f;
+  font-size: 24rpx;
+  font-weight: 600;
+}
+
 .empty-state {
   margin-top: 20rpx;
   padding: 40rpx 28rpx;

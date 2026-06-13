@@ -391,6 +391,11 @@ def add_room_menu_items(
     if not isinstance(new_items, list):
         return None, "invalid_menu"
 
+    # 服务端权威地记下「谁加的菜」(用 user_id 取昵称/头像,前端无法伪造)
+    adder = require_user(user_id) or {}
+    adder_name = adder.get("nickname") or ""
+    adder_avatar = adder.get("avatarUrl") or ""
+
     def mutate(items: list) -> list:
         merged = [dict(item) for item in items if isinstance(item, dict)]
         index = {(it.get("spuId"), it.get("skuId")): it for it in merged}
@@ -407,10 +412,17 @@ def add_room_menu_items(
                     existing["selectedBy"] = goods["selectedBy"]
                 if goods.get("selectedByName"):
                     existing["selectedByName"] = goods["selectedByName"]
+                # 「谁加的」只在第一次加入时记一次,已存在的菜保留最初添加者
+                existing.setdefault("addedBy", user_id)
+                existing.setdefault("addedByName", adder_name)
+                existing.setdefault("addedByAvatar", adder_avatar)
             else:
                 item = dict(goods)
                 item["quantity"] = goods.get("quantity") or 1
                 item["isSelected"] = 1
+                item["addedBy"] = user_id
+                item["addedByName"] = adder_name
+                item["addedByAvatar"] = adder_avatar
                 merged.append(item)
                 index[key] = item
         return merged

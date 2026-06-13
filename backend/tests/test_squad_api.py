@@ -251,6 +251,29 @@ class SquadApiTest(unittest.TestCase):
         guest_view = self.client.get(f"/api/squad/rooms/{room_id}/menu", headers=h_guest).json()
         self.assertEqual([i["spuId"] for i in guest_view["items"]], ["B"])
 
+    def test_menu_items_record_who_added_them(self):
+        owner, guest, room_id = self._make_shared_room()  # 队长 / 队员
+        h_owner = {"X-User-Id": owner["userId"]}
+        h_guest = {"X-User-Id": guest["userId"]}
+
+        self.client.post(f"/api/squad/rooms/{room_id}/menu/add", headers=h_owner, json={"items": [{"spuId": "A", "skuId": ""}]})
+        after_b = self.client.post(
+            f"/api/squad/rooms/{room_id}/menu/add", headers=h_guest, json={"items": [{"spuId": "B", "skuId": ""}]}
+        ).json()
+        by_id = {i["spuId"]: i for i in after_b["items"]}
+        # 每道菜记下「谁加的」=添加者昵称,且服务端权威写入 user_id
+        self.assertEqual(by_id["A"]["addedByName"], "队长")
+        self.assertEqual(by_id["A"]["addedBy"], owner["userId"])
+        self.assertEqual(by_id["B"]["addedByName"], "队员")
+        self.assertEqual(by_id["B"]["addedBy"], guest["userId"])
+
+        # 别人再加同一道菜,归属保留最初的添加者,不被顶替
+        after_readd = self.client.post(
+            f"/api/squad/rooms/{room_id}/menu/add", headers=h_guest, json={"items": [{"spuId": "A", "skuId": ""}]}
+        ).json()
+        item_a = next(i for i in after_readd["items"] if i["spuId"] == "A")
+        self.assertEqual(item_a["addedByName"], "队长", "已存在的菜应保留最初添加者")
+
     def test_update_avatar_and_member_carries_it(self):
         user = self.login("avatar-user", "甲")
         headers = {"X-User-Id": user["userId"]}

@@ -85,13 +85,22 @@
 
 .wr-goods-card__picker {
   align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
   margin-top: 8rpx;
-  padding: 4rpx 8rpx;
-  border-radius: 6rpx;
+  padding: 4rpx 10rpx 4rpx 4rpx;
+  border-radius: 22rpx;
   background: #eef4e7;
   color: #48613f;
   font-size: 22rpx;
   line-height: 30rpx;
+}
+.wr-goods-card__picker-avatar {
+  width: 32rpx;
+  height: 32rpx;
+  border-radius: 50%;
+  margin-right: 8rpx;
+  flex-shrink: 0;
 }
 .wr-goods-card__specs__desc,
 .wr-goods-card__specs__text {

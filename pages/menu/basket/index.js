@@ -21,6 +21,28 @@ Page({
     progressText: '暂无备料',
     source: 'current',
     menuButtonText: '查看菜单',
+    collapsed: {},
+    allCollapsed: false,
+  },
+
+  // 收起 / 展开某个分类
+  toggleGroup(event) {
+    const { key } = event.currentTarget.dataset;
+    if (!key) return;
+    const collapsed = { ...this.data.collapsed, [key]: !this.data.collapsed[key] };
+    this.setData({ collapsed, allCollapsed: this.isAllCollapsed(collapsed) });
+  },
+
+  // 一键收起 / 展开全部
+  toggleAllGroups() {
+    const keys = this.data.basket.groups.map((group) => group.key);
+    const next = this.data.allCollapsed ? {} : keys.reduce((acc, key) => ({ ...acc, [key]: true }), {});
+    this.setData({ collapsed: next, allCollapsed: !this.data.allCollapsed });
+  },
+
+  isAllCollapsed(collapsed) {
+    const keys = this.data.basket.groups.map((group) => group.key);
+    return keys.length > 0 && keys.every((key) => collapsed[key]);
   },
 
   onLoad(options = {}) {
