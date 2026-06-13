@@ -7,7 +7,6 @@ const DISH_PLACEHOLDER_IMAGES = {
   vegetable: '/assets/dishes/vegetable.svg',
   soup: '/assets/dishes/soup.svg',
   staple: '/assets/dishes/staple.svg',
-  takeout: '/assets/dishes/takeout.svg',
 };
 const MENU_STORAGE_KEY = 'familyMenuPicker.tonightMenu';
 const LAST_CONFIRMED_MENU_STORAGE_KEY = 'familyMenuPicker.lastConfirmedMenu';
@@ -16,15 +15,18 @@ const CUSTOM_DISHES_STORAGE_KEY = 'familyMenuPicker.customDishes';
 const USER_DISHES_STORAGE_KEY = 'familyMenuPicker.userDishes';
 const SHOPPING_BASKET_CHECKED_KEY = 'familyMenuPicker.shoppingBasketChecked';
 const MAX_MENU_HISTORY_COUNT = 20;
+const OTHER_CATEGORY_ID = 'other';
 
-export const dishCategories = [
+export const defaultDishCategories = [
   { id: 'quick', name: '快手菜', description: '30 分钟内能上桌' },
   { id: 'meat', name: '荤菜', description: '肉蛋鱼虾和高蛋白' },
   { id: 'vegetable', name: '素菜', description: '清爽蔬菜和豆制品' },
   { id: 'soup', name: '汤', description: '补水暖胃' },
   { id: 'staple', name: '主食', description: '米饭面粉类' },
-  { id: 'takeout', name: '外卖备选', description: '不想做饭时兜底' },
 ];
+export const otherDishCategory = { id: OTHER_CATEGORY_ID, name: '其他', description: '暂时没归类的菜' };
+
+export const dishCategories = [...defaultDishCategories, otherDishCategory];
 
 export function getDishPlaceholderImage(category) {
   return DISH_PLACEHOLDER_IMAGES[category] || DEFAULT_IMAGE;
@@ -218,46 +220,64 @@ export const dishes = [
     ],
     notes: '适合懒得炒多个菜时。',
   },
-  {
-    id: 'takeout-rice',
-    name: '附近烧腊饭',
-    category: 'takeout',
-    image: getDishPlaceholderImage('takeout'),
-    cookMinutes: 5,
-    difficulty: '外卖',
-    flavor: '咸香',
-    servings: 1,
-    tags: ['外卖备选', '省事', '单人'],
-    ingredients: ['烧腊饭', '青菜', '汤品'],
-    steps: [
-      { title: '确认人数', description: '按实际人数决定份数，避免点多浪费。' },
-      { title: '补一份蔬菜', description: '如果店里有青菜或例汤，优先搭配。' },
-      { title: '到家分餐', description: '到家后先分装，保留明天能复热的部分。' },
-    ],
-    notes: '只作为今天不想做饭的备选。',
-  },
-  {
-    id: 'hotpot-kit',
-    name: '小分队小火锅',
-    category: 'takeout',
-    image: getDishPlaceholderImage('takeout'),
-    cookMinutes: 20,
-    difficulty: '简单',
-    flavor: '热辣',
-    servings: 4,
-    tags: ['外卖备选', '聚餐', '可加菜'],
-    ingredients: ['火锅底料', '肉片', '丸子', '青菜', '主食'],
-    steps: [
-      { title: '准备锅底', description: '底料加水煮开，按口味调咸淡。' },
-      { title: '先下耐煮食材', description: '丸子、根茎类和冻品先下锅。' },
-      { title: '再下鲜菜肉片', description: '肉片和绿叶菜最后下，熟了就吃。' },
-      { title: '收尾主食', description: '最后可下粉面或米饭，避免一开始太撑。' },
-    ],
-    notes: '适合人多但没人想决定吃什么的时候。',
-  },
 ];
 
 export const defaultDishIds = dishes.map((dish) => dish.id);
+
+// 备料用量(约 3 人份)与步骤时长(分钟)——和菜数据分开放便于维护，读菜时合并进去
+const DISH_AMOUNTS = {
+  'tomato-egg': { 番茄: '2个', 鸡蛋: '3个', 葱: '1根', 盐: '2g', 糖: '5g' },
+  'pepper-beef': { 牛肉: '200g', 青椒: '2个', 蒜: '3瓣', 生抽: '15ml', 淀粉: '10g' },
+  'garlic-lettuce': { 生菜: '1棵', 蒜: '4瓣', 盐: '2g', 生抽: '10ml' },
+  'corn-rib-soup': { 排骨: '400g', 玉米: '1根', 胡萝卜: '1根', 姜片: '3片', 盐: '3g' },
+  'egg-fried-rice': { 剩米饭: '2碗', 鸡蛋: '2个', 葱花: '1把', 盐: '2g', 生抽: '10ml' },
+  'mapo-tofu': { 豆腐: '1块', 肉末: '100g', 豆瓣酱: '15g', 蒜: '3瓣', 淀粉水: '30ml' },
+  'steamed-fish': { 鱼: '1条', 姜: '1块', 葱: '2根', 蒸鱼豉油: '20ml', 热油: '15ml' },
+  'mushroom-greens': { 青菜: '300g', 香菇: '5朵', 蒜: '2瓣', 盐: '2g', 蚝油: '10ml' },
+  'seaweed-egg-soup': { 紫菜: '1小把', 鸡蛋: '2个', 葱花: '1把', 盐: '2g', 香油: '3ml' },
+  'noodle-soup': { 面条: '150g', 番茄: '2个', 鸡蛋: '2个', 青菜: '100g', 盐: '3g' },
+};
+
+const DISH_STEP_MINUTES = {
+  'tomato-egg': [3, 2, 4, 2],
+  'pepper-beef': [10, 5, 3, 5],
+  'garlic-lettuce': [3, 2, 3],
+  'corn-rib-soup': [5, 5, 38, 2],
+  'egg-fried-rice': [2, 3, 6, 4],
+  'mapo-tofu': [3, 4, 8, 3],
+  'steamed-fish': [6, 12, 1, 3],
+  'mushroom-greens': [4, 4, 4],
+  'seaweed-egg-soup': [4, 2, 2],
+  'noodle-soup': [5, 5, 5, 3],
+};
+
+// 真实菜品照片(放在 assets/dishes/photos，已压成 480px WebP)
+const DISH_IMAGES = {
+  'tomato-egg': '/assets/dishes/photos/tomato-egg.webp',
+  'pepper-beef': '/assets/dishes/photos/pepper-beef.webp',
+  'garlic-lettuce': '/assets/dishes/photos/garlic-lettuce.webp',
+  'corn-rib-soup': '/assets/dishes/photos/corn-rib-soup.webp',
+  'egg-fried-rice': '/assets/dishes/photos/egg-fried-rice.webp',
+  'mapo-tofu': '/assets/dishes/photos/mapo-tofu.webp',
+  'steamed-fish': '/assets/dishes/photos/steamed-fish.webp',
+  'mushroom-greens': '/assets/dishes/photos/mushroom-greens.webp',
+  'seaweed-egg-soup': '/assets/dishes/photos/seaweed-egg-soup.webp',
+  'noodle-soup': '/assets/dishes/photos/noodle-soup.webp',
+};
+
+function enrichBuiltInDish(dish) {
+  const amounts = DISH_AMOUNTS[dish.id] || {};
+  const stepMinutes = DISH_STEP_MINUTES[dish.id] || [];
+  const steps = Array.isArray(dish.steps)
+    ? dish.steps.map((step, index) => ({ ...step, minutes: step.minutes || stepMinutes[index] || 0 }))
+    : dish.steps;
+  return {
+    ...dish,
+    image: DISH_IMAGES[dish.id] || dish.image,
+    amounts: { ...amounts, ...(dish.amounts || {}) },
+    steps,
+  };
+}
 
 function readStorageValue(key, fallback) {
   const wxApi = typeof wx !== 'undefined' ? wx : null;
@@ -287,14 +307,28 @@ function parseTags(tagsText) {
     .filter(Boolean);
 }
 
-function parseIngredients(ingredientsText) {
+function splitIngredientEntries(ingredientsText) {
   if (!ingredientsText) return [];
-  if (Array.isArray(ingredientsText))
-    return ingredientsText.map((ingredient) => String(ingredient).trim()).filter(Boolean);
-  return String(ingredientsText)
-    .split(/[,，\n]/)
-    .map((ingredient) => ingredient.trim())
-    .filter(Boolean);
+  const raw = Array.isArray(ingredientsText)
+    ? ingredientsText.map((ingredient) => String(ingredient))
+    : String(ingredientsText).split(/[,，\n]/);
+  return raw.map((entry) => entry.trim()).filter(Boolean);
+}
+
+// 一条备料可写「名字 用量」(如「番茄 2个」),这里只取名字部分;用量交给 parseIngredientAmounts
+function parseIngredients(ingredientsText) {
+  return splitIngredientEntries(ingredientsText).map((entry) => entry.split(/\s+/)[0]);
+}
+
+function parseIngredientAmounts(ingredientsText) {
+  const amounts = {};
+  splitIngredientEntries(ingredientsText).forEach((entry) => {
+    const parts = entry.split(/\s+/);
+    const name = parts[0];
+    const amount = parts.slice(1).join(' ').trim();
+    if (name && amount) amounts[name] = amount;
+  });
+  return amounts;
 }
 
 function normalizeStepImage(image) {
@@ -315,7 +349,8 @@ function parseSteps(stepsText, stepImages = []) {
         const title = String(step.title || step.description || `第 ${index + 1} 步`).trim();
         const description = String(step.description || step.title || '').trim();
         const image = normalizeStepImage(step.image || images[index]);
-        return title && description ? { title, description, image } : null;
+        const minutes = Number(step.minutes) || 0;
+        return title && description ? { title, description, image, minutes } : null;
       })
       .filter(Boolean);
   }
@@ -344,8 +379,14 @@ function getPayloadStepImages(payload) {
   return Array.isArray(payload.stepImages) ? payload.stepImages : [];
 }
 
+function normalizeDishCategory(categoryId) {
+  const cleanCategoryId = String(categoryId || '').trim();
+  const categoryIds = getKnownDishCategoryIds();
+  return categoryIds.has(cleanCategoryId) ? cleanCategoryId : OTHER_CATEGORY_ID;
+}
+
 function buildCustomDish(payload = {}, id = `custom-${Date.now()}`) {
-  const { category } = payload;
+  const category = normalizeDishCategory(payload.category);
   return {
     id,
     name: String(payload.name || '').trim(),
@@ -357,6 +398,10 @@ function buildCustomDish(payload = {}, id = `custom-${Date.now()}`) {
     servings: Number(payload.servings) || 3,
     tags: parseTags(getPayloadTags(payload)),
     ingredients: parseIngredients(getPayloadIngredients(payload)),
+    amounts:
+      payload.amounts && typeof payload.amounts === 'object'
+        ? payload.amounts
+        : parseIngredientAmounts(getPayloadIngredients(payload)),
     steps: parseSteps(getPayloadSteps(payload), getPayloadStepImages(payload)),
     notes: String(payload.notes || '').trim(),
     isCustom: true,
@@ -380,32 +425,68 @@ function normalizeDishOverride(dish) {
   return buildUserDish(dish, dish.id, false);
 }
 
+function normalizeDishCategoryRecord(category) {
+  if (!category || !category.id || !category.name) return null;
+  const id = String(category.id).trim();
+  if (!id || defaultDishCategories.some((item) => item.id === id) || id === OTHER_CATEGORY_ID) return null;
+  return {
+    id,
+    name: String(category.name || '').trim(),
+    description: String(category.description || '').trim(),
+    isCustom: true,
+  };
+}
+
+function readStoredDishCategories() {
+  const stored = readStorageValue(USER_DISHES_STORAGE_KEY, null);
+  if (!stored || typeof stored !== 'object' || Array.isArray(stored) || !Array.isArray(stored.categories)) return [];
+  return stored.categories.map(normalizeDishCategoryRecord).filter(Boolean);
+}
+
+function getKnownDishCategoryIds() {
+  return new Set(
+    [...defaultDishCategories, ...readStoredDishCategories(), otherDishCategory].map((category) => category.id),
+  );
+}
+
 function readHiddenDishIds() {
   const legacyHiddenDishIds = readStorageValue('familyMenuPicker.hiddenDishIds', []);
   if (Array.isArray(legacyHiddenDishIds)) return legacyHiddenDishIds.map(String).filter(Boolean);
   return [];
 }
 
+function normalizeDishOverrides(overrides) {
+  if (!overrides || typeof overrides !== 'object') return {};
+  return Object.entries(overrides).reduce((result, [id, dish]) => {
+    const normalizedDish = normalizeDishOverride({ ...dish, id });
+    return normalizedDish ? { ...result, [id]: normalizedDish } : result;
+  }, {});
+}
+
 export function readUserDishes() {
   const stored = readStorageValue(USER_DISHES_STORAGE_KEY, null);
   if (stored && typeof stored === 'object' && !Array.isArray(stored)) {
     const custom = Array.isArray(stored.custom) ? stored.custom.map(normalizeCustomDish).filter(Boolean) : [];
-    const overrides =
-      stored.overrides && typeof stored.overrides === 'object'
-        ? Object.entries(stored.overrides).reduce((result, [id, dish]) => {
-            const normalizedDish = normalizeDishOverride({ ...dish, id });
-            if (normalizedDish) result[id] = normalizedDish;
-            return result;
-          }, {})
-        : {};
+    const overrides = normalizeDishOverrides(stored.overrides);
     const hidden = Array.isArray(stored.hidden) ? stored.hidden.map(String).filter(Boolean) : [];
-    return { custom, overrides, hidden };
+    const categories = Array.isArray(stored.categories)
+      ? stored.categories.map(normalizeDishCategoryRecord).filter(Boolean)
+      : [];
+    const categoryOverrides =
+      stored.categoryOverrides && typeof stored.categoryOverrides === 'object' ? stored.categoryOverrides : {};
+    const removedCategories = Array.isArray(stored.removedCategories)
+      ? stored.removedCategories.map(String).filter((id) => defaultDishCategories.some((category) => category.id === id))
+      : [];
+    return { custom, overrides, hidden, categories, categoryOverrides, removedCategories };
   }
 
   return {
     custom: readCustomDishes(),
     overrides: {},
     hidden: readHiddenDishIds(),
+    categories: [],
+    categoryOverrides: {},
+    removedCategories: [],
   };
 }
 
@@ -414,7 +495,126 @@ export function saveUserDishes(userDishes = {}) {
     custom: Array.isArray(userDishes.custom) ? userDishes.custom : [],
     overrides: userDishes.overrides && typeof userDishes.overrides === 'object' ? userDishes.overrides : {},
     hidden: Array.isArray(userDishes.hidden) ? userDishes.hidden : [],
+    categories: Array.isArray(userDishes.categories)
+      ? userDishes.categories.map(normalizeDishCategoryRecord).filter(Boolean)
+      : [],
+    categoryOverrides:
+      userDishes.categoryOverrides && typeof userDishes.categoryOverrides === 'object'
+        ? userDishes.categoryOverrides
+        : {},
+    removedCategories: Array.isArray(userDishes.removedCategories)
+      ? [...new Set(userDishes.removedCategories.map(String))]
+      : [],
   });
+}
+
+export function readUserDishCategories() {
+  return readUserDishes().categories;
+}
+
+export function getDishCategoryOptions() {
+  const userDishes = readUserDishes();
+  const removed = new Set(userDishes.removedCategories);
+  const overrides = userDishes.categoryOverrides || {};
+  const activeDefaults = defaultDishCategories
+    .filter((category) => !removed.has(category.id))
+    .map((category) => {
+      const override = overrides[category.id];
+      if (!override) return category;
+      return {
+        ...category,
+        name: String(override.name || '').trim() || category.name,
+        description: override.description !== undefined ? String(override.description).trim() : category.description,
+      };
+    });
+  return [...activeDefaults, ...userDishes.categories, otherDishCategory];
+}
+
+export function addDishCategory(payload = {}) {
+  const name = String(payload.name || '').trim();
+  if (!name) return null;
+  const userDishes = readUserDishes();
+  const category = {
+    id: `custom-category-${Date.now()}`,
+    name,
+    description: String(payload.description || '').trim(),
+    isCustom: true,
+  };
+  saveUserDishes({ ...userDishes, categories: [category, ...userDishes.categories] });
+  return category;
+}
+
+export function updateDishCategory(id, patch = {}) {
+  const categoryId = String(id || '').trim();
+  if (!categoryId || categoryId === OTHER_CATEGORY_ID) return null;
+  const name = String(patch.name || '').trim();
+  if (!name) return null;
+  const description = String(patch.description || '').trim();
+  const userDishes = readUserDishes();
+
+  // 内置分组:改名存成 override，保留原 id 以免菜品失联
+  const baseDefault = defaultDishCategories.find((category) => category.id === categoryId);
+  if (baseDefault) {
+    saveUserDishes({
+      ...userDishes,
+      categoryOverrides: { ...userDishes.categoryOverrides, [categoryId]: { name, description } },
+      removedCategories: userDishes.removedCategories.filter((removedId) => removedId !== categoryId),
+    });
+    return { ...baseDefault, name, description, isCustom: false };
+  }
+
+  // 自定义分组
+  const existing = userDishes.categories.find((category) => category.id === categoryId);
+  if (!existing) return null;
+  const updated = { ...existing, name, description, isCustom: true };
+  saveUserDishes({
+    ...userDishes,
+    categories: userDishes.categories.map((category) => (category.id === categoryId ? updated : category)),
+  });
+  return updated;
+}
+
+export function deleteDishCategory(id) {
+  const categoryId = String(id || '').trim();
+  if (!categoryId || categoryId === OTHER_CATEGORY_ID) return false;
+  const userDishes = readUserDishes();
+  const isDefault = defaultDishCategories.some((category) => category.id === categoryId);
+  const isCustom = userDishes.categories.some((category) => category.id === categoryId);
+  if (!isDefault && !isCustom) return false;
+
+  // 该分组下的「自定义菜」和「被覆盖的菜」归到「其他」;内置菜由 getDishesByCategory('other') 兜底
+  const nextCustom = userDishes.custom.map((dish) => {
+    if (dish.category !== categoryId) return dish;
+    return buildCustomDish({ ...dish, category: OTHER_CATEGORY_ID }, dish.id);
+  });
+  const nextOverrides = Object.entries(userDishes.overrides || {}).reduce((result, [dishId, dish]) => {
+    const nextDish =
+      dish && dish.category === categoryId
+        ? buildUserDish({ ...dish, category: OTHER_CATEGORY_ID }, dishId, false)
+        : dish;
+    return { ...result, [dishId]: nextDish };
+  }, {});
+
+  const next = { ...userDishes, custom: nextCustom, overrides: nextOverrides };
+  if (isDefault) {
+    next.removedCategories = [...new Set([...userDishes.removedCategories, categoryId])];
+    const categoryOverrides = { ...userDishes.categoryOverrides };
+    delete categoryOverrides[categoryId];
+    next.categoryOverrides = categoryOverrides;
+  } else {
+    next.categories = userDishes.categories.filter((category) => category.id !== categoryId);
+  }
+
+  saveUserDishes(next);
+  writeStorageValue(CUSTOM_DISHES_STORAGE_KEY, nextCustom);
+  return true;
+}
+
+// 一键还原系统自带分组(清掉内置改名与删除),不影响自定义分组
+export function restoreDishCategoryDefaults() {
+  const userDishes = readUserDishes();
+  saveUserDishes({ ...userDishes, categoryOverrides: {}, removedCategories: [] });
+  return getDishCategoryOptions();
 }
 
 export function readCustomDishes() {
@@ -535,8 +735,17 @@ function getAllDishes() {
   const hidden = new Set(userDishes.hidden);
   const defaults = dishes
     .filter((dish) => !hidden.has(dish.id))
-    .map((dish) => ({ ...dish, ...userDishes.overrides[dish.id], id: dish.id, isCustom: false }));
-  return [...defaults, ...userDishes.custom];
+    .map((dish) => ({
+      ...enrichBuiltInDish(dish),
+      ...userDishes.overrides[dish.id],
+      id: dish.id,
+      category: normalizeDishCategory((userDishes.overrides[dish.id] || dish).category),
+      isCustom: false,
+    }));
+  return [
+    ...defaults,
+    ...userDishes.custom.map((dish) => ({ ...dish, category: normalizeDishCategory(dish.category) })),
+  ];
 }
 
 export function readAllDishes() {
@@ -590,7 +799,7 @@ export function toGoodsCard(dish, quantity = 1) {
 }
 
 export function getDishCategories() {
-  return dishCategories.map((category) => ({
+  return getDishCategoryOptions().map((category) => ({
     groupId: category.id,
     name: category.name,
     thumbnail: DEFAULT_IMAGE,
@@ -619,6 +828,15 @@ export function getDishesByCategory(categoryId) {
   if (categoryId === 'quick') {
     return allDishes.filter((dish) => dish.category === 'quick' || dish.tags.includes('快手'));
   }
+  // 「其他」兜底:本就归其他的，以及分组被删后无处可去的孤儿菜
+  if (categoryId === OTHER_CATEGORY_ID) {
+    const activeIds = new Set(
+      getDishCategoryOptions()
+        .filter((category) => category.id !== OTHER_CATEGORY_ID)
+        .map((category) => category.id),
+    );
+    return allDishes.filter((dish) => dish.category === OTHER_CATEGORY_ID || !activeIds.has(dish.category));
+  }
   return allDishes.filter((dish) => dish.category === categoryId);
 }
 
@@ -633,7 +851,7 @@ export function getDishGoodsList({ categoryId = 'all', pageNum = 1, pageSize = 2
 }
 
 export function getDishSelectionSections() {
-  return dishCategories.map((category) => {
+  return getDishCategoryOptions().map((category) => {
     const dishesInCategory = getDishesByCategory(category.id);
     return {
       id: category.id,
@@ -643,6 +861,20 @@ export function getDishSelectionSections() {
       goodsList: dishesInCategory.map((dish) => toGoodsCard(dish)),
     };
   });
+}
+
+// 按关键字搜菜:菜名 / 口味 / 难度 / 标签 / 食材 任一命中即返回,结果是 goods 卡片(和分类列表同结构)
+export function searchDishes(keyword) {
+  const kw = String(keyword || '').trim().toLowerCase();
+  if (!kw) return [];
+  return getAllDishes()
+    .filter((dish) => {
+      const fields = [dish.name, dish.flavor, dish.difficulty]
+        .concat(Array.isArray(dish.tags) ? dish.tags : [])
+        .concat(Array.isArray(dish.ingredients) ? dish.ingredients : []);
+      return fields.join(' ').toLowerCase().includes(kw);
+    })
+    .map((dish) => toGoodsCard(dish));
 }
 
 function normalizeRecommendationCount(count, sourceLength) {
@@ -874,6 +1106,79 @@ export function clearShoppingBasketChecked() {
   return saveShoppingBasketChecked([]);
 }
 
+// 食材关键词归类(顺序敏感:调料先于肉蛋先于蔬菜，避免「番茄酱→蔬菜」「蒸鱼豉油→肉」之类误判)
+const INGREDIENT_CATEGORY_RULES = [
+  {
+    key: 'seasoning',
+    keywords: ['盐', '糖', '酱', '油', '醋', '抽', '料酒', '淀粉', '豆瓣', '蚝', '豉', '味精', '鸡精', '胡椒', '花椒', '孜然', '蜂蜜', '芝麻'],
+  },
+  {
+    key: 'meat',
+    keywords: ['牛肉', '猪肉', '羊肉', '排骨', '鸡', '鸭', '鹅', '鱼', '虾', '蟹', '肉', '蛋', '培根', '香肠', '腊', '豆腐', '豆干', '腐竹'],
+  },
+  {
+    key: 'veg',
+    keywords: ['菜', '番茄', '茄', '椒', '瓜', '菇', '菌', '葱', '蒜', '姜', '萝卜', '豆角', '豆芽', '玉米', '紫菜', '海带', '木耳', '笋', '藕', '芹', '菠', '韭', '蘑', '洋葱', '土豆', '山药', '莲', '豆'],
+  },
+  { key: 'staple', keywords: ['米', '面', '馒头', '饺', '粉', '年糕', '饭', '馍', '粥', '麦'] },
+];
+
+const SHOPPING_CATEGORIES = [
+  { key: 'veg', label: '蔬菜', icon: '🥬' },
+  { key: 'meat', label: '肉蛋', icon: '🥩' },
+  { key: 'staple', label: '主食', icon: '🍚' },
+  { key: 'seasoning', label: '调料', icon: '🧂' },
+  { key: 'other', label: '其他', icon: '🛒' },
+];
+
+// 内置菜库食材的权威品类(逐个核对过，准；用户新加的生僻食材走下面的关键词兜底)
+const INGREDIENT_CATEGORY = {
+  葱: 'veg',
+  葱花: 'veg',
+  番茄: 'veg',
+  胡萝卜: 'veg',
+  姜: 'veg',
+  姜片: 'veg',
+  青菜: 'veg',
+  青椒: 'veg',
+  生菜: 'veg',
+  蒜: 'veg',
+  香菇: 'veg',
+  玉米: 'veg',
+  紫菜: 'veg',
+  豆腐: 'meat',
+  鸡蛋: 'meat',
+  牛肉: 'meat',
+  排骨: 'meat',
+  肉末: 'meat',
+  肉片: 'meat',
+  鱼: 'meat',
+  丸子: 'meat',
+  面条: 'staple',
+  剩米饭: 'staple',
+  烧腊饭: 'staple',
+  主食: 'staple',
+  淀粉: 'seasoning',
+  淀粉水: 'seasoning',
+  豆瓣酱: 'seasoning',
+  蚝油: 'seasoning',
+  热油: 'seasoning',
+  生抽: 'seasoning',
+  糖: 'seasoning',
+  香油: 'seasoning',
+  盐: 'seasoning',
+  蒸鱼豉油: 'seasoning',
+  火锅底料: 'seasoning',
+  汤品: 'other',
+};
+
+export function categorizeIngredient(name) {
+  const clean = normalizeIngredientName(name);
+  if (INGREDIENT_CATEGORY[clean]) return INGREDIENT_CATEGORY[clean];
+  const matched = INGREDIENT_CATEGORY_RULES.find((rule) => rule.keywords.some((kw) => clean.includes(kw)));
+  return matched ? matched.key : 'other';
+}
+
 export function buildShoppingBasket(menu = readTonightMenu()) {
   const checkedSet = new Set(readShoppingBasketChecked());
   const grouped = new Map();
@@ -899,26 +1204,56 @@ export function buildShoppingBasket(menu = readTonightMenu()) {
     });
   });
 
-  const items = [...grouped.values()].sort((left, right) => {
-    if (left.checked !== right.checked) return left.checked ? 1 : -1;
-    return left.name.localeCompare(right.name, 'zh-Hans-CN');
-  });
+  const items = [...grouped.values()]
+    .map((item) => ({ ...item, category: categorizeIngredient(item.name) }))
+    .sort((left, right) => {
+      if (left.checked !== right.checked) return left.checked ? 1 : -1;
+      return left.name.localeCompare(right.name, 'zh-Hans-CN');
+    });
+
+  const groups = SHOPPING_CATEGORIES.map((category) => {
+    const groupItems = items.filter((item) => item.category === category.key);
+    return {
+      ...category,
+      items: groupItems,
+      totalCount: groupItems.length,
+      checkedCount: groupItems.filter((item) => item.checked).length,
+    };
+  }).filter((group) => group.items.length);
 
   return {
     items,
+    groups,
     checkedCount: items.filter((item) => item.checked).length,
     totalIngredientCount: items.length,
     totalDishCount: menu.length,
   };
 }
 
+// 生成可复制/分享的买菜清单文本(按品类分行，发给买菜的人一目了然)
+export function buildShoppingListText(basket = buildShoppingBasket()) {
+  if (!basket || !basket.totalIngredientCount) return '菜篮子还是空的，先去选几道菜~';
+  const lines = [`🛒 买菜清单（${basket.totalDishCount} 道菜 · ${basket.totalIngredientCount} 样）`];
+  basket.groups.forEach((group) => {
+    lines.push(`【${group.label}】${group.items.map((item) => item.name).join('、')}`);
+  });
+  return lines.join('\n');
+}
+
 export function buildCartGroupData(menu = readTonightMenu()) {
-  const selectedGoods = menu.filter((item) => item.isSelected);
+  // 用当前菜库的图刷新封面:菜单项里的 thumb 是「加菜那一刻」存的，
+  // 之后给菜换了图(如补了真实照片)旧菜单项不会自动更新，这里按 spuId 兜底刷新。
+  const freshMenu = menu.map((item) => {
+    const dish = getDishById(item.dishId || item.spuId);
+    if (!dish || !dish.image) return item;
+    return { ...item, thumb: dish.image, primaryImage: dish.image };
+  });
+  const selectedGoods = freshMenu.filter((item) => item.isSelected);
   const totalCookMinutes = selectedGoods.reduce((sum, item) => sum + (item.cookMinutes || 0) * (item.quantity || 1), 0);
   return {
     data: {
-      isNotEmpty: menu.length > 0,
-      isAllSelected: menu.length > 0 && selectedGoods.length === menu.length,
+      isNotEmpty: freshMenu.length > 0,
+      isAllSelected: freshMenu.length > 0 && selectedGoods.length === freshMenu.length,
       selectedGoodsCount: selectedGoods.reduce((sum, item) => sum + (item.quantity || 1), 0),
       totalAmount: totalCookMinutes * 100,
       totalDiscountAmount: 0,
@@ -928,7 +1263,7 @@ export function buildCartGroupData(menu = readTonightMenu()) {
           storeId: STORE_ID,
           storeName: STORE_NAME,
           storeStatus: 1,
-          isSelected: menu.length > 0 && selectedGoods.length === menu.length,
+          isSelected: freshMenu.length > 0 && selectedGoods.length === freshMenu.length,
           storeStockShortage: false,
           shortageGoodsList: [],
           promotionGoodsList: [
@@ -943,7 +1278,7 @@ export function buildCartGroupData(menu = readTonightMenu()) {
               description: '',
               doorSillRemain: null,
               isNeedAddOnShop: 0,
-              goodsPromotionList: menu,
+              goodsPromotionList: freshMenu,
             },
           ],
         },

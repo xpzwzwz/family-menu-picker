@@ -46,5 +46,5 @@
 }
 
 .filter-left-content .filter-active-item {
-  color: #fa550f;
+  color: #26332c;
 }

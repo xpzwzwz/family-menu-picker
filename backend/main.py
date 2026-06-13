@@ -12,17 +12,28 @@ from pydantic import BaseModel
 
 from oss_image_upload import create_image_upload_policy, load_oss_config
 from squad_store import (
+    add_clean_plate_checkin,
+    add_room_menu_items,
     bind_user_phone,
     create_room,
     disband_room,
+    get_clean_plate_calendar,
+    get_clean_plate_summary,
     get_or_create_user,
     get_room,
+    get_room_menu,
     get_room_preview,
     join_room,
     leave_room,
     list_user_rooms,
+    remove_clean_plate_checkin,
+    remove_room_menu_item,
     require_user,
+    update_user_avatar,
+    save_room_menu,
+    set_room_menu_all_selected,
     update_member_name,
+    update_room_menu_item,
     update_room_name,
 )
 
@@ -69,6 +80,41 @@ class JoinRoomRequest(BaseModel):
     memberName: str = "光盘队员"
     role: str = "成员"
     flavorPreference: str = ""
+
+
+class RoomMenuRequest(BaseModel):
+    items: list[dict] = []
+
+
+class MenuAddRequest(BaseModel):
+    items: list[dict] = []
+    incrementExisting: bool = True
+
+
+class MenuItemUpdateRequest(BaseModel):
+    spuId: str
+    skuId: str = ""
+    quantity: int | None = None
+    isSelected: int | None = None
+
+
+class MenuItemRemoveRequest(BaseModel):
+    spuId: str
+    skuId: str = ""
+
+
+class MenuSelectAllRequest(BaseModel):
+    isSelected: bool = True
+
+
+class CheckinRequest(BaseModel):
+    mealDate: str
+    note: str = ""
+    photoUrl: str = ""
+
+
+class AvatarRequest(BaseModel):
+    avatarUrl: str = ""
 
 
 def require_request_user(x_user_id: str | None) -> dict:
@@ -190,6 +236,15 @@ def squad_bind_phone(payload: BindPhoneRequest, x_user_id: str | None = Header(d
     return bound_user
 
 
+@app.post("/api/squad/avatar")
+def squad_update_avatar(payload: AvatarRequest, x_user_id: str | None = Header(default=None)):
+    user = require_request_user(x_user_id)
+    updated = update_user_avatar(user["userId"], payload.avatarUrl)
+    if not updated:
+        raise HTTPException(status_code=400, detail="avatar update failed")
+    return updated
+
+
 @app.post("/api/squad/rooms")
 def squad_create_room(payload: CreateRoomRequest, x_user_id: str | None = Header(default=None)):
     user = require_request_user(x_user_id)
@@ -209,6 +264,119 @@ def squad_get_room(room_id: str, x_user_id: str | None = Header(default=None)):
     if not room:
         raise HTTPException(status_code=404, detail="Room not found")
     return room
+
+
+@app.get("/api/squad/rooms/{room_id}/menu")
+def squad_get_room_menu(room_id: str, x_user_id: str | None = Header(default=None)):
+    user = require_request_user(x_user_id)
+    menu, error = get_room_menu(room_id, user["userId"])
+    if error == "not_found":
+        raise HTTPException(status_code=404, detail="Room not found")
+    if error == "not_member":
+        raise HTTPException(status_code=403, detail="User is not a room member")
+    return menu
+
+
+@app.put("/api/squad/rooms/{room_id}/menu")
+def squad_save_room_menu(room_id: str, payload: RoomMenuRequest, x_user_id: str | None = Header(default=None)):
+    user = require_request_user(x_user_id)
+    menu, error = save_room_menu(room_id, user["userId"], payload.items)
+    if error == "not_found":
+        raise HTTPException(status_code=404, detail="Room not found")
+    if error == "not_member":
+        raise HTTPException(status_code=403, detail="User is not a room member")
+    if error == "invalid_menu":
+        raise HTTPException(status_code=400, detail="Menu items must be a list")
+    return menu
+
+
+def _raise_menu_error(error: str | None) -> None:
+    if error == "not_found":
+        raise HTTPException(status_code=404, detail="Room not found")
+    if error == "not_member":
+        raise HTTPException(status_code=403, detail="User is not a room member")
+    if error == "invalid_menu":
+        raise HTTPException(status_code=400, detail="Menu items must be a list")
+
+
+@app.post("/api/squad/rooms/{room_id}/menu/add")
+def squad_menu_add_items(room_id: str, payload: MenuAddRequest, x_user_id: str | None = Header(default=None)):
+    user = require_request_user(x_user_id)
+    menu, error = add_room_menu_items(room_id, user["userId"], payload.items, payload.incrementExisting)
+    _raise_menu_error(error)
+    return menu
+
+
+@app.post("/api/squad/rooms/{room_id}/menu/update")
+def squad_menu_update_item(room_id: str, payload: MenuItemUpdateRequest, x_user_id: str | None = Header(default=None)):
+    user = require_request_user(x_user_id)
+    patch: dict = {}
+    if payload.quantity is not None:
+        patch["quantity"] = payload.quantity
+    if payload.isSelected is not None:
+        patch["isSelected"] = payload.isSelected
+    menu, error = update_room_menu_item(room_id, user["userId"], payload.spuId, payload.skuId, patch)
+    _raise_menu_error(error)
+    return menu
+
+
+@app.post("/api/squad/rooms/{room_id}/menu/remove")
+def squad_menu_remove_item(room_id: str, payload: MenuItemRemoveRequest, x_user_id: str | None = Header(default=None)):
+    user = require_request_user(x_user_id)
+    menu, error = remove_room_menu_item(room_id, user["userId"], payload.spuId, payload.skuId)
+    _raise_menu_error(error)
+    return menu
+
+
+@app.post("/api/squad/rooms/{room_id}/menu/select-all")
+def squad_menu_select_all(room_id: str, payload: MenuSelectAllRequest, x_user_id: str | None = Header(default=None)):
+    user = require_request_user(x_user_id)
+    menu, error = set_room_menu_all_selected(room_id, user["userId"], payload.isSelected)
+    _raise_menu_error(error)
+    return menu
+
+
+def _raise_checkin_error(error: str | None) -> None:
+    if error == "not_found":
+        raise HTTPException(status_code=404, detail="Room not found")
+    if error == "not_member":
+        raise HTTPException(status_code=403, detail="User is not a room member")
+    if error == "invalid_date":
+        raise HTTPException(status_code=400, detail="mealDate must be YYYY-MM-DD")
+    if error == "invalid_month":
+        raise HTTPException(status_code=400, detail="month must be YYYY-MM")
+
+
+@app.post("/api/squad/rooms/{room_id}/checkins")
+def squad_add_checkin(room_id: str, payload: CheckinRequest, x_user_id: str | None = Header(default=None)):
+    user = require_request_user(x_user_id)
+    summary, error = add_clean_plate_checkin(room_id, user["userId"], payload.mealDate, payload.note, payload.photoUrl)
+    _raise_checkin_error(error)
+    return summary
+
+
+@app.get("/api/squad/rooms/{room_id}/checkins/summary")
+def squad_checkin_summary(room_id: str, today: str, x_user_id: str | None = Header(default=None)):
+    user = require_request_user(x_user_id)
+    summary, error = get_clean_plate_summary(room_id, user["userId"], today)
+    _raise_checkin_error(error)
+    return summary
+
+
+@app.get("/api/squad/rooms/{room_id}/checkins/calendar")
+def squad_checkin_calendar(room_id: str, month: str, x_user_id: str | None = Header(default=None)):
+    user = require_request_user(x_user_id)
+    calendar, error = get_clean_plate_calendar(room_id, user["userId"], month)
+    _raise_checkin_error(error)
+    return calendar
+
+
+@app.delete("/api/squad/rooms/{room_id}/checkins")
+def squad_remove_checkin(room_id: str, mealDate: str, x_user_id: str | None = Header(default=None)):
+    user = require_request_user(x_user_id)
+    summary, error = remove_clean_plate_checkin(room_id, user["userId"], mealDate)
+    _raise_checkin_error(error)
+    return summary
 
 
 @app.get("/api/squad/rooms/invite/{invite_code}")

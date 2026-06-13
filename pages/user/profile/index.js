@@ -9,9 +9,11 @@ import {
   refreshCloudUser,
   refreshCloudRoom,
   refreshCloudRooms,
+  updateCloudAvatar,
   updateCloudMemberName,
   updateCloudRoomName,
 } from '../../../services/squad/cloudSquad';
+import { uploadDishImage } from '../../../services/dish/uploadImage';
 
 Page({
   data: {
@@ -21,6 +23,7 @@ Page({
     memberName: '我',
     cloudError: '',
     phoneBinding: false,
+    avatarUploading: false,
     isRoomOwner: false,
     editingRoomName: false,
     roomNameDraft: '',
@@ -28,6 +31,22 @@ Page({
     editingMemberName: false,
     memberNameDraft: '',
     memberSaving: false,
+  },
+
+  onChooseAvatar(event) {
+    const tempUrl = event.detail && event.detail.avatarUrl;
+    if (!tempUrl) return;
+    this.setData({ avatarUploading: true });
+    uploadDishImage(tempUrl)
+      .then((ossUrl) => updateCloudAvatar(ossUrl))
+      .then((user) => {
+        this.setData({ cloudUser: user });
+        Toast({ context: this, selector: '#t-toast', message: '头像已更新' });
+      })
+      .catch((error) => {
+        Toast({ context: this, selector: '#t-toast', message: (error && error.message) || '头像上传失败，再试一次' });
+      })
+      .finally(() => this.setData({ avatarUploading: false }));
   },
 
   onLoad(options = {}) {
@@ -237,7 +256,7 @@ Page({
       title: '解散这个小分队？',
       content: '解散后，队员需要重新创建或加入新的小分队。',
       confirmText: '解散',
-      confirmColor: '#d54941',
+      confirmColor: '#48613f',
       success: (res) => {
         if (!res.confirm) return;
         disbandCloudRoom(cloudRoom.roomId)

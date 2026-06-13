@@ -31,8 +31,11 @@
 
   <view class="section">
     <view class="section-title">备料</view>
-    <view class="ingredient-list" wx:if="{{dish.ingredients.length}}">
-      <view class="ingredient" wx:for="{{dish.ingredients}}" wx:key="*this">{{item}}</view>
+    <view class="ingredient-list" wx:if="{{dish.ingredientList.length}}">
+      <view class="ingredient" wx:for="{{dish.ingredientList}}" wx:key="name">
+        <text class="ingredient-name">{{item.name}}</text>
+        <text class="ingredient-amount" wx:if="{{item.amount}}">{{item.amount}}</text>
+      </view>
     </view>
     <view class="empty-copy" wx:else>这道菜还没记录备料，可以在管理菜品里补上。</view>
   </view>
@@ -43,7 +46,7 @@
       <view class="step" wx:for="{{dish.steps}}" wx:key="title">
         <view class="step-index">{{index + 1}}</view>
         <view class="step-copy">
-          <view class="step-title">{{item.title}}</view>
+          <view class="step-title">{{item.title}}<text class="step-minutes" wx:if="{{item.minutes}}">约 {{item.minutes}} 分钟</text></view>
           <view class="step-desc">{{item.description}}</view>
           <t-image wx:if="{{item.image}}" src="{{item.image}}" t-class="step-image" mode="aspectFill" />
         </view>

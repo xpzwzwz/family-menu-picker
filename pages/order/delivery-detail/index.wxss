@@ -64,7 +64,7 @@ page {
   .t-step--vertical.t-step--default-anchor
   .t-steps-item--process
   .t-steps-item__icon-number {
-  background: #ffece9 !important;
+  background: #eef4e7 !important;
   color: white !important;
   border: none;
 }

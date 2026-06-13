@@ -213,7 +213,7 @@ page {
   height: 96rpx;
   margin: 0 auto;
   border-radius: 8rpx;
-  background: #d54941;
+  background: #48613f;
 }
 
 .result-title {
@@ -233,7 +233,7 @@ page {
 
 .result-summary {
   margin-top: 24rpx;
-  color: #d54941;
+  color: #48613f;
   font-size: 28rpx;
   font-weight: 700;
   line-height: 40rpx;
@@ -256,7 +256,7 @@ page {
 }
 
 .primary-result-btn {
-  background: #d54941;
+  background: #48613f;
   color: #ffffff;
 }
 

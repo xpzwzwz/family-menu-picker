@@ -109,6 +109,121 @@ page {
   color: #26332c;
 }
 
+/* 光盘打卡 —— 一行细条，避免和首页主操作抢视线 */
+.cleanplate-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  border-radius: 8rpx;
+  margin-top: 24rpx;
+  padding: 18rpx 24rpx;
+}
+
+.cp-line {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.cp-flame {
+  font-size: 30rpx;
+  margin-right: 8rpx;
+}
+
+.cp-streak {
+  color: #1f241f;
+  font-size: 26rpx;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.cp-num {
+  color: #26332c;
+  font-size: 32rpx;
+  font-weight: 800;
+  padding: 0 2rpx;
+}
+
+.cp-dot {
+  color: #c9cdc6;
+  margin: 0 12rpx;
+  flex-shrink: 0;
+}
+
+.cp-status {
+  color: #69736d;
+  font-size: 24rpx;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.cp-pill {
+  background: #f3c969;
+  color: #1f241f;
+  font-size: 24rpx;
+  font-weight: 600;
+  height: 56rpx;
+  line-height: 56rpx;
+  padding: 0 26rpx;
+  border-radius: 28rpx;
+  margin: 0 0 0 16rpx;
+  flex-shrink: 0;
+}
+
+.cp-done {
+  flex-shrink: 0;
+  margin-left: 16rpx;
+}
+
+/* 打卡弹层 */
+.cp-sheet {
+  padding: 20rpx 32rpx calc(env(safe-area-inset-bottom) + 40rpx);
+  border-radius: 24rpx 24rpx 0 0;
+}
+
+.cp-sheet-handle {
+  width: 64rpx;
+  height: 8rpx;
+  border-radius: 8rpx;
+  background: #e3e6e1;
+  margin: 0 auto 24rpx;
+}
+
+.cp-sheet-title {
+  color: #1f241f;
+  font-size: 34rpx;
+  font-weight: 700;
+  text-align: center;
+}
+
+.cp-sheet-sub {
+  color: #69736d;
+  font-size: 26rpx;
+  text-align: center;
+  margin-top: 10rpx;
+}
+
+.cp-sheet-note {
+  background: #f4f5f1;
+  border-radius: 12rpx;
+  padding: 20rpx 24rpx;
+  margin: 28rpx 0;
+}
+
+.cp-sheet-confirm {
+  background: #f3c969;
+  color: #1f241f;
+  font-size: 32rpx;
+  font-weight: 700;
+  height: 88rpx;
+  line-height: 88rpx;
+  border-radius: 44rpx;
+  margin: 0;
+}
+
 .summary-card {
   background: #ffffff;
   border-radius: 8rpx;

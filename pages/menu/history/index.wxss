@@ -13,7 +13,7 @@ page {
 }
 
 .eyebrow {
-  color: #d54941;
+  color: #48613f;
   font-size: 24rpx;
   font-weight: 600;
   letter-spacing: 0;
@@ -77,7 +77,7 @@ page {
 
 .history-count {
   margin-top: 4rpx;
-  color: #d54941;
+  color: #48613f;
   font-size: 24rpx;
   line-height: 34rpx;
 }
@@ -88,8 +88,8 @@ page {
   height: 56rpx;
   padding: 0;
   border-radius: 8rpx;
-  background: #fff0ee;
-  color: #d54941;
+  background: #eef4e7;
+  color: #48613f;
   font-size: 24rpx;
   font-weight: 600;
   line-height: 56rpx;

@@ -30,12 +30,23 @@
     </view>
   </view>
 
+  <view class="cleanplate-strip" bindtap="goCheckinRecords">
+    <view class="cp-line">
+      <text class="cp-flame">🔥</text>
+      <text class="cp-streak">连续光盘 <text class="cp-num">{{checkin.streakDays}}</text> 天</text>
+      <text class="cp-dot">·</text>
+      <text class="cp-status">{{checkin.todayDone ? '今晚已光盘' : '今晚光盘了吗？'}}</text>
+    </view>
+    <button wx:if="{{!checkin.todayDone}}" class="cp-pill" catchtap="openCheckin">今晚打卡</button>
+    <view wx:else class="cp-done"><t-icon name="check-circle-filled" size="36rpx" color="#26332c" /></view>
+  </view>
+
   <view class="summary-card" wx:if="{{recommendation}}">
     <view>
       <view class="summary-title">{{recommendation.title}}</view>
       <view class="summary-meta">{{recommendation.totalCookMinutes}} 分钟 · {{recommendationTagText}}</view>
     </view>
-    <t-icon name="refresh" size="40rpx" color="#e34d59" bindtap="randomDinnerSet" />
+    <t-icon name="refresh" size="40rpx" color="#26332c" bindtap="randomDinnerSet" />
   </view>
 
   <view class="dish-grid" wx:if="{{recommendation}}">
@@ -58,6 +69,23 @@
     </view>
     <t-icon name="chevron-right" size="40rpx" color="#666" />
   </view>
+
+  <t-popup visible="{{showCheckinPopup}}" placement="bottom" bind:visible-change="onCheckinPopupChange">
+    <view class="cp-sheet">
+      <view class="cp-sheet-handle"></view>
+      <view class="cp-sheet-title">🍽️ 今晚光盘打卡</view>
+      <view class="cp-sheet-sub">一家人一起把菜吃光，给今晚记一笔</view>
+      <t-textarea
+        class="cp-sheet-note"
+        value="{{checkinNote}}"
+        bind:change="onCheckinNoteInput"
+        placeholder="想记一句吗？(可选，比如：红烧肉光速光盘)"
+        maxlength="50"
+        disableDefaultPadding
+      />
+      <button class="cp-sheet-confirm" bindtap="confirmCheckin">光盘！</button>
+    </view>
+  </t-popup>
 
   <t-toast id="t-toast" />
 </view>

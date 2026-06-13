@@ -13,7 +13,7 @@ page {
 }
 
 .eyebrow {
-  color: #d54941;
+  color: #48613f;
   font-size: 24rpx;
   font-weight: 600;
   letter-spacing: 0;
@@ -67,7 +67,7 @@ page {
 .save-btn {
   height: 92rpx;
   border-radius: 8rpx;
-  background: #d54941;
+  background: #48613f;
   color: #fff;
   font-size: 30rpx;
   font-weight: 700;
@@ -79,5 +79,5 @@ page {
 }
 
 .cloud-error {
-  color: #d54941;
+  color: #48613f;
 }

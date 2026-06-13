@@ -10,6 +10,10 @@
       <t-icon name="add" size="32rpx" color="#ffffff" />
       <text>新增菜品</text>
     </button>
+    <button class="secondary-btn" bindtap="goCategoryManage">
+      <t-icon name="setting" size="32rpx" color="#48613f" />
+      <text>管理分类</text>
+    </button>
     <button class="restore-btn" wx:if="{{canRestore}}" bindtap="restoreDefaultDishes">恢复初始菜品</button>
   </view>
 

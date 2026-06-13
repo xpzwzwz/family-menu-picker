@@ -44,7 +44,7 @@
 	  status="{{loadMoreStatus}}"
 	  no-more-text="没有更多了"
 	  color="#BBBBBB"
-	  failedColor="#FA550F"
+	  failedColor="#26332c"
 	/>
 </view>
 

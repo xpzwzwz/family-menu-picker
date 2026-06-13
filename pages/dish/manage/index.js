@@ -3,20 +3,22 @@ import Toast from 'tdesign-miniprogram/toast/index';
 import {
   defaultDishIds,
   deleteDish,
-  dishCategories,
+  getDishCategoryOptions,
   getManageableDishes,
   hasRemovedDefaultDishes,
   restoreDishDefaults,
 } from '../../../model/dishes';
 
-const categoryNameMap = dishCategories.reduce((result, category) => {
-  return {
-    ...result,
-    [category.id]: category.name,
-  };
-}, {});
+function getCategoryNameMap() {
+  return getDishCategoryOptions().reduce((result, category) => {
+    return {
+      ...result,
+      [category.id]: category.name,
+    };
+  }, {});
+}
 
-function formatDish(dish) {
+function formatDish(dish, categoryNameMap) {
   const tags = Array.isArray(dish.tags) ? dish.tags : [];
   return {
     ...dish,
@@ -37,7 +39,8 @@ Page({
   },
 
   refreshDishes() {
-    const dishList = getManageableDishes().map(formatDish);
+    const categoryNameMap = getCategoryNameMap();
+    const dishList = getManageableDishes().map((dish) => formatDish(dish, categoryNameMap));
     this.setData({
       dishList,
       canRestore: hasRemovedDefaultDishes(),
@@ -54,6 +57,10 @@ Page({
 
   goCreate() {
     wx.navigateTo({ url: '/pages/dish/custom-create/index' });
+  },
+
+  goCategoryManage() {
+    wx.navigateTo({ url: '/pages/dish/category-manage/index' });
   },
 
   editDish(event) {

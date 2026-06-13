@@ -7,6 +7,18 @@
     <view class="head-copy">按分类滑动挑菜</view>
   </view>
 
+  <view class="search-bar">
+    <t-icon name="search" size="36rpx" color="#9aa39c" />
+    <input
+      class="search-input"
+      value="{{keyword}}"
+      placeholder="搜菜名、食材、口味"
+      confirm-type="search"
+      bindinput="onSearchInput"
+    />
+    <t-icon wx:if="{{keyword}}" name="close-circle-filled" size="36rpx" color="#c0c4bd" bindtap="clearSearch" />
+  </view>
+
   <scroll-view class="member-strip" scroll-x="{{true}}" show-scrollbar="{{false}}">
     <view
       class="member-chip {{selectedMemberId === item.id ? 'member-chip-active' : ''}}"
@@ -19,7 +31,37 @@
     </view>
   </scroll-view>
 
-  <view class="picker-shell" style="height: {{scrollHeight}}px;">
+  <view wx:if="{{keyword}}" class="search-shell" style="height: {{scrollHeight}}px;">
+    <scroll-view class="search-scroll" scroll-y="{{true}}" enhanced="{{true}}" show-scrollbar="{{false}}" style="height: {{scrollHeight}}px;">
+      <view
+        class="dish-row"
+        wx:for="{{searchResults}}"
+        wx:for-item="goods"
+        wx:for-index="rIdx"
+        wx:key="spuId"
+        data-id="{{goods.spuId}}"
+        bindtap="goDishDetail"
+      >
+        <t-image src="{{goods.thumb}}" t-class="dish-image" mode="aspectFill" />
+        <view class="dish-info">
+          <view class="dish-title">{{goods.title}}</view>
+          <view class="dish-meta">{{goods.cookMinutes}} 分钟 · {{goods.difficulty}} · {{goods.flavor}}</view>
+          <view class="dish-tags">
+            <text wx:for="{{goods.tags}}" wx:key="*this">{{item}}</text>
+          </view>
+        </view>
+        <button class="add-btn" data-goods-index="{{rIdx}}" catchtap="addSearchDish">+</button>
+      </view>
+
+      <view wx:if="{{!searchResults.length}}" class="search-empty">
+        <view class="search-empty-title">没找到「{{keyword}}」相关的菜</view>
+        <view class="search-empty-sub">换个词试试，或在「我的 → 管理菜品」里把它加进来</view>
+      </view>
+      <view class="scroll-bottom" />
+    </scroll-view>
+  </view>
+
+  <view wx:else class="picker-shell" style="height: {{scrollHeight}}px;">
     <scroll-view class="category-sidebar" scroll-y="{{true}}" enhanced="{{true}}" show-scrollbar="{{false}}" style="height: {{scrollHeight}}px;">
       <view
         class="category-tab {{activeCategoryId === item.id ? 'category-tab-active' : ''}}"

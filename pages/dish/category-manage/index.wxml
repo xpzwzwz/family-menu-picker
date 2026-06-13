@@ -1,0 +1,63 @@
+<view class="category-page">
+  <view class="page-head">
+    <view class="eyebrow">Dish Library</view>
+    <view class="title">管理分组</view>
+    <view class="subtitle">内置和自定义分组都能改名、增减。删掉的分组里，菜会自动归到「其他」。</view>
+  </view>
+
+  <view class="form-section">
+    <view class="field">
+      <view class="field-label">分类名称</view>
+      <input
+        class="field-input"
+        value="{{form.name}}"
+        placeholder="例如：早餐"
+        data-field="name"
+        bindinput="updateField"
+      />
+    </view>
+
+    <view class="field">
+      <view class="field-label">描述</view>
+      <input
+        class="field-input"
+        value="{{form.description}}"
+        placeholder="例如：早上吃点轻的"
+        data-field="description"
+        bindinput="updateField"
+      />
+    </view>
+
+    <view class="form-actions">
+      <button class="primary-btn" bindtap="submitCategory">{{submitText}}</button>
+      <button class="ghost-btn" wx:if="{{editing}}" bindtap="resetForm">取消编辑</button>
+    </view>
+  </view>
+
+  <view class="category-list">
+    <view class="category-card" wx:for="{{categoryList}}" wx:key="id">
+      <view class="category-main">
+        <view class="category-title-row">
+          <view class="category-title">{{item.name}}</view>
+          <view class="category-badge {{item.editable ? 'custom-badge' : ''}}">{{item.badgeText}}</view>
+        </view>
+        <view class="category-desc">{{item.description}}</view>
+      </view>
+      <view class="category-actions" wx:if="{{item.editable}}">
+        <button class="action-btn edit-btn" catchtap="editCategory" data-id="{{item.id}}">
+          <t-icon name="edit-1" size="28rpx" color="#48613f" />
+          <text>编辑</text>
+        </button>
+        <button class="action-btn delete-btn" catchtap="deleteCategory" data-id="{{item.id}}">
+          <t-icon name="delete" size="28rpx" color="#777777" />
+          <text>删除</text>
+        </button>
+      </view>
+    </view>
+  </view>
+
+  <button class="restore-btn" bindtap="restoreDefaults">恢复默认分组</button>
+
+  <t-dialog id="t-dialog" />
+  <t-toast id="t-toast" />
+</view>

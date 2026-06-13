@@ -46,7 +46,7 @@ page {
 }
 
 .member-chip-active {
-  background: #d54941;
+  background: #48613f;
   color: #ffffff;
 }
 
@@ -108,7 +108,7 @@ page {
   width: 8rpx;
   height: 52rpx;
   border-radius: 0 8rpx 8rpx 0;
-  background: #d54941;
+  background: #48613f;
   content: '';
 }
 
@@ -228,7 +228,7 @@ page {
   height: 56rpx;
   padding: 0;
   border-radius: 8rpx;
-  background: #d54941;
+  background: #48613f;
   color: #ffffff;
   font-size: 36rpx;
   font-weight: 600;
@@ -241,4 +241,48 @@ page {
 
 .scroll-bottom {
   height: 24rpx;
+}
+
+/* 搜索 */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 16rpx;
+  padding: 14rpx 24rpx;
+  background: #ffffff;
+  border-radius: 40rpx;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 0;
+  font-size: 28rpx;
+  color: #1f241f;
+}
+
+.search-shell {
+  box-sizing: border-box;
+}
+
+.search-scroll {
+  box-sizing: border-box;
+}
+
+.search-empty {
+  padding: 90rpx 40rpx;
+  text-align: center;
+}
+
+.search-empty-title {
+  color: #1f241f;
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.search-empty-sub {
+  margin-top: 12rpx;
+  color: #9aa39c;
+  font-size: 26rpx;
+  line-height: 38rpx;
 }

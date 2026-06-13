@@ -37,7 +37,7 @@
 
 .btn-bar .right .primary {
   --td-button-default-color: #fff;
-  --td-button-default-bg-color: #fa4126;
-  --td-button-default-border-color: #fa4126;
+  --td-button-default-bg-color: #26332c;
+  --td-button-default-border-color: #26332c;
   --td-button-default-active-bg-color: #fa42269c;
 }

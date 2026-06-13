@@ -43,7 +43,7 @@
     </view>
 
     <view class="anonymous-box">
-      <t-checkbox bind:change="onAnonymousChange" checked="{{isAnonymous}}" color="#FA4126" />
+      <t-checkbox bind:change="onAnonymousChange" checked="{{isAnonymous}}" color="#26332c" />
       <view class="name">匿名评价</view>
     </view>
   </view>

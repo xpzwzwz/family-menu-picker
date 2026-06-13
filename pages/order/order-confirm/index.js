@@ -96,6 +96,8 @@ Page({
         note: this.data.note,
       });
 
+      // 确认只把菜存进本机「菜单历史」，不动云端共享菜单。
+      // saveConfirmedMenu 已清空本地菜单，若再 syncLocalMenuToCloud 就会把全队共享菜单清空。
       this.setData({ confirmedMenu });
       Toast({
         context: this,

@@ -4,9 +4,15 @@
       <view class="eyebrow">当前小分队</view>
       <button class="manage-btn" bindtap="handleAction" data-type="profile">管理</button>
     </view>
-    <view class="center-title">{{currentSquadName}}</view>
-    <view class="center-desc">{{currentIdentityText}}</view>
-    <view class="profile-pref" wx:if="{{cloudUser && cloudUser.hasPhone}}">{{cloudUser.maskedPhone}}</view>
+    <view class="panel-id-row">
+      <image wx:if="{{cloudUser.avatarUrl}}" class="panel-avatar" src="{{cloudUser.avatarUrl}}" mode="aspectFill" />
+      <view wx:else class="panel-avatar panel-avatar-ph"><t-icon name="user-1" size="44rpx" color="#9aa39c" /></view>
+      <view class="panel-id-copy">
+        <view class="center-title">{{currentSquadName}}</view>
+        <view class="center-desc">{{currentIdentityText}}</view>
+        <view class="profile-pref" wx:if="{{cloudUser && cloudUser.hasPhone}}">{{cloudUser.maskedPhone}}</view>
+      </view>
+    </view>
     <view class="menu-stats">
       <view class="menu-stat">
         <view class="menu-stat__value">{{selectedCount}}</view>
@@ -24,7 +30,7 @@
     <view class="action-list">
       <view class="action-item" wx:for="{{actionList}}" wx:key="type" bindtap="handleAction" data-type="{{item.type}}">
         <view class="action-icon">
-          <t-icon name="{{item.icon}}" size="36rpx" color="#d54941" />
+          <t-icon name="{{item.icon}}" size="36rpx" color="#48613f" />
         </view>
         <view class="action-copy">
           <view class="action-title">{{item.title}}</view>

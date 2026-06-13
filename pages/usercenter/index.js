@@ -34,6 +34,12 @@ const actionList = [
     icon: 'time',
   },
   {
+    title: '光盘记录',
+    desc: '看小分队连续光盘了多少天',
+    type: 'cleanplate',
+    icon: 'chart-bar',
+  },
+  {
     title: '新增菜品',
     desc: '把队里常吃的菜加进来',
     type: 'customDish',
@@ -44,6 +50,12 @@ const actionList = [
     desc: '编辑或移除队里常吃菜',
     type: 'manageDish',
     icon: 'view-list',
+  },
+  {
+    title: '管理分组',
+    desc: '内置和自定义分组都能改名、增减',
+    type: 'manageCategory',
+    icon: 'menu-application',
   },
   {
     title: '提个想法',
@@ -126,8 +138,16 @@ Page({
         wx.navigateTo({ url: '/pages/dish/manage/index' });
         break;
       }
+      case 'manageCategory': {
+        wx.navigateTo({ url: '/pages/dish/category-manage/index' });
+        break;
+      }
       case 'menuHistory': {
         wx.navigateTo({ url: '/pages/menu/history/index' });
+        break;
+      }
+      case 'cleanplate': {
+        wx.navigateTo({ url: '/pages/checkin/index' });
         break;
       }
       case 'profile': {

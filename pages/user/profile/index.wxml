@@ -6,8 +6,17 @@
   </view>
 
   <view class="cloud-card">
-    <view class="cloud-title">我</view>
-    <view class="cloud-value">{{cloudUser ? '已经准备好' : '正在准备你的小分队菜单...'}}</view>
+    <view class="me-row">
+      <button class="avatar-btn" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
+        <image wx:if="{{cloudUser.avatarUrl}}" class="avatar-img" src="{{cloudUser.avatarUrl}}" mode="aspectFill" />
+        <view wx:else class="avatar-ph"><t-icon name="user-1" size="48rpx" color="#9aa39c" /></view>
+        <view class="avatar-cam"><t-icon name="camera" size="22rpx" color="#ffffff" /></view>
+      </button>
+      <view class="me-copy">
+        <view class="cloud-title">我</view>
+        <view class="cloud-value">{{avatarUploading ? '正在上传头像…' : (cloudUser ? '点头像可换一张' : '正在准备你的小分队菜单...')}}</view>
+      </view>
+    </view>
     <view class="phone-row" wx:if="{{cloudUser}}">
       <view class="phone-copy">
         <view class="phone-title">{{cloudUser.hasPhone ? '已添加手机号' : '添加手机号'}}</view>
@@ -55,7 +64,8 @@
     </view>
     <view class="cloud-members">
       <view class="cloud-member" wx:for="{{cloudRoom.members}}" wx:key="userId">
-        <view class="member-avatar">{{item.name.slice(0, 1)}}</view>
+        <image wx:if="{{item.avatarUrl}}" class="member-avatar member-avatar-img" src="{{item.avatarUrl}}" mode="aspectFill" />
+        <view wx:else class="member-avatar">{{item.name.slice(0, 1)}}</view>
         <view class="member-copy">
           <view class="member-name">{{item.name}}</view>
           <view class="member-meta">{{item.role}}</view>

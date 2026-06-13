@@ -1,5 +1,11 @@
 import Toast from 'tdesign-miniprogram/toast/index';
-import { addCustomDish, dishCategories, getDishById, getDishPlaceholderImage, updateDish } from '../../../model/dishes';
+import {
+  addCustomDish,
+  getDishById,
+  getDishCategoryOptions,
+  getDishPlaceholderImage,
+  updateDish,
+} from '../../../model/dishes';
 import { uploadDishImage } from '../../../services/dish/uploadImage';
 import { buildStepPreviews, syncStepImagesWithSteps } from './stepImages';
 
@@ -30,7 +36,11 @@ function formatDishForm(dish) {
     flavor: dish.flavor || '',
     image: dish.image || getDishPlaceholderImage(dish.category),
     tagsText: Array.isArray(dish.tags) ? dish.tags.join('，') : '',
-    ingredientsText: Array.isArray(dish.ingredients) ? dish.ingredients.join('，') : '',
+    ingredientsText: Array.isArray(dish.ingredients)
+      ? dish.ingredients
+          .map((name) => (dish.amounts && dish.amounts[name] ? `${name} ${dish.amounts[name]}` : name))
+          .join('，')
+      : '',
     stepsText: Array.isArray(dish.steps) ? dish.steps.map((step) => step.description || step.title).join('\n') : '',
     stepImages: Array.isArray(dish.steps) ? dish.steps.map((step) => step.image || '') : [],
     notes: dish.notes || '',
@@ -43,7 +53,7 @@ Page({
     modeTitle: '新增菜品',
     submitText: '保存菜品',
     form: getDefaultForm(),
-    categoryOptions: dishCategories,
+    categoryOptions: getDishCategoryOptions(),
     difficultyOptions,
     uploadingImage: false,
     stepPreviews: [],
@@ -72,6 +82,10 @@ Page({
       form: formatDishForm(dish),
     });
     this.refreshStepPreviews();
+  },
+
+  onShow() {
+    this.setData({ categoryOptions: getDishCategoryOptions() });
   },
 
   updateField(event) {

@@ -87,7 +87,7 @@
     #fff 100%
   );
   font-size: 26rpx;
-  color: #fa550f;
+  color: #26332c;
   line-height: 36rpx;
   text-align: right;
 }

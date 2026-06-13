@@ -1,0 +1,41 @@
+<view class="page">
+  <view class="hero">
+    <view class="eyebrow">光盘小分队</view>
+    <view class="hero-streak"><text class="flame">🔥</text> 连续光盘 <text class="big">{{summary.streakDays}}</text> 天</view>
+    <view class="hero-sub">本月 {{summary.monthDays}} 天 · 累计 {{summary.totalCount}} 顿光盘</view>
+  </view>
+
+  <view class="cal-card">
+    <view class="cal-head">
+      <view class="cal-nav" bindtap="prevMonth"><t-icon name="chevron-left" size="40rpx" color="#69736d" /></view>
+      <view class="cal-title">{{year}} 年 {{month}} 月</view>
+      <view class="cal-nav" bindtap="nextMonth"><t-icon name="chevron-right" size="40rpx" color="#69736d" /></view>
+    </view>
+    <view class="cal-weekrow">
+      <view class="cal-wk" wx:for="{{weekLabels}}" wx:key="*this">{{item}}</view>
+    </view>
+    <view class="cal-week" wx:for="{{weeks}}" wx:key="index" wx:for-item="week" wx:for-index="wi">
+      <view
+        class="cal-cell {{cell.done ? 'done' : ''}} {{cell.isToday ? 'today' : ''}}"
+        wx:for="{{week}}"
+        wx:key="k"
+        wx:for-item="cell"
+      >
+        <text wx:if="{{!cell.blank}}">{{cell.day}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="ach-card">
+    <view class="ach-title">成就</view>
+    <view class="ach-grid">
+      <view class="ach-item {{item.unlocked ? '' : 'locked'}}" wx:for="{{milestones}}" wx:key="key">
+        <view class="ach-icon">{{item.icon}}</view>
+        <view class="ach-label">{{item.label}}</view>
+      </view>
+    </view>
+  </view>
+
+  <button class="share-btn" open-type="share">分享我们家的光盘战绩</button>
+  <t-toast id="t-toast" />
+</view>

@@ -14,7 +14,7 @@
     {
       "root": "pages/dish",
       "name": "dish",
-      "pages": ["custom-create/index", "manage/index", "detail/index"]
+      "pages": ["custom-create/index", "manage/index", "detail/index", "category-manage/index"]
     },
     {
       "root": "pages/user",
@@ -25,12 +25,17 @@
       "root": "pages/menu",
       "name": "menu",
       "pages": ["history/index", "basket/index"]
+    },
+    {
+      "root": "pages/checkin",
+      "name": "checkin",
+      "pages": ["index"]
     }
   ],
   "tabBar": {
     "custom": true,
     "color": "#666666",
-    "selectedColor": "#FF5F15",
+    "selectedColor": "#26332c",
     "backgroundColor": "#ffffff",
     "borderStyle": "black",
     "list": [

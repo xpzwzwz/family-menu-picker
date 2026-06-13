@@ -26,7 +26,7 @@ Component({
     },
     failedColor: {
       type: String,
-      value: '#FA550F',
+      value: '#26332c',
     },
     size: {
       type: null,

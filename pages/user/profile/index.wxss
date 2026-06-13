@@ -13,7 +13,7 @@ page {
 }
 
 .eyebrow {
-  color: #d54941;
+  color: #48613f;
   font-size: 24rpx;
   font-weight: 600;
   letter-spacing: 0;
@@ -107,6 +107,64 @@ page {
   white-space: nowrap;
 }
 
+.me-row {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.avatar-btn {
+  position: relative;
+  width: 112rpx;
+  height: 112rpx;
+  padding: 0;
+  margin: 0;
+  border-radius: 50%;
+  background: #eef4e7;
+  line-height: normal;
+  overflow: visible;
+}
+
+.avatar-btn::after {
+  border: none;
+}
+
+.avatar-img {
+  display: block;
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: 50%;
+}
+
+.avatar-ph {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: 50%;
+  background: #eef4e7;
+}
+
+.avatar-cam {
+  position: absolute;
+  right: -2rpx;
+  bottom: -2rpx;
+  width: 38rpx;
+  height: 38rpx;
+  border-radius: 50%;
+  background: #26332c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3rpx solid #ffffff;
+}
+
+.me-copy {
+  flex: 1;
+  min-width: 0;
+}
+
 .cloud-value,
 .cloud-error,
 .join-desc {
@@ -118,7 +176,7 @@ page {
 }
 
 .cloud-error {
-  color: #d54941;
+  color: #48613f;
 }
 
 .phone-row {
@@ -195,8 +253,8 @@ page {
   height: 56rpx;
   padding: 0;
   border-radius: 8rpx;
-  background: #fff0ee;
-  color: #d54941;
+  background: #eef4e7;
+  color: #48613f;
   font-size: 24rpx;
   line-height: 56rpx;
 }
@@ -208,8 +266,8 @@ page {
   margin: 0;
   padding: 0 18rpx;
   border-radius: 8rpx;
-  background: #fff0ee;
-  color: #d54941;
+  background: #eef4e7;
+  color: #48613f;
   font-size: 24rpx;
   line-height: 52rpx;
 }
@@ -230,8 +288,8 @@ page {
 }
 
 .leave-btn.danger {
-  background: #fff0ee;
-  color: #d54941;
+  background: #eef4e7;
+  color: #48613f;
 }
 
 .join-preview {
@@ -301,6 +359,10 @@ page {
   line-height: 72rpx;
 }
 
+.member-avatar-img {
+  overflow: hidden;
+}
+
 .member-copy {
   flex: 1;
   min-width: 0;
@@ -359,7 +421,7 @@ page {
 }
 
 .save-btn {
-  background: #d54941;
+  background: #48613f;
   color: #fff;
 }
 

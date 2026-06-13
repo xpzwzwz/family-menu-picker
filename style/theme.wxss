@@ -1,33 +1,34 @@
-/* 主题定制 */
+/* 主题定制 —— 墨绿 + 金 */
+/* 墨绿 #26332c：结构/激活/勾选/图标   金 #f3c969：主行动按钮(配深字 #1f241f) */
 .t-input {
   --td-input-placeholder-text-color: #bbbbbb;
   --td-input-text-color: #333333;
 }
 
 .t-tab-bar {
-  --td-tab-bar-color: #bbb;
-  --td-tab-bar-active-color: #333;
+  --td-tab-bar-color: #9aa39c;
+  --td-tab-bar-active-color: #26332c;
 }
 
 .t-cascader {
-  --td-cascader-active-color: #fa4126;
+  --td-cascader-active-color: #26332c;
 }
 
 .t-switch {
-  --td-switch-checked-color: #34c759;
+  --td-switch-checked-color: #26332c;
 }
 
 .t-button {
   --td-button-font-weight: 500;
   --td-button-medium-font-size: 32rpx;
-  --td-button-default-color: #fff;
-  --td-button-default-bg-color: #fa4126;
-  --td-button-default-border-color: #fa4126;
+  --td-button-default-color: #1f241f;
+  --td-button-default-bg-color: #f3c969;
+  --td-button-default-border-color: #f3c969;
   --td-button-default-disabled-color: #fff;
   --td-button-default-disabled-bg: #cccccc;
   --td-button-default-disabled-border-color: #cccccc;
-  --td-button-default-active-bg-color: #fa4126;
-  --td-button-default-active-border-color: #fa4126;
+  --td-button-default-active-bg-color: #e6b84d;
+  --td-button-default-active-border-color: #e6b84d;
 }
 
 .t-textarea {
@@ -35,11 +36,11 @@
 }
 
 .t-checkbox {
-  --td-checkbox-icon-checked-color: #fa4126;
+  --td-checkbox-icon-checked-color: #26332c;
 }
 
 .dialog__button-confirm {
-  color: #fa4126 !important;
+  color: #26332c !important;
 }
 
 .dialog__button-cancel {

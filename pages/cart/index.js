@@ -1,7 +1,13 @@
 import Dialog from 'tdesign-miniprogram/dialog/index';
 import Toast from 'tdesign-miniprogram/toast/index';
 import { fetchCartGroupData } from '../../services/cart/cart';
-import { removeTonightMenuItem, saveConfirmedMenu, updateTonightMenuItem } from '../../model/dishes';
+import { saveConfirmedMenu } from '../../model/dishes';
+import {
+  removeSharedMenuItem,
+  setAllSharedMenuSelected,
+  syncCloudMenuToLocal,
+  updateSharedMenuItem,
+} from '../../services/squad/cloudMenu';
 
 function isDishSelected(value) {
   return value === true || value === 1;
@@ -19,46 +25,72 @@ Page({
   },
 
   refreshData() {
-    this.getCartGroupData().then((res) => {
-      let isEmpty = true;
-      const cartGroupData = res.data;
-      for (const store of cartGroupData.storeGoods) {
-        store.isSelected = true;
-        store.storeStockShortage = false;
-        if (!store.shortageGoodsList) {
-          store.shortageGoodsList = [];
-        }
-        for (const activity of store.promotionGoodsList) {
-          activity.goodsPromotionList = activity.goodsPromotionList.filter((goods) => {
-            goods.originPrice = undefined;
+    this.loadCloudMenuIfNeeded()
+      .catch((error) => {
+        Toast({
+          context: this,
+          selector: '#t-toast',
+          message: error.message || '菜单同步失败，先显示本机菜单',
+        });
+      })
+      .then(() => this.getCartGroupData())
+      .then((res) => {
+        let isEmpty = true;
+        const cartGroupData = res.data;
+        for (const store of cartGroupData.storeGoods) {
+          store.isSelected = true;
+          store.storeStockShortage = false;
+          if (!store.shortageGoodsList) {
+            store.shortageGoodsList = [];
+          }
+          for (let activityIndex = 0; activityIndex < store.promotionGoodsList.length; activityIndex += 1) {
+            const activity = store.promotionGoodsList[activityIndex];
+            const goodsPromotionList = activity.goodsPromotionList
+              .map((goods) => ({ ...goods, originPrice: undefined }))
+              .filter((goods) => {
+                if (goods.quantity > goods.stockQuantity) {
+                  store.storeStockShortage = true;
+                }
+                if (!goods.isSelected) {
+                  store.isSelected = false;
+                }
+                if (goods.stockQuantity > 0) {
+                  return true;
+                }
+                store.shortageGoodsList.push(goods);
+                return false;
+              });
+            store.promotionGoodsList[activityIndex] = { ...activity, goodsPromotionList };
 
-            if (goods.quantity > goods.stockQuantity) {
-              store.storeStockShortage = true;
+            if (goodsPromotionList.length > 0) {
+              isEmpty = false;
             }
-            if (!goods.isSelected) {
-              store.isSelected = false;
-            }
-            if (goods.stockQuantity > 0) {
-              return true;
-            }
-            store.shortageGoodsList.push(goods);
-            return false;
-          });
-
-          if (activity.goodsPromotionList.length > 0) {
+          }
+          if (store.shortageGoodsList.length > 0) {
             isEmpty = false;
           }
         }
-        if (store.shortageGoodsList.length > 0) {
-          isEmpty = false;
-        }
-      }
-      cartGroupData.invalidGoodItems = cartGroupData.invalidGoodItems.map((goods) => {
-        goods.originPrice = undefined;
-        return goods;
+        cartGroupData.invalidGoodItems = cartGroupData.invalidGoodItems.map((goods) => ({
+          ...goods,
+          originPrice: undefined,
+        }));
+        cartGroupData.isNotEmpty = !isEmpty;
+        this.setData({ cartGroupData });
       });
-      cartGroupData.isNotEmpty = !isEmpty;
-      this.setData({ cartGroupData });
+  },
+
+  loadCloudMenuIfNeeded() {
+    return syncCloudMenuToLocal();
+  },
+
+  withSyncToast(promise) {
+    return promise.catch((error) => {
+      Toast({
+        context: this,
+        selector: '#t-toast',
+        message: error.message || '菜单暂时没同步给队友',
+      });
+      throw error;
     });
   },
 
@@ -102,29 +134,25 @@ Page({
     const { currentGoods } = this.findGoods(spuId, skuId);
     if (!currentGoods) return Promise.reject(new Error('missing goods'));
     currentGoods.isSelected = isSelected;
-    updateTonightMenuItem(spuId, skuId, { isSelected: isSelected ? 1 : 0 });
-    return Promise.resolve();
+    return this.withSyncToast(updateSharedMenuItem(spuId, skuId, { isSelected: isSelected ? 1 : 0 }));
   },
 
   selectStoreService({ storeId, isSelected }) {
     const currentStore = this.data.cartGroupData.storeGoods.find((s) => s.storeId === storeId);
     if (!currentStore) return Promise.reject(new Error('missing store'));
     currentStore.isSelected = isSelected;
-    currentStore.promotionGoodsList.forEach((activity) => {
-      activity.goodsPromotionList.forEach((goods) => {
-        goods.isSelected = isSelected;
-        updateTonightMenuItem(goods.spuId, goods.skuId, { isSelected: isSelected ? 1 : 0 });
-      });
+    currentStore.promotionGoodsList = currentStore.promotionGoodsList.map((activity) => {
+      const goodsPromotionList = activity.goodsPromotionList.map((goods) => ({ ...goods, isSelected }));
+      return { ...activity, goodsPromotionList };
     });
-    return Promise.resolve();
+    return this.withSyncToast(setAllSharedMenuSelected(isSelected));
   },
 
   changeQuantityService({ spuId, skuId, quantity }) {
     const { currentGoods } = this.findGoods(spuId, skuId);
     if (!currentGoods) return Promise.reject(new Error('missing goods'));
     currentGoods.quantity = quantity;
-    updateTonightMenuItem(spuId, skuId, { quantity });
-    return Promise.resolve();
+    return this.withSyncToast(updateSharedMenuItem(spuId, skuId, { quantity }));
   },
 
   deleteGoodsService({ spuId, skuId }) {
@@ -133,7 +161,6 @@ Page({
         const goods = group[gindex];
         if (goods.spuId === spuId && goods.skuId === skuId) {
           group.splice(gindex, 1);
-          removeTonightMenuItem(spuId, skuId);
           return gindex;
         }
       }
@@ -143,15 +170,15 @@ Page({
     for (const store of storeGoods) {
       for (const activity of store.promotionGoodsList) {
         if (deleteGoods(activity.goodsPromotionList) > -1) {
-          return Promise.resolve();
+          return this.withSyncToast(removeSharedMenuItem(spuId, skuId));
         }
       }
       if (deleteGoods(store.shortageGoodsList) > -1) {
-        return Promise.resolve();
+        return this.withSyncToast(removeSharedMenuItem(spuId, skuId));
       }
     }
     if (deleteGoods(invalidGoodItems) > -1) {
-      return Promise.resolve();
+      return this.withSyncToast(removeSharedMenuItem(spuId, skuId));
     }
     return Promise.reject();
   },
@@ -180,7 +207,9 @@ Page({
       }"`,
       icon: '',
     });
-    this.selectGoodsService({ spuId, skuId, isSelected }).then(() => this.refreshData());
+    this.selectGoodsService({ spuId, skuId, isSelected })
+      .then(() => this.refreshData())
+      .catch(() => this.refreshData());
   },
 
   onStoreSelect(e) {
@@ -188,7 +217,9 @@ Page({
       store: { storeId },
       isSelected,
     } = e.detail;
-    this.selectStoreService({ storeId, isSelected }).then(() => this.refreshData());
+    this.selectStoreService({ storeId, isSelected })
+      .then(() => this.refreshData())
+      .catch(() => this.refreshData());
   },
 
   onQuantityChange(e) {
@@ -223,12 +254,16 @@ Page({
             spuId,
             skuId,
             quantity: stockQuantity,
-          }).then(() => this.refreshData());
+          })
+            .then(() => this.refreshData())
+            .catch(() => this.refreshData());
         })
         .catch(() => {});
       return;
     }
-    this.changeQuantityService({ spuId, skuId, quantity }).then(() => this.refreshData());
+    this.changeQuantityService({ spuId, skuId, quantity })
+      .then(() => this.refreshData())
+      .catch(() => this.refreshData());
   },
 
   goCollect() {
@@ -258,10 +293,12 @@ Page({
       confirmBtn: '移除',
       cancelBtn: '取消',
     }).then(() => {
-      this.deleteGoodsService({ spuId, skuId }).then(() => {
-        Toast({ context: this, selector: '#t-toast', message: '已从菜单删除' });
-        this.refreshData();
-      });
+      this.deleteGoodsService({ spuId, skuId })
+        .then(() => {
+          Toast({ context: this, selector: '#t-toast', message: '已从菜单删除' });
+          this.refreshData();
+        })
+        .catch(() => this.refreshData());
     });
   },
 
@@ -272,7 +309,9 @@ Page({
       selector: '#t-toast',
       message: isAllSelected ? '已取消全选' : '已全选',
     });
-    this.selectStoreService({ storeId: 'family-kitchen', isSelected: !isAllSelected }).then(() => this.refreshData());
+    this.selectStoreService({ storeId: 'family-kitchen', isSelected: !isAllSelected })
+      .then(() => this.refreshData())
+      .catch(() => this.refreshData());
   },
 
   onToSettle() {
@@ -306,6 +345,9 @@ Page({
       },
       note: '',
     });
+    // 结算只把选中的菜存进本机「菜单历史」做备料快照，不动云端共享菜单。
+    // 以前这里把刚被 saveConfirmedMenu 清空的本地菜单推到云端，会把全队的共享菜单清空，
+    // 导致队友点的菜「看不到」。共享菜单交给加菜/改量/删除这些显式操作维护。
     Toast({
       context: this,
       selector: '#t-toast',

@@ -13,7 +13,7 @@ page {
 }
 
 .eyebrow {
-  color: #d54941;
+  color: #48613f;
   font-size: 24rpx;
   font-weight: 600;
   letter-spacing: 0;
@@ -127,6 +127,70 @@ page {
   white-space: nowrap;
 }
 
+.share-row {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 20rpx;
+}
+
+.copy-btn,
+.share-btn2 {
+  flex: 1;
+  height: 80rpx;
+  line-height: 80rpx;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.copy-btn {
+  background: #f3c969;
+  color: #1f241f;
+}
+
+.share-btn2 {
+  background: #fff;
+  color: #48613f;
+  border: 2rpx solid #d8e0d2;
+}
+
+.copy-btn::after,
+.share-btn2::after {
+  border: 0;
+}
+
+.ingredient-group {
+  margin-top: 20rpx;
+  border-radius: 8rpx;
+  background: #fff;
+  box-shadow: 0 8rpx 24rpx rgba(31, 31, 31, 0.06);
+  overflow: hidden;
+}
+
+.group-head {
+  display: flex;
+  align-items: center;
+  padding: 18rpx 24rpx;
+  border-bottom: 1rpx solid #f0eee9;
+}
+
+.group-icon {
+  font-size: 32rpx;
+  margin-right: 12rpx;
+}
+
+.group-label {
+  color: #1f241f;
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.group-count {
+  margin-left: auto;
+  color: #9aa39c;
+  font-size: 24rpx;
+}
+
 .empty-state {
   margin-top: 20rpx;
   padding: 40rpx 28rpx;
@@ -151,7 +215,7 @@ page {
   margin-top: 28rpx;
   height: 76rpx;
   border-radius: 8rpx;
-  background: #d54941;
+  background: #48613f;
   color: #fff;
   font-size: 28rpx;
   font-weight: 600;
@@ -181,7 +245,7 @@ page {
 }
 
 .primary-btn {
-  background: #d54941;
+  background: #48613f;
   color: #fff;
 }
 

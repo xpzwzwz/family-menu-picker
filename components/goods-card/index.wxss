@@ -77,10 +77,10 @@
 }
 
 .goods-card__tag {
-  color: #fa4126;
+  color: #26332c;
   background: transparent;
   font-size: 20rpx;
-  border: 1rpx solid #fa4126;
+  border: 1rpx solid #26332c;
   padding: 0 8rpx;
   border-radius: 16rpx;
   line-height: 30rpx;
@@ -124,7 +124,7 @@
   white-space: nowrap;
   font-weight: 700;
   order: 1;
-  color: #fa4126;
+  color: #26332c;
   margin: 0;
 }
 

@@ -2,15 +2,18 @@ import Dialog from 'tdesign-miniprogram/dialog/index';
 import Toast from 'tdesign-miniprogram/toast/index';
 import {
   buildShoppingBasket,
+  buildShoppingListText,
   clearShoppingBasketChecked,
   readLastConfirmedMenu,
   toggleShoppingBasketItem,
 } from '../../../model/dishes';
+import { syncCloudMenuToLocal } from '../../../services/squad/cloudMenu';
 
 Page({
   data: {
     basket: {
       items: [],
+      groups: [],
       checkedCount: 0,
       totalIngredientCount: 0,
       totalDishCount: 0,
@@ -29,12 +32,24 @@ Page({
   },
 
   onShow() {
-    this.refreshBasket();
+    this.refreshBasketFromSource();
   },
 
   onPullDownRefresh() {
-    this.refreshBasket();
-    wx.stopPullDownRefresh();
+    this.refreshBasketFromSource().finally(() => wx.stopPullDownRefresh());
+  },
+
+  refreshBasketFromSource() {
+    const syncTask = this.data.source === 'confirmed' ? Promise.resolve() : syncCloudMenuToLocal();
+    return syncTask
+      .catch((error) => {
+        Toast({
+          context: this,
+          selector: '#t-toast',
+          message: error.message || '备料同步失败，先显示本机菜单',
+        });
+      })
+      .then(() => this.refreshBasket());
   },
 
   refreshBasket() {
@@ -52,6 +67,26 @@ Page({
     const { id, checked } = event.currentTarget.dataset;
     toggleShoppingBasketItem(id, !checked);
     this.refreshBasket();
+  },
+
+  copyList() {
+    if (!this.data.basket.totalIngredientCount) {
+      Toast({ context: this, selector: '#t-toast', message: '菜篮子还是空的' });
+      return;
+    }
+    wx.setClipboardData({
+      data: buildShoppingListText(this.data.basket),
+      success: () => {
+        Toast({ context: this, selector: '#t-toast', message: '清单已复制，发给买菜的人吧' });
+      },
+    });
+  },
+
+  onShareAppMessage() {
+    return {
+      title: `买菜清单：${this.data.basket.totalDishCount} 道菜要买 ${this.data.basket.totalIngredientCount} 样`,
+      path: '/pages/menu/basket/index',
+    };
   },
 
   clearChecked() {

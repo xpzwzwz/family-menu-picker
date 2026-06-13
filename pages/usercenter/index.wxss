@@ -25,7 +25,7 @@ page {
 }
 
 .eyebrow {
-  color: #d54941;
+  color: #48613f;
   font-size: 24rpx;
   font-weight: 600;
   letter-spacing: 0;
@@ -40,6 +40,37 @@ page {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.panel-id-row {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  margin-top: 16rpx;
+}
+
+.panel-id-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.panel-id-copy .center-title {
+  margin-top: 0;
+}
+
+.panel-avatar {
+  width: 88rpx;
+  height: 88rpx;
+  flex-shrink: 0;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.panel-avatar-ph {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eef4e7;
 }
 
 .center-desc {
@@ -150,7 +181,7 @@ page {
   height: 64rpx;
   margin-right: 20rpx;
   border-radius: 8rpx;
-  background: #fff0ee;
+  background: #eef4e7;
 }
 
 .action-copy {

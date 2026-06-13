@@ -1,7 +1,8 @@
 import Toast from 'tdesign-miniprogram/toast/index';
-import { addDishesToTonightMenu, getDishSelectionSections } from '../../model/dishes';
+import { getDishSelectionSections, searchDishes } from '../../model/dishes';
 import { readSquadMembers } from '../../model/user';
 import { readCloudRoom } from '../../services/squad/cloudSquad';
+import { addDishesToSharedMenu } from '../../services/squad/cloudMenu';
 
 const SECTION_TOP_OFFSET = 8;
 const TAB_BAR_HEIGHT = 76;
@@ -15,6 +16,8 @@ Page({
     scrollHeight: 0,
     squadMembers: [],
     selectedMemberId: 'self',
+    keyword: '',
+    searchResults: [],
   },
 
   sectionTops: [],
@@ -35,15 +38,15 @@ Page({
 
   refreshMembers() {
     const cloudRoom = readCloudRoom();
-    const cloudMembers =
-      cloudRoom && Array.isArray(cloudRoom.members)
-        ? cloudRoom.members
-            .map((member) => ({
-              id: member.userId,
-              name: member.name,
-            }))
-            .filter((member) => member.id && member.name)
-        : [];
+    let cloudMembers = [];
+    if (cloudRoom && Array.isArray(cloudRoom.members)) {
+      cloudMembers = cloudRoom.members
+        .map((member) => ({
+          id: member.userId,
+          name: member.name,
+        }))
+        .filter((member) => member.id && member.name);
+    }
     const squadMembers = cloudMembers.length ? cloudMembers : readSquadMembers();
     const selectedMemberId = squadMembers.some((member) => member.id === this.data.selectedMemberId)
       ? this.data.selectedMemberId
@@ -141,25 +144,50 @@ Page({
     }, 16);
   },
 
-  addDish(event) {
-    const { sectionIndex, goodsIndex } = event.currentTarget.dataset;
-    const section = this.data.sections[sectionIndex];
-    const goods = section && section.goodsList[goodsIndex];
+  addGoods(goods) {
     if (!goods) return;
     const member =
       this.data.squadMembers.find((item) => item.id === this.data.selectedMemberId) || this.data.squadMembers[0];
-    addDishesToTonightMenu([
-      {
-        ...goods,
-        selectedBy: member ? member.id : '',
-        selectedByName: member ? member.name : '',
-      },
-    ]);
-    Toast({
-      context: this,
-      selector: '#t-toast',
-      message: member ? `${member.name} 已加入菜单` : '已加入菜单',
-    });
+    const nextGoods = {
+      ...goods,
+      selectedBy: member ? member.id : '',
+      selectedByName: member ? member.name : '',
+    };
+    addDishesToSharedMenu([nextGoods])
+      .then(() => {
+        Toast({
+          context: this,
+          selector: '#t-toast',
+          message: member ? `${member.name} 已加入菜单` : '已加入菜单',
+        });
+      })
+      .catch((error) => {
+        Toast({
+          context: this,
+          selector: '#t-toast',
+          message: error.message || '暂时没同步给队友，稍后再试',
+        });
+      });
+  },
+
+  addDish(event) {
+    const { sectionIndex, goodsIndex } = event.currentTarget.dataset;
+    const section = this.data.sections[sectionIndex];
+    this.addGoods(section && section.goodsList[goodsIndex]);
+  },
+
+  onSearchInput(event) {
+    const keyword = event.detail.value;
+    this.setData({ keyword, searchResults: searchDishes(keyword) });
+  },
+
+  clearSearch() {
+    this.setData({ keyword: '', searchResults: [] });
+  },
+
+  addSearchDish(event) {
+    const { goodsIndex } = event.currentTarget.dataset;
+    this.addGoods(this.data.searchResults[goodsIndex]);
   },
 
   selectMember(event) {

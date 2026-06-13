@@ -115,12 +115,20 @@ page {
 }
 
 .ingredient {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8rpx;
   padding: 8rpx 14rpx;
   border-radius: 8rpx;
   background: #eef4e7;
   color: #48613f;
   font-size: 24rpx;
   line-height: 34rpx;
+}
+
+.ingredient-amount {
+  color: #2f4a2a;
+  font-weight: 700;
 }
 
 .step-list {
@@ -145,7 +153,7 @@ page {
   height: 44rpx;
   flex-shrink: 0;
   border-radius: 8rpx;
-  background: #d54941;
+  background: #48613f;
   color: #fff;
   font-size: 24rpx;
   font-weight: 700;
@@ -162,6 +170,16 @@ page {
   font-size: 28rpx;
   font-weight: 700;
   line-height: 40rpx;
+}
+
+.step-minutes {
+  margin-left: 12rpx;
+  padding: 2rpx 14rpx;
+  border-radius: 20rpx;
+  background: #eef4e7;
+  color: #48613f;
+  font-size: 20rpx;
+  font-weight: 600;
 }
 
 .step-desc {
@@ -206,7 +224,7 @@ page {
 }
 
 .primary-btn {
-  background: #d54941;
+  background: #48613f;
   color: #fff;
 }
 

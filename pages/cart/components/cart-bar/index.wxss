@@ -44,11 +44,11 @@
   width: 192rpx;
   height: 80rpx;
   border-radius: 40rpx;
-  background-color: #fa4126;
+  background-color: #f3c969;
   font-size: 28rpx;
   font-weight: bold;
   line-height: 80rpx;
-  color: #ffffff;
+  color: #1f241f;
   text-align: center;
 }
 .cart-bar .disabled-btn {
@@ -71,7 +71,7 @@
 }
 
 .cart-bar__total .cart-bar__total--price {
-  color: #fa4126;
+  color: #26332c;
   font-weight: bold;
 }
 

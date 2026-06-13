@@ -32,8 +32,8 @@
   height: 64rpx;
   padding: 0;
   border-radius: 8rpx;
-  background: #fff0ee;
-  color: #d54941;
+  background: #eef4e7;
+  color: #48613f;
   font-size: 26rpx;
   font-weight: 600;
   line-height: 64rpx;
@@ -50,5 +50,5 @@
 
 .t-button {
   --td-button-default-color: #000;
-  --td-button-primary-text-color: #fa4126;
+  --td-button-primary-text-color: #26332c;
 }

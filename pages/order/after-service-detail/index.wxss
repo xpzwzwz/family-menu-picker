@@ -166,7 +166,7 @@
 }
 .service-detail .right {
   font-size: 36rpx;
-  color: #fa550f;
+  color: #26332c;
   font-weight: bold;
 }
 
@@ -240,14 +240,14 @@
 }
 
 .service-detail .specs-popup .bottom-btn {
-  color: #fa550f;
+  color: #26332c;
 }
 .service-detail .specs-popup .bottom-btn::after {
-  color: #fa550f;
+  color: #26332c;
 }
 
 .dialog .dialog__button-confirm {
-  color: #fa550f;
+  color: #26332c;
 }
 
 .page-container .order-goods-card > wr-goods-card .wr-goods-card__bottom .price {
@@ -411,7 +411,7 @@
 .service-section-logistics {
   display: flex;
   justify-content: center;
-  color: #fa4126;
+  color: #26332c;
   align-items: center;
   margin-top: 24rpx;
 }
@@ -437,5 +437,5 @@
 
 .t-button {
   --td-button-default-color: #000;
-  --td-button-primary-text-color: #fa4126;
+  --td-button-primary-text-color: #26332c;
 }

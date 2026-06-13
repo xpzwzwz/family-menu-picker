@@ -7,7 +7,7 @@
     <view class="cart-store">
       <t-icon
         size="40rpx"
-        color="{{store.isSelected ? '#FA4126' : '#BBBBBB'}}"
+        color="{{store.isSelected ? '#26332c' : '#BBBBBB'}}"
         name="{{store.isSelected ? 'check-circle-filled' : 'circle'}}"
         class="cart-store__check"
         bindtap="selectStore"
@@ -50,7 +50,7 @@
             <view class="check-wrap" catchtap="selectGoods" data-goods="{{goods}}">
               <t-icon
                 size="40rpx"
-                color="{{goods.isSelected ? '#FA4126' : '#BBBBBB'}}"
+                color="{{goods.isSelected ? '#26332c' : '#BBBBBB'}}"
                 name="{{goods.isSelected ? 'check-circle-filled' : 'circle'}}"
                 class="check"
               />

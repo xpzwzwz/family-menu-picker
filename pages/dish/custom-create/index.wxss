@@ -13,7 +13,7 @@ page {
 }
 
 .eyebrow {
-  color: #d54941;
+  color: #48613f;
   font-size: 24rpx;
   font-weight: 600;
   letter-spacing: 0;
@@ -101,7 +101,7 @@ page {
   height: 44rpx;
   flex-shrink: 0;
   border-radius: 8rpx;
-  background: #d54941;
+  background: #48613f;
   color: #fff;
   font-size: 24rpx;
   font-weight: 700;
@@ -140,7 +140,7 @@ page {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #fff0ee;
+  background: #eef4e7;
 }
 
 .step-image-copy {
@@ -201,7 +201,7 @@ page {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #fff0ee;
+  background: #eef4e7;
 }
 
 .image-copy {
@@ -246,8 +246,8 @@ page {
 }
 
 .chip-active {
-  background: #fff0ee;
-  color: #d54941;
+  background: #eef4e7;
+  color: #48613f;
   font-weight: 600;
 }
 
@@ -259,7 +259,7 @@ page {
 .save-btn {
   height: 92rpx;
   border-radius: 8rpx;
-  background: #d54941;
+  background: #48613f;
   color: #fff;
   font-size: 30rpx;
   font-weight: 600;

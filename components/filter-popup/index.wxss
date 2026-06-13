@@ -21,19 +21,19 @@
 }
 
 .btn-reset {
-  color: #fa4126;
+  color: #26332c;
   background: rgba(255, 255, 255, 1);
   position: relative;
-  border: 1rpx solid #fa4126;
+  border: 1rpx solid #26332c;
   border-radius: 84rpx 0 0 84rpx;
 }
 
 .btn-confirm {
   border-radius: 0 84rpx 84rpx 0;
-  border: 1rpx solid #fa4126;
+  border: 1rpx solid #26332c;
 }
 
 .btn-confirm {
   color: #fff;
-  background: #fa4126;
+  background: #26332c;
 }

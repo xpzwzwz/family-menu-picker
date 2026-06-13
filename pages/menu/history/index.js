@@ -1,6 +1,7 @@
 import Dialog from 'tdesign-miniprogram/dialog/index';
 import Toast from 'tdesign-miniprogram/toast/index';
 import { readMenuHistory, reuseMenuHistoryEntry } from '../../../model/dishes';
+import { syncLocalMenuToCloud } from '../../../services/squad/cloudMenu';
 
 function formatConfirmedAt(timestamp) {
   if (!timestamp) return '暂无';
@@ -61,7 +62,15 @@ Page({
           });
           return;
         }
-        wx.switchTab({ url: '/pages/cart/index' });
+        syncLocalMenuToCloud()
+          .catch((error) => {
+            Toast({
+              context: this,
+              selector: '#t-toast',
+              message: error.message || '历史菜单暂时没同步给队友',
+            });
+          })
+          .then(() => wx.switchTab({ url: '/pages/cart/index' }));
       })
       .catch(() => {});
   },

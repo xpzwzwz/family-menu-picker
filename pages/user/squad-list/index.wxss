@@ -13,7 +13,7 @@ page {
 }
 
 .eyebrow {
-  color: #d54941;
+  color: #48613f;
   font-size: 24rpx;
   font-weight: 600;
   letter-spacing: 0;
@@ -54,7 +54,7 @@ page {
 }
 
 .room-card.active {
-  background: #fff0ee;
+  background: #eef4e7;
 }
 
 .room-main {
@@ -78,7 +78,7 @@ page {
 
 .room-status {
   flex-shrink: 0;
-  color: #d54941;
+  color: #48613f;
   font-size: 24rpx;
   font-weight: 600;
   line-height: 34rpx;

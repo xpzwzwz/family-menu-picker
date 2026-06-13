@@ -1,10 +1,7 @@
 import Toast from 'tdesign-miniprogram/toast/index';
-import {
-  addDishesToTonightMenu,
-  buildDifferentDinnerRecommendation,
-  buildDinnerRecommendation,
-  readTonightMenu,
-} from '../../model/dishes';
+import { buildDifferentDinnerRecommendation, buildDinnerRecommendation, readTonightMenu } from '../../model/dishes';
+import { addDishesToSharedMenu, syncCloudMenuToLocal } from '../../services/squad/cloudMenu';
+import { addCheckin, getCheckinSummary } from '../../services/squad/cloudCheckin';
 
 const RECOMMENDATION_COUNT_STORAGE_KEY = 'familyMenuPicker.recommendationCount';
 
@@ -15,11 +12,59 @@ Page({
     recommendationSeed: 0,
     recommendationCount: 3,
     totalMenuCount: 0,
+    checkin: { streakDays: 0, totalCount: 0, monthDays: 0, todayDone: false },
+    showCheckinPopup: false,
+    checkinNote: '',
   },
 
   onShow() {
     this.getTabBar().init();
-    this.updateMenuCount();
+    this.loadCheckin();
+    syncCloudMenuToLocal()
+      .catch(() => {})
+      .then(() => this.updateMenuCount());
+  },
+
+  loadCheckin() {
+    getCheckinSummary()
+      .then((summary) => this.setData({ checkin: summary }))
+      .catch(() => {});
+  },
+
+  goCheckinRecords() {
+    wx.navigateTo({ url: '/pages/checkin/index' });
+  },
+
+  openCheckin() {
+    this.setData({ showCheckinPopup: true });
+  },
+
+  onCheckinPopupChange(event) {
+    this.setData({ showCheckinPopup: event.detail.visible });
+  },
+
+  onCheckinNoteInput(event) {
+    this.setData({ checkinNote: event.detail.value });
+  },
+
+  confirmCheckin() {
+    addCheckin({ note: this.data.checkinNote })
+      .then((summary) => {
+        this.setData({ checkin: summary, showCheckinPopup: false, checkinNote: '' });
+        Toast({
+          context: this,
+          selector: '#t-toast',
+          message: `光盘！连续光盘 ${summary.streakDays} 天 🎉`,
+        });
+      })
+      .catch((error) => {
+        this.setData({ showCheckinPopup: false });
+        Toast({
+          context: this,
+          selector: '#t-toast',
+          message: (error && error.message) || '打卡没成功，再试一次',
+        });
+      });
   },
 
   onLoad() {
@@ -84,25 +129,37 @@ Page({
 
   addRecommendationToMenu() {
     if (!this.data.recommendation) return;
-    const currentMenu = readTonightMenu();
-    const missingGoods = this.data.recommendation.goods.filter(
-      (goods) => !currentMenu.some((item) => item.spuId === goods.spuId && item.skuId === goods.skuId),
-    );
-    if (!missingGoods.length) {
-      Toast({
-        context: this,
-        selector: '#t-toast',
-        message: '这几道已经在菜单里了',
+    syncCloudMenuToLocal()
+      .catch(() => readTonightMenu())
+      .then(() => {
+        const currentMenu = readTonightMenu();
+        const missingGoods = this.data.recommendation.goods.filter(
+          (goods) => !currentMenu.some((item) => item.spuId === goods.spuId && item.skuId === goods.skuId),
+        );
+        if (!missingGoods.length) {
+          Toast({
+            context: this,
+            selector: '#t-toast',
+            message: '这几道已经在菜单里了',
+          });
+          return null;
+        }
+        return addDishesToSharedMenu(this.data.recommendation.goods, { incrementExisting: false }).then(() => {
+          this.updateMenuCount();
+          Toast({
+            context: this,
+            selector: '#t-toast',
+            message: missingGoods.length === this.data.recommendation.goods.length ? '已加入菜单' : '已补进菜单',
+          });
+        });
+      })
+      .catch((error) => {
+        Toast({
+          context: this,
+          selector: '#t-toast',
+          message: error.message || '暂时没同步给队友，稍后再试',
+        });
       });
-      return;
-    }
-    addDishesToTonightMenu(this.data.recommendation.goods, { incrementExisting: false });
-    this.updateMenuCount();
-    Toast({
-      context: this,
-      selector: '#t-toast',
-      message: missingGoods.length === this.data.recommendation.goods.length ? '已加入菜单' : '已补进菜单',
-    });
   },
 
   navToDishList() {

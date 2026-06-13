@@ -22,7 +22,7 @@
       <view class="image-picker" bindtap="chooseImage">
         <t-image wx:if="{{form.image}}" src="{{form.image}}" t-class="dish-preview" mode="aspectFill" />
         <view class="image-placeholder" wx:else>
-          <t-icon name="image" size="48rpx" color="#d54941" />
+          <t-icon name="image" size="48rpx" color="#48613f" />
         </view>
         <view class="image-copy">
           <view class="image-title">{{uploadingImage ? '正在保存图片' : '更换图片'}}</view>
@@ -97,11 +97,11 @@
     </view>
 
     <view class="field">
-      <view class="field-label">备料</view>
+      <view class="field-label">备料（可带用量）</view>
       <input
         class="field-input"
         value="{{form.ingredientsText}}"
-        placeholder="例如：豆角，蒜，干辣椒"
+        placeholder="例如：番茄 2个，鸡蛋 3个，盐 2g"
         data-field="ingredientsText"
         bindinput="updateField"
       />
@@ -124,7 +124,7 @@
             <view class="step-image-row" bindtap="chooseStepImage" data-index="{{index}}">
               <t-image wx:if="{{item.image}}" src="{{item.image}}" t-class="step-image" mode="aspectFill" />
               <view class="step-image-placeholder" wx:else>
-                <t-icon name="image" size="36rpx" color="#d54941" />
+                <t-icon name="image" size="36rpx" color="#48613f" />
               </view>
               <view class="step-image-copy">
                 <view class="step-image-title">{{item.image ? '更换步骤图' : '添加步骤图'}}</view>

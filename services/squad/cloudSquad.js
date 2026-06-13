@@ -83,6 +83,12 @@ function toFriendlyError(detail) {
   if (message.includes('Member name')) {
     return '名字不能为空';
   }
+  if (message.includes('room member')) {
+    return '先加入这个小分队再修改菜单';
+  }
+  if (message.includes('Menu items')) {
+    return '菜单内容暂时保存不了，请稍后再试';
+  }
   if (message.includes('code') || message.includes('WeChat') || message.includes('access token')) {
     return '微信这会儿没连上，请稍后再试';
   }
@@ -130,6 +136,11 @@ export function readCloudRoom() {
   if (!rooms.length) return null;
   const currentRoomId = getCurrentCloudRoomId();
   return rooms.find((room) => room.roomId === currentRoomId) || rooms[0];
+}
+
+export function hasCurrentCloudRoom() {
+  const room = readCloudRoom();
+  return Boolean(room && room.roomId);
 }
 
 function writeCloudRooms(rooms, currentRoomId = '') {
@@ -209,6 +220,17 @@ export async function bindCloudPhone(phoneCode) {
   return writeStorage(CLOUD_USER_KEY, boundUser);
 }
 
+export async function updateCloudAvatar(avatarUrl) {
+  const user = await ensureCloudUser();
+  const updated = await request({
+    url: '/api/squad/avatar',
+    method: 'POST',
+    userId: user.userId,
+    data: { avatarUrl },
+  });
+  return writeStorage(CLOUD_USER_KEY, updated);
+}
+
 export async function createCloudRoom({ name, memberName }) {
   const user = await ensureCloudUser(memberName);
   const room = await request({
@@ -261,6 +283,108 @@ export async function refreshCloudRoom(roomId) {
     }
     throw error;
   }
+}
+
+export async function fetchCloudRoomMenu(roomId = getCurrentCloudRoomId()) {
+  if (!roomId) return { roomId: '', items: [], updatedAt: 0, updatedByUserId: '' };
+  const user = await ensureCloudUser();
+  return request({
+    url: `/api/squad/rooms/${roomId}/menu`,
+    userId: user.userId,
+  });
+}
+
+export async function saveCloudRoomMenu(items, roomId = getCurrentCloudRoomId()) {
+  if (!roomId) return { roomId: '', items, updatedAt: 0, updatedByUserId: '' };
+  const user = await ensureCloudUser();
+  return request({
+    url: `/api/squad/rooms/${roomId}/menu`,
+    method: 'PUT',
+    userId: user.userId,
+    data: { items: Array.isArray(items) ? items : [] },
+  });
+}
+
+// 以下按单道菜的接口由服务端原子合并(BEGIN IMMEDIATE)，
+// 多人并发增删改不会互相覆盖，从根上避免「整单覆盖」把队友的菜冲掉。
+export async function addCloudRoomMenuItems(items, incrementExisting = true, roomId = getCurrentCloudRoomId()) {
+  if (!roomId) return { roomId: '', items: [], updatedAt: 0, updatedByUserId: '' };
+  const user = await ensureCloudUser();
+  return request({
+    url: `/api/squad/rooms/${roomId}/menu/add`,
+    method: 'POST',
+    userId: user.userId,
+    data: { items: Array.isArray(items) ? items : [], incrementExisting },
+  });
+}
+
+export async function updateCloudRoomMenuItem(spuId, skuId, patch, roomId = getCurrentCloudRoomId()) {
+  if (!roomId) return { roomId: '', items: [], updatedAt: 0, updatedByUserId: '' };
+  const user = await ensureCloudUser();
+  return request({
+    url: `/api/squad/rooms/${roomId}/menu/update`,
+    method: 'POST',
+    userId: user.userId,
+    data: { spuId, skuId: skuId || '', ...patch },
+  });
+}
+
+export async function removeCloudRoomMenuItem(spuId, skuId, roomId = getCurrentCloudRoomId()) {
+  if (!roomId) return { roomId: '', items: [], updatedAt: 0, updatedByUserId: '' };
+  const user = await ensureCloudUser();
+  return request({
+    url: `/api/squad/rooms/${roomId}/menu/remove`,
+    method: 'POST',
+    userId: user.userId,
+    data: { spuId, skuId: skuId || '' },
+  });
+}
+
+export async function setCloudRoomMenuAllSelected(isSelected, roomId = getCurrentCloudRoomId()) {
+  if (!roomId) return { roomId: '', items: [], updatedAt: 0, updatedByUserId: '' };
+  const user = await ensureCloudUser();
+  return request({
+    url: `/api/squad/rooms/${roomId}/menu/select-all`,
+    method: 'POST',
+    userId: user.userId,
+    data: { isSelected },
+  });
+}
+
+// 光盘打卡(团队视角):一顿一次，连续天数是整个小分队共享的
+export async function addCloudCheckin({ mealDate, note = '', photoUrl = '' }, roomId = getCurrentCloudRoomId()) {
+  const user = await ensureCloudUser();
+  return request({
+    url: `/api/squad/rooms/${roomId}/checkins`,
+    method: 'POST',
+    userId: user.userId,
+    data: { mealDate, note, photoUrl },
+  });
+}
+
+export async function fetchCloudCheckinSummary(today, roomId = getCurrentCloudRoomId()) {
+  const user = await ensureCloudUser();
+  return request({
+    url: `/api/squad/rooms/${roomId}/checkins/summary?today=${encodeURIComponent(today)}`,
+    userId: user.userId,
+  });
+}
+
+export async function fetchCloudCheckinCalendar(month, roomId = getCurrentCloudRoomId()) {
+  const user = await ensureCloudUser();
+  return request({
+    url: `/api/squad/rooms/${roomId}/checkins/calendar?month=${encodeURIComponent(month)}`,
+    userId: user.userId,
+  });
+}
+
+export async function removeCloudCheckin(mealDate, roomId = getCurrentCloudRoomId()) {
+  const user = await ensureCloudUser();
+  return request({
+    url: `/api/squad/rooms/${roomId}/checkins?mealDate=${encodeURIComponent(mealDate)}`,
+    method: 'DELETE',
+    userId: user.userId,
+  });
 }
 
 export async function updateCloudRoomName(roomId, name) {

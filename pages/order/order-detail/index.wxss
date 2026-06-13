@@ -88,7 +88,7 @@
 }
 
 .order-logistics .edit-text {
-  color: #fa4126;
+  color: #26332c;
   font-size: 26rpx;
   line-height: 36rpx;
 }
@@ -146,7 +146,7 @@
   font-weight: bold;
 }
 .order-detail .pay-detail .pay-item .primary {
-  color: #fa4126;
+  color: #26332c;
 }
 .order-detail .pay-detail .pay-item .max-size {
   font-size: 36rpx;
@@ -236,10 +236,10 @@
 }
 
 .add-notes__confirm {
-  color: #fa4126 !important;
+  color: #26332c !important;
 }
 
 .t-button {
   --td-button-default-color: #000;
-  --td-button-primary-text-color: #fa4126;
+  --td-button-primary-text-color: #26332c;
 }

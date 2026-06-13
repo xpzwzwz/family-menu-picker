@@ -1,0 +1,181 @@
+page {
+  background: #f4f5f1;
+}
+
+.page {
+  padding: 24rpx;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 40rpx);
+}
+
+.hero {
+  background: #26332c;
+  border-radius: 16rpx;
+  color: #ffffff;
+  padding: 36rpx 32rpx;
+}
+
+.eyebrow {
+  color: #b8d8c2;
+  font-size: 22rpx;
+}
+
+.hero-streak {
+  font-size: 34rpx;
+  font-weight: 700;
+  margin-top: 12rpx;
+}
+
+.hero-streak .flame {
+  font-size: 40rpx;
+}
+
+.hero-streak .big {
+  color: #f3c969;
+  font-size: 64rpx;
+  font-weight: 800;
+  padding: 0 8rpx;
+}
+
+.hero-sub {
+  color: #dce7df;
+  font-size: 26rpx;
+  margin-top: 14rpx;
+}
+
+.cal-card {
+  background: #ffffff;
+  border-radius: 16rpx;
+  margin-top: 24rpx;
+  padding: 24rpx;
+}
+
+.cal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cal-title {
+  color: #1f241f;
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.cal-nav {
+  padding: 8rpx 16rpx;
+}
+
+.cal-weekrow,
+.cal-week {
+  display: flex;
+}
+
+.cal-wk {
+  flex: 1;
+  text-align: center;
+  color: #9aa39c;
+  font-size: 22rpx;
+  padding: 14rpx 0;
+}
+
+.cal-cell {
+  position: relative;
+  flex: 1;
+  height: 76rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26rpx;
+  color: #5d5d5d;
+}
+
+.cal-cell text {
+  position: relative;
+  z-index: 1;
+}
+
+.cal-cell.done text {
+  color: #1f241f;
+  font-weight: 700;
+}
+
+.cal-cell.done::after {
+  content: '';
+  position: absolute;
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  background: #f3c969;
+  z-index: 0;
+}
+
+.cal-cell.today text {
+  color: #26332c;
+  font-weight: 700;
+}
+
+.cal-cell.today::before {
+  content: '';
+  position: absolute;
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  border: 2rpx solid #26332c;
+  box-sizing: border-box;
+  z-index: 0;
+}
+
+.ach-card {
+  background: #ffffff;
+  border-radius: 16rpx;
+  margin-top: 24rpx;
+  padding: 24rpx 24rpx 8rpx;
+}
+
+.ach-title {
+  color: #1f241f;
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.ach-grid {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 16rpx;
+}
+
+.ach-item {
+  width: 25%;
+  text-align: center;
+  margin-bottom: 24rpx;
+}
+
+.ach-icon {
+  font-size: 48rpx;
+}
+
+.ach-item.locked .ach-icon {
+  filter: grayscale(1);
+  opacity: 0.3;
+}
+
+.ach-label {
+  font-size: 22rpx;
+  color: #69736d;
+  margin-top: 6rpx;
+}
+
+.ach-item.locked .ach-label {
+  color: #c0c4bd;
+}
+
+.share-btn {
+  background: #f3c969;
+  color: #1f241f;
+  font-size: 30rpx;
+  font-weight: 700;
+  height: 88rpx;
+  line-height: 88rpx;
+  border-radius: 44rpx;
+  margin-top: 28rpx;
+}

@@ -155,6 +155,210 @@ class SquadApiTest(unittest.TestCase):
         self.assertEqual({room["ownerUserId"] for room in rooms}, {owner["userId"]})
         self.assertEqual(len({room["roomId"] for room in rooms}), 2)
 
+    def test_room_menu_is_shared_between_members(self):
+        owner = self.login("menu-owner-code", "队长")
+        guest = self.login("menu-guest-code", "队员")
+
+        create_response = self.client.post(
+            "/api/squad/rooms",
+            headers={"X-User-Id": owner["userId"]},
+            json={"name": "晚饭小分队", "memberName": "队长"},
+        )
+        self.assertEqual(create_response.status_code, 200)
+        room = create_response.json()
+
+        join_response = self.client.post(
+            f"/api/squad/rooms/invite/{room['inviteCode']}/join",
+            headers={"X-User-Id": guest["userId"]},
+            json={"memberName": "队员"},
+        )
+        self.assertEqual(join_response.status_code, 200)
+
+        save_response = self.client.put(
+            f"/api/squad/rooms/{room['roomId']}/menu",
+            headers={"X-User-Id": owner["userId"]},
+            json={
+                "items": [
+                    {
+                        "spuId": "tomato-egg",
+                        "skuId": "tomato-egg",
+                        "title": "番茄炒蛋",
+                        "quantity": 1,
+                        "isSelected": 1,
+                        "selectedBy": owner["userId"],
+                        "selectedByName": "队长",
+                    }
+                ]
+            },
+        )
+        self.assertEqual(save_response.status_code, 200)
+
+        guest_menu_response = self.client.get(
+            f"/api/squad/rooms/{room['roomId']}/menu",
+            headers={"X-User-Id": guest["userId"]},
+        )
+        self.assertEqual(guest_menu_response.status_code, 200)
+        self.assertEqual(guest_menu_response.json()["items"][0]["title"], "番茄炒蛋")
+
+    def _make_shared_room(self):
+        owner = self.login("merge-owner", "队长")
+        guest = self.login("merge-guest", "队员")
+        room = self.client.post(
+            "/api/squad/rooms",
+            headers={"X-User-Id": owner["userId"]},
+            json={"name": "晚饭小分队", "memberName": "队长"},
+        ).json()
+        self.client.post(
+            f"/api/squad/rooms/invite/{room['inviteCode']}/join",
+            headers={"X-User-Id": guest["userId"]},
+            json={"memberName": "队员"},
+        )
+        return owner, guest, room["roomId"]
+
+    def test_per_dish_endpoints_merge_without_clobbering_teammates(self):
+        owner, guest, room_id = self._make_shared_room()
+        h_owner = {"X-User-Id": owner["userId"]}
+        h_guest = {"X-User-Id": guest["userId"]}
+
+        # 队长加 A，队员加 B —— 服务端合并，B 不能冲掉 A
+        self.client.post(f"/api/squad/rooms/{room_id}/menu/add", headers=h_owner, json={"items": [{"spuId": "A", "skuId": "", "quantity": 1}]})
+        after_b = self.client.post(
+            f"/api/squad/rooms/{room_id}/menu/add", headers=h_guest, json={"items": [{"spuId": "B", "skuId": "", "quantity": 2}]}
+        ).json()
+        self.assertEqual([i["spuId"] for i in after_b["items"]], ["A", "B"])
+
+        # 队员改 A 的数量，基于云端最新，保留 B
+        after_update = self.client.post(
+            f"/api/squad/rooms/{room_id}/menu/update", headers=h_guest, json={"spuId": "A", "skuId": "", "quantity": 5}
+        ).json()
+        item_a = next(i for i in after_update["items"] if i["spuId"] == "A")
+        self.assertEqual(item_a["quantity"], 5)
+        self.assertEqual({i["spuId"] for i in after_update["items"]}, {"A", "B"})
+
+        # 全选作用于全部菜品
+        after_select = self.client.post(
+            f"/api/squad/rooms/{room_id}/menu/select-all", headers=h_owner, json={"isSelected": True}
+        ).json()
+        self.assertTrue(all(i["isSelected"] == 1 for i in after_select["items"]))
+
+        # 删除 A，只删这一道
+        after_remove = self.client.post(
+            f"/api/squad/rooms/{room_id}/menu/remove", headers=h_owner, json={"spuId": "A", "skuId": ""}
+        ).json()
+        self.assertEqual([i["spuId"] for i in after_remove["items"]], ["B"])
+
+        # 队员 GET 看到的也是合并后的结果
+        guest_view = self.client.get(f"/api/squad/rooms/{room_id}/menu", headers=h_guest).json()
+        self.assertEqual([i["spuId"] for i in guest_view["items"]], ["B"])
+
+    def test_update_avatar_and_member_carries_it(self):
+        user = self.login("avatar-user", "甲")
+        headers = {"X-User-Id": user["userId"]}
+        self.assertEqual(user.get("avatarUrl"), "")
+
+        updated = self.client.post(
+            "/api/squad/avatar", headers=headers, json={"avatarUrl": "https://oss/a.jpg"}
+        ).json()
+        self.assertEqual(updated["avatarUrl"], "https://oss/a.jpg")
+
+        # 建房后成员列表应带上该用户头像
+        room = self.client.post(
+            "/api/squad/rooms", headers=headers, json={"name": "队", "memberName": "甲"}
+        ).json()
+        self.assertEqual(room["members"][0]["avatarUrl"], "https://oss/a.jpg")
+
+        # 未登录不能改头像
+        self.assertEqual(self.client.post("/api/squad/avatar", json={"avatarUrl": "x"}).status_code, 401)
+
+    def test_create_room_retries_on_invite_code_collision(self):
+        import squad_store
+
+        owner = self.login("collision-owner", "甲")
+        guest = self.login("collision-guest", "乙")
+        # 第二个房先生成与第一个相同的口令(撞唯一约束),应自动换一个重试
+        codes = iter(["DUPCODE1", "DUPCODE1", "FRESHCD2"])
+        with patch.object(squad_store, "make_invite_code", lambda: next(codes)):
+            r1 = self.client.post(
+                "/api/squad/rooms",
+                headers={"X-User-Id": owner["userId"]},
+                json={"name": "甲队", "memberName": "甲"},
+            ).json()
+            r2 = self.client.post(
+                "/api/squad/rooms",
+                headers={"X-User-Id": guest["userId"]},
+                json={"name": "乙队", "memberName": "乙"},
+            ).json()
+        self.assertEqual(r1["inviteCode"], "DUPCODE1")
+        self.assertEqual(r2["inviteCode"], "FRESHCD2", "口令撞了应自动换新的，而不是建房失败")
+
+    def test_clean_plate_checkin_team_streak(self):
+        owner, guest, room_id = self._make_shared_room()
+        h_owner = {"X-User-Id": owner["userId"]}
+        h_guest = {"X-User-Id": guest["userId"]}
+
+        # 团队视角:不同成员在不同天打卡，算同一条小分队连续天数
+        self.client.post(f"/api/squad/rooms/{room_id}/checkins", headers=h_owner, json={"mealDate": "2026-06-11"})
+        self.client.post(f"/api/squad/rooms/{room_id}/checkins", headers=h_guest, json={"mealDate": "2026-06-12"})
+        summary = self.client.post(
+            f"/api/squad/rooms/{room_id}/checkins", headers=h_owner, json={"mealDate": "2026-06-13"}
+        ).json()
+        self.assertEqual(summary["streakDays"], 3)
+        self.assertEqual(summary["totalCount"], 3)
+        self.assertTrue(summary["todayDone"])
+
+        # 今天还没打卡(隔天)→ streak 仍按昨天连续计，todayDone=False
+        pending = self.client.get(
+            f"/api/squad/rooms/{room_id}/checkins/summary", headers=h_guest, params={"today": "2026-06-14"}
+        ).json()
+        self.assertEqual(pending["streakDays"], 3)
+        self.assertFalse(pending["todayDone"])
+
+        # 断签一天 → streak 归零
+        broken = self.client.get(
+            f"/api/squad/rooms/{room_id}/checkins/summary", headers=h_guest, params={"today": "2026-06-15"}
+        ).json()
+        self.assertEqual(broken["streakDays"], 0)
+
+        # 同一天多顿 → 天数不重复，累计顿数增加
+        self.client.post(f"/api/squad/rooms/{room_id}/checkins", headers=h_owner, json={"mealDate": "2026-06-13"})
+        multi = self.client.get(
+            f"/api/squad/rooms/{room_id}/checkins/summary", headers=h_owner, params={"today": "2026-06-13"}
+        ).json()
+        self.assertEqual(multi["monthDays"], 3)
+        self.assertEqual(multi["totalCount"], 4)
+
+        # 日历按天聚合
+        calendar = self.client.get(
+            f"/api/squad/rooms/{room_id}/checkins/calendar", headers=h_owner, params={"month": "2026-06"}
+        ).json()
+        self.assertEqual(len(calendar["days"]), 3)
+
+        # 撤销当天
+        undone = self.client.delete(
+            f"/api/squad/rooms/{room_id}/checkins", headers=h_owner, params={"mealDate": "2026-06-13"}
+        ).json()
+        self.assertEqual(undone["totalCount"], 2)
+
+    def test_clean_plate_checkin_rejects_non_member(self):
+        _, _, room_id = self._make_shared_room()
+        outsider = self.login("checkin-outsider", "路人")
+        response = self.client.post(
+            f"/api/squad/rooms/{room_id}/checkins",
+            headers={"X-User-Id": outsider["userId"]},
+            json={"mealDate": "2026-06-13"},
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_per_dish_endpoints_reject_non_member(self):
+        _, _, room_id = self._make_shared_room()
+        outsider = self.login("outsider-code", "路人")
+        response = self.client.post(
+            f"/api/squad/rooms/{room_id}/menu/add",
+            headers={"X-User-Id": outsider["userId"]},
+            json={"items": [{"spuId": "A", "skuId": ""}]},
+        )
+        self.assertEqual(response.status_code, 403)
+
     def test_login_uses_wechat_openid_for_stable_user_id_when_configured(self):
         os.environ["WECHAT_APPID"] = "wx-test-app"
         os.environ["WECHAT_SECRET"] = "secret-test"

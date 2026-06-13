@@ -1,6 +1,6 @@
 import Toast from 'tdesign-miniprogram/toast/index';
-import { addDishesToTonightMenu } from '../../../model/dishes';
 import { fetchGoodsList } from '../../../services/good/fetchGoodsList';
+import { addDishesToSharedMenu } from '../../../services/squad/cloudMenu';
 
 Page({
   data: {
@@ -65,12 +65,21 @@ Page({
     const { index } = event.currentTarget.dataset;
     const goods = this.data.goodsList[index];
     if (!goods) return;
-    addDishesToTonightMenu([goods]);
-    Toast({
-      context: this,
-      selector: '#t-toast',
-      message: '已加入菜单',
-    });
+    addDishesToSharedMenu([goods])
+      .then(() => {
+        Toast({
+          context: this,
+          selector: '#t-toast',
+          message: '已加入菜单',
+        });
+      })
+      .catch((error) => {
+        Toast({
+          context: this,
+          selector: '#t-toast',
+          message: error.message || '暂时没同步给队友，稍后再试',
+        });
+      });
   },
 
   goMenu() {

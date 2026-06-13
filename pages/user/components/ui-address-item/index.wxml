@@ -6,7 +6,7 @@
   <t-swipe-cell class="swipe-out">
     <view class="address {{isDrawLine ? 'draw-line' : ''}}" bindtap="onSelect" data-item="{{address}}">
       <view class="address-left" wx:if="{{extraSpace}}">
-        <t-icon wx:if="{{address.checked}}" name="check" color="#FA4126" class-prefix="{{classPrefix}}" size="46rpx" />
+        <t-icon wx:if="{{address.checked}}" name="check" color="#26332c" class-prefix="{{classPrefix}}" size="46rpx" />
       </view>
       <view class="address-content">
         <view class="title title-class">

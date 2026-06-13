@@ -52,11 +52,11 @@
   width: 112rpx;
   height: 40rpx;
   border-radius: 20rpx;
-  background-color: #ffecf9;
+  background-color: #eef4e7;
   line-height: 40rpx;
   text-align: center;
   font-size: 26rpx;
-  color: #fa4126;
+  color: #26332c;
 }
 
 .cart-group .promotion-wrap {
@@ -83,7 +83,7 @@
   display: inline-block;
   padding: 0 8rpx;
   color: #ffffff;
-  background: #fa4126;
+  background: #26332c;
   font-size: 20rpx;
   height: 32rpx;
   line-height: 32rpx;
@@ -197,7 +197,7 @@
   font-weight: 600;
 }
 .invalid-goods-wrap .invalid-head .invalid-clear {
-  color: #fa4126;
+  color: #26332c;
 }
 .invalid-goods-wrap .toggle {
   display: flex;
@@ -205,7 +205,7 @@
   justify-content: center;
   align-items: center;
   font-size: 24rpx;
-  color: #fa4126;
+  color: #26332c;
 }
 .invalid-goods-wrap .toggle .m-r-6 {
   margin-right: 6rpx;
@@ -216,7 +216,7 @@
   height: 0;
   border-left: 10rpx solid transparent;
   border-right: 10rpx solid transparent;
-  border-bottom: 10rpx solid #fa4126;
+  border-bottom: 10rpx solid #26332c;
 }
 .invalid-goods-wrap .toggle .down-icon {
   display: inline-block;
@@ -224,7 +224,7 @@
   height: 0;
   border-left: 10rpx solid transparent;
   border-right: 10rpx solid transparent;
-  border-top: 10rpx solid #fa4126;
+  border-top: 10rpx solid #26332c;
 }
 .action-btn {
   display: flex;
@@ -241,7 +241,7 @@
 .swiper-right-del {
   height: calc(100% - 40rpx);
   width: 144rpx;
-  background-color: #fa4126;
+  background-color: #26332c;
   font-size: 28rpx;
   color: white;
   display: flex;

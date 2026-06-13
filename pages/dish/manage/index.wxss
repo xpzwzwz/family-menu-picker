@@ -13,7 +13,7 @@ page {
 }
 
 .eyebrow {
-  color: #d54941;
+  color: #48613f;
   font-size: 24rpx;
   font-weight: 600;
   letter-spacing: 0;
@@ -48,7 +48,7 @@ page {
   gap: 10rpx;
   height: 84rpx;
   border-radius: 8rpx;
-  background: #d54941;
+  background: #48613f;
   color: #fff;
   font-size: 28rpx;
   font-weight: 600;
@@ -56,17 +56,32 @@ page {
 }
 
 .primary-btn::after,
+.secondary-btn::after,
 .restore-btn::after,
 .empty-btn::after,
 .action-btn::after {
   border: 0;
 }
 
+.secondary-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10rpx;
+  height: 76rpx;
+  border-radius: 8rpx;
+  background: #eef4e7;
+  color: #48613f;
+  font-size: 26rpx;
+  font-weight: 600;
+  line-height: 76rpx;
+}
+
 .restore-btn {
   height: 72rpx;
   border-radius: 8rpx;
   background: #fff;
-  color: #d54941;
+  color: #48613f;
   font-size: 26rpx;
   font-weight: 600;
   line-height: 72rpx;
@@ -117,8 +132,8 @@ page {
   max-width: 180rpx;
   padding: 0 14rpx;
   border-radius: 8rpx;
-  background: #fff0ee;
-  color: #d54941;
+  background: #eef4e7;
+  color: #48613f;
   font-size: 22rpx;
   font-weight: 600;
   line-height: 44rpx;
@@ -161,8 +176,8 @@ page {
 }
 
 .edit-btn {
-  background: #fff0ee;
-  color: #d54941;
+  background: #eef4e7;
+  color: #48613f;
 }
 
 .delete-btn {
