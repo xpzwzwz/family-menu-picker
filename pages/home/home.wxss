@@ -180,6 +180,11 @@ page {
   flex-shrink: 0;
 }
 
+.cp-pill-ghost {
+  background: #eef4e7;
+  color: #48613f;
+}
+
 .cp-done {
   flex-shrink: 0;
   margin-left: 16rpx;

@@ -36,10 +36,9 @@
       <text class="cp-flame">🔥</text>
       <text class="cp-streak">连续光盘 <text class="cp-num">{{checkin.streakDays}}</text> 天</text>
       <text class="cp-dot">·</text>
-      <text class="cp-status">{{checkin.todayDone ? '今晚已光盘' : '今晚光盘了吗？'}}</text>
+      <text class="cp-status">{{cpStatus}}</text>
     </view>
-    <button wx:if="{{!checkin.todayDone}}" class="cp-pill" catchtap="openCheckin">今晚打卡</button>
-    <view wx:else class="cp-done"><t-icon name="check-circle-filled" size="36rpx" color="#26332c" /></view>
+    <button class="cp-pill {{checkin.todayDone ? 'cp-pill-ghost' : ''}}" catchtap="openCheckin">{{cpButton}}</button>
   </view>
 
   <view class="summary-card" wx:if="{{recommendation}}">
@@ -77,8 +76,8 @@
   <t-popup visible="{{showCheckinPopup}}" placement="bottom" bind:visible-change="onCheckinPopupChange">
     <view class="cp-sheet">
       <view class="cp-sheet-handle"></view>
-      <view class="cp-sheet-title">🍽️ 今晚光盘打卡</view>
-      <view class="cp-sheet-sub">一家人一起把菜吃光，给今晚记一笔</view>
+      <view class="cp-sheet-title">🍽️ 光盘打卡</view>
+      <view class="cp-sheet-sub">一家人一起把菜吃光，给这一顿记一笔</view>
       <t-textarea
         class="cp-sheet-note"
         value="{{checkinNote}}"

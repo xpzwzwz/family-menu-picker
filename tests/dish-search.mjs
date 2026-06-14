@@ -32,6 +32,6 @@ assert.deepEqual(searchDishes('这玩意儿不存在xyz'), []);
 // 结果是 goods 卡片(能直接渲染+加菜)
 const one = searchDishes('麻婆豆腐')[0];
 assert.equal(one.spuId, 'mapo-tofu');
-assert.ok(one.thumb && one.title && one.thumb.includes('/photos/'), '带封面图与标题');
+assert.ok(one.thumb && one.title && one.thumb.indexOf('http') === 0, '带封面图(云端URL)与标题');
 
 console.log('dish search checks passed');

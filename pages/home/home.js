@@ -1,7 +1,7 @@
 import Toast from 'tdesign-miniprogram/toast/index';
 import { buildDifferentDinnerRecommendation, buildDinnerRecommendation, readTonightMenu } from '../../model/dishes';
 import { addDishesToSharedMenu, syncCloudMenuToLocal } from '../../services/squad/cloudMenu';
-import { addCheckin, getCheckinSummary } from '../../services/squad/cloudCheckin';
+import { addCheckin, getCheckinCalendar, getCheckinSummary, todayStr } from '../../services/squad/cloudCheckin';
 
 const RECOMMENDATION_COUNT_STORAGE_KEY = 'familyMenuPicker.recommendationCount';
 
@@ -13,7 +13,9 @@ Page({
     recommendationCount: 3,
     lockedIds: [],
     totalMenuCount: 0,
-    checkin: { streakDays: 0, totalCount: 0, monthDays: 0, todayDone: false },
+    checkin: { streakDays: 0, totalCount: 0, monthDays: 0, todayDone: false, todayCount: 0 },
+    cpStatus: '',
+    cpButton: '打卡',
     showCheckinPopup: false,
     checkinNote: '',
   },
@@ -35,9 +37,37 @@ Page({
     this.stopShake();
   },
 
+  // 按当前时间问候哪一顿,不再写死「今晚」
+  currentMealLabel() {
+    const hour = new Date().getHours();
+    if (hour >= 4 && hour < 10) return '早饭';
+    if (hour >= 10 && hour < 15) return '午饭';
+    return '晚饭';
+  },
+
+  // 统一根据 summary + 今天顿数算出状态文案/按钮文案
+  setCheckinView(summary, todayCount) {
+    const count = todayCount == null ? this.data.checkin.todayCount || 0 : todayCount;
+    const checkin = { ...summary, todayCount: count };
+    let cpStatus;
+    if (!checkin.todayDone) cpStatus = `${this.currentMealLabel()}光盘了吗？`;
+    else if (count > 1) cpStatus = `今天已光盘 ${count} 顿`;
+    else cpStatus = '今天光盘了 🎉';
+    this.setData({ checkin, cpStatus, cpButton: checkin.todayDone ? '再记一顿' : '打卡' });
+  },
+
   loadCheckin() {
-    getCheckinSummary()
-      .then((summary) => this.setData({ checkin: summary }))
+    const today = todayStr();
+    getCheckinSummary(today)
+      .then((summary) => {
+        this.setCheckinView(summary, null);
+        return getCheckinCalendar(today.slice(0, 7));
+      })
+      .then((calendar) => {
+        if (!calendar) return;
+        const day = (calendar.days || []).find((item) => item.date === today);
+        this.setCheckinView(this.data.checkin, day ? day.count : 0);
+      })
       .catch(() => {});
   },
 
@@ -60,7 +90,8 @@ Page({
   confirmCheckin() {
     addCheckin({ note: this.data.checkinNote })
       .then((summary) => {
-        this.setData({ checkin: summary, showCheckinPopup: false, checkinNote: '' });
+        this.setCheckinView(summary, (this.data.checkin.todayCount || 0) + 1);
+        this.setData({ showCheckinPopup: false, checkinNote: '' });
         Toast({
           context: this,
           selector: '#t-toast',
@@ -89,6 +120,7 @@ Page({
   init() {
     const recommendationCount = this.readRecommendationCount();
     this.setData({ recommendationCount });
+    this.setCheckinView(this.data.checkin, 0); // 先占个文案,避免异步加载前空白
     this.refreshRecommendation();
     this.updateMenuCount();
   },

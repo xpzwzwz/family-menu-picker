@@ -4,6 +4,7 @@ import { fetchCartGroupData } from '../../services/cart/cart';
 import { saveConfirmedMenu } from '../../model/dishes';
 import {
   removeSharedMenuItem,
+  replaceSharedMenu,
   setAllSharedMenuSelected,
   syncCloudMenuToLocal,
   updateSharedMenuItem,
@@ -314,6 +315,34 @@ Page({
       .catch(() => this.refreshData());
   },
 
+  // 一键清空当前菜单、重新开始选菜(区别于「本顿已完成」:不存入菜单历史)。
+  // 同样是整单权威清空(本地+云端),所以清的是整个小分队的菜单,弹框讲清楚。
+  onClearMenu() {
+    if (!this.data.cartGroupData || !this.data.cartGroupData.isNotEmpty) {
+      Toast({ context: this, selector: '#t-toast', message: '菜单还是空的' });
+      return;
+    }
+    Dialog.confirm({
+      title: '清空菜单重新选？',
+      content: '会清空整个小分队的菜单，且不会存入菜单历史。',
+      confirmBtn: '清空',
+      cancelBtn: '取消',
+    })
+      .then(() => {
+        replaceSharedMenu([])
+          .then(() => {
+            Toast({ context: this, selector: '#t-toast', message: '已清空，重新选菜吧' });
+            this.setData({ cartGroupData: null });
+            this.refreshData();
+          })
+          .catch(() => {
+            Toast({ context: this, selector: '#t-toast', message: '清空没同步成功，稍后再试' });
+            this.refreshData();
+          });
+      })
+      .catch(() => {});
+  },
+
   onToSettle() {
     const goodsRequestList = [];
     this.data.cartGroupData.storeGoods.forEach((store) => {
@@ -333,28 +362,41 @@ Page({
       });
       return;
     }
-    saveConfirmedMenu({
-      goodsList: goodsRequestList,
-      summary: {
-        totalQuantity: goodsRequestList.reduce((sum, item) => sum + (item.quantity || 1), 0),
-        totalCookMinutes: goodsRequestList.reduce(
-          (sum, item) => sum + (item.cookMinutes || 0) * (item.quantity || 1),
-          0,
-        ),
-        tags: [],
-      },
-      note: '',
-    });
-    // 结算只把选中的菜存进本机「菜单历史」做备料快照，不动云端共享菜单。
-    // 以前这里把刚被 saveConfirmedMenu 清空的本地菜单推到云端，会把全队的共享菜单清空，
-    // 导致队友点的菜「看不到」。共享菜单交给加菜/改量/删除这些显式操作维护。
-    Toast({
-      context: this,
-      selector: '#t-toast',
-      message: '已放入菜单历史',
-    });
-    this.setData({ cartGroupData: null });
-    this.refreshData();
+    // 「本顿已完成」是用户主动结束这一顿:先确认(会清空整个小分队的共享菜单),
+    // 再把这桌菜存进本机「菜单历史」做备料快照,然后权威地整单清空(本地+云端)。
+    // 注意区别于以前的 bug:那是改量/同步时「误把空菜单推云端」清掉队友在点的菜;
+    // 这里是显式的「吃完清桌」,清空是预期行为,菜也已存进历史可复用。
+    Dialog.confirm({
+      title: '本顿吃完了吗？',
+      content: '会把这桌菜存进「菜单历史」，并清空当前菜单（整个小分队的），方便开始下一顿。',
+      confirmBtn: '完成并清空',
+      cancelBtn: '再等等',
+    })
+      .then(() => {
+        saveConfirmedMenu({
+          goodsList: goodsRequestList,
+          summary: {
+            totalQuantity: goodsRequestList.reduce((sum, item) => sum + (item.quantity || 1), 0),
+            totalCookMinutes: goodsRequestList.reduce(
+              (sum, item) => sum + (item.cookMinutes || 0) * (item.quantity || 1),
+              0,
+            ),
+            tags: [],
+          },
+          note: '',
+        });
+        return replaceSharedMenu([])
+          .then(() => {
+            Toast({ context: this, selector: '#t-toast', message: '本顿完成，菜单已清空' });
+            this.setData({ cartGroupData: null });
+            this.refreshData();
+          })
+          .catch(() => {
+            Toast({ context: this, selector: '#t-toast', message: '已存历史，但清空没同步成功，稍后再试' });
+            this.refreshData();
+          });
+      })
+      .catch(() => {});
   },
   onGotoHome() {
     wx.switchTab({ url: '/pages/category/index' });

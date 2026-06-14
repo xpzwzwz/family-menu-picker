@@ -33,13 +33,11 @@ function rpx2px(rpx, screenWidth) {
 function imageMogr(url, options) {
   if (!isString(url) || !url) return '';
 
-  if (
-    url.indexOf('qlogo.cn') !== -1 ||
-    url.indexOf('wxfile://') === 0 ||
-    url.indexOf('http://tmp/wx') === 0 ||
-    url.indexOf('imageMogr2') !== -1
-  ) {
-    //qlogo.cn域名或者本地图片不做转换
+  // 本 app 没有腾讯云 COS 图。imageMogr2 是腾讯 COS 专有的图片处理参数,
+  // 拼到「包内本地资源(/assets/...)」上会让真机 404 裂图(开发者工具却容忍,
+  // 所以本地看着好、上线就裂);拼到阿里云 OSS / 微信头像等外链上也无意义甚至可能出错。
+  // 因此只对腾讯 COS 域名(myqcloud.com)做转换,其余一律原样返回。
+  if (url.indexOf('myqcloud.com') === -1) {
     return url;
   } //强制转https
 

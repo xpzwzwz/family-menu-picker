@@ -1,12 +1,12 @@
 const STORE_ID = 'family-kitchen';
 const STORE_NAME = '小分队厨房';
-const DEFAULT_IMAGE = '/assets/dishes/default.svg';
+const DEFAULT_IMAGE = 'https://interview-simulator-audio-xp.oss-cn-guangzhou.aliyuncs.com/family-menu-images/images/d72fb2ba67db479aa967693d284df5fa.png';
 const DISH_PLACEHOLDER_IMAGES = {
-  quick: '/assets/dishes/quick.svg',
-  meat: '/assets/dishes/meat.svg',
-  vegetable: '/assets/dishes/vegetable.svg',
-  soup: '/assets/dishes/soup.svg',
-  staple: '/assets/dishes/staple.svg',
+  quick: 'https://interview-simulator-audio-xp.oss-cn-guangzhou.aliyuncs.com/family-menu-images/images/39e88059d2ff4e1490d79c76aca2219a.png',
+  meat: 'https://interview-simulator-audio-xp.oss-cn-guangzhou.aliyuncs.com/family-menu-images/images/3aeb63647d6c463ea46c1a9972956a31.png',
+  vegetable: 'https://interview-simulator-audio-xp.oss-cn-guangzhou.aliyuncs.com/family-menu-images/images/5bc53031794648e09b47f060b34e4c79.png',
+  soup: 'https://interview-simulator-audio-xp.oss-cn-guangzhou.aliyuncs.com/family-menu-images/images/fcf698d03a684cd0ad66f3cf4c629269.png',
+  staple: 'https://interview-simulator-audio-xp.oss-cn-guangzhou.aliyuncs.com/family-menu-images/images/b5b131581a9f4820a2f68c627c54e7e3.png',
 };
 const MENU_STORAGE_KEY = 'familyMenuPicker.tonightMenu';
 const LAST_CONFIRMED_MENU_STORAGE_KEY = 'familyMenuPicker.lastConfirmedMenu';
@@ -253,16 +253,16 @@ const DISH_STEP_MINUTES = {
 
 // 真实菜品照片(放在 assets/dishes/photos，已压成 480px WebP)
 const DISH_IMAGES = {
-  'tomato-egg': '/assets/dishes/photos/tomato-egg.webp',
-  'pepper-beef': '/assets/dishes/photos/pepper-beef.webp',
-  'garlic-lettuce': '/assets/dishes/photos/garlic-lettuce.webp',
-  'corn-rib-soup': '/assets/dishes/photos/corn-rib-soup.webp',
-  'egg-fried-rice': '/assets/dishes/photos/egg-fried-rice.webp',
-  'mapo-tofu': '/assets/dishes/photos/mapo-tofu.webp',
-  'steamed-fish': '/assets/dishes/photos/steamed-fish.webp',
-  'mushroom-greens': '/assets/dishes/photos/mushroom-greens.webp',
-  'seaweed-egg-soup': '/assets/dishes/photos/seaweed-egg-soup.webp',
-  'noodle-soup': '/assets/dishes/photos/noodle-soup.webp',
+  'tomato-egg': 'https://interview-simulator-audio-xp.oss-cn-guangzhou.aliyuncs.com/family-menu-images/images/83c633a407fe4fe284b98358200b33ef.jpg',
+  'pepper-beef': 'https://interview-simulator-audio-xp.oss-cn-guangzhou.aliyuncs.com/family-menu-images/images/bb0955190da94c6aba04d5d88514ce47.jpg',
+  'garlic-lettuce': 'https://interview-simulator-audio-xp.oss-cn-guangzhou.aliyuncs.com/family-menu-images/images/9e4e34e454a3405ebfd8b62003c3f533.jpg',
+  'corn-rib-soup': 'https://interview-simulator-audio-xp.oss-cn-guangzhou.aliyuncs.com/family-menu-images/images/77462bd2af634c04aaa5221d99035261.jpg',
+  'egg-fried-rice': 'https://interview-simulator-audio-xp.oss-cn-guangzhou.aliyuncs.com/family-menu-images/images/65c322241cfa47fbbca5276c5c303de7.jpg',
+  'mapo-tofu': 'https://interview-simulator-audio-xp.oss-cn-guangzhou.aliyuncs.com/family-menu-images/images/3b798c952d2f4ba5a9eca4f6c28af726.jpg',
+  'steamed-fish': 'https://interview-simulator-audio-xp.oss-cn-guangzhou.aliyuncs.com/family-menu-images/images/4042c0cc570045a5ad946e770b292946.jpg',
+  'mushroom-greens': 'https://interview-simulator-audio-xp.oss-cn-guangzhou.aliyuncs.com/family-menu-images/images/009950a468f84b0ab5c9c9bf434d4f5c.jpg',
+  'seaweed-egg-soup': 'https://interview-simulator-audio-xp.oss-cn-guangzhou.aliyuncs.com/family-menu-images/images/857fcb08493e4ee689b0cf9e2cbdb1a9.jpg',
+  'noodle-soup': 'https://interview-simulator-audio-xp.oss-cn-guangzhou.aliyuncs.com/family-menu-images/images/4f612ad2f11a44cea96cb160c2ed5bb8.jpg',
 };
 
 function enrichBuiltInDish(dish) {
